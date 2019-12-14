@@ -3,9 +3,18 @@ import { ObjectId } from "mongodb";
 import { generate } from "randomstring";
 import { Field, ObjectType } from "type-graphql";
 
-import { getModelForClass, prop as Property } from "@typegoose/typegoose";
+import {
+  arrayProp as PropertyArray,
+  getModelForClass,
+  prop as Property,
+  Ref,
+} from "@typegoose/typegoose";
 
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
+import { Image } from "./image";
+import { Tag } from "./tag";
+import { TagAssociation } from "./TagAssociation";
+import { TagImageAssociation } from "./TagImageAssociation";
 
 @ObjectType()
 export class User {
@@ -30,6 +39,24 @@ export class User {
   @Field()
   @Property({ default: () => generate() })
   unlockKey: string;
+
+  @Field(() => [Image])
+  @PropertyArray({ items: "Image", ref: "Image" })
+  imagesUploaded: Ref<Image>[];
+
+  @Field(() => [TagAssociation])
+  @PropertyArray({ items: TagAssociation })
+  tagAssociations: TagAssociation[];
+
+  @Field(() => [TagImageAssociation])
+  @PropertyArray({ items: TagImageAssociation })
+  tagImageAssociations: TagImageAssociation[];
+
+  @Field(() => [Image])
+  notAssociatedImages: Image[];
+
+  @Field(() => [Tag])
+  notAssociatedTags: Tag[];
 }
 
 export const UserModel = getModelForClass(User);

@@ -3,6 +3,12 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Category {
+  _id: ObjectId!
+  name: String!
+  tags: [Tag!]!
+}
+
 input ChangePasswordInput {
   oldPassword: String!
   password: String!
@@ -24,8 +30,16 @@ type Image {
   filename: String!
   mimetype: String!
   extension: String!
+  validated: Boolean!
+  possibleTags: [Tag!]!
+  categories: [Category!]!
   updatedAt: DateTime!
   createdAt: DateTime!
+}
+
+type Location {
+  latitude: Float!
+  longitude: Float!
 }
 
 input LoginInput {
@@ -47,11 +61,38 @@ scalar ObjectId
 
 type Query {
   currentUser: User
+  validatedImages: [Image!]!
+  tags: [Tag!]!
 }
 
 input SignUpInput {
   email: EmailAddress!
   password: String!
+}
+
+type Tag {
+  _id: ObjectId!
+  name: String!
+  categories: [Category!]!
+  possibleTagAssociations: [Tag!]!
+}
+
+type TagAssociation {
+  _id: ObjectId!
+  tag1: Tag
+  tag2: Tag
+  location: Location
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type TagImageAssociation {
+  _id: ObjectId!
+  tag: Tag
+  image: Image
+  location: Location!
+  updatedAt: DateTime!
+  createdAt: DateTime!
 }
 
 input UnlockInput {
@@ -69,4 +110,9 @@ type User {
   admin: Boolean!
   locked: Boolean!
   unlockKey: String!
+  imagesUploaded: [Image!]!
+  tagAssociations: [TagAssociation!]!
+  tagImageAssociations: [TagImageAssociation!]!
+  notAssociatedImages: [Image!]!
+  notAssociatedTags: [Tag!]!
 }

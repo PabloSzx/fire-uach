@@ -2,7 +2,7 @@ import assert, { AssertionError } from "assert";
 import encodeUrl from "encodeurl";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
 import mime from "mime";
-import { Arg, Mutation, Resolver } from "type-graphql";
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
 
 import { uploadFileGridFSStream } from "../db/gridFS";
 import { Image, ImageModel } from "../entities/image";
@@ -61,5 +61,10 @@ export class ImageResolver {
       console.error(40, err);
       throw err;
     }
+  }
+
+  @Query(() => [Image])
+  async validatedImages() {
+    return await ImageModel.find({ validated: true });
   }
 }
