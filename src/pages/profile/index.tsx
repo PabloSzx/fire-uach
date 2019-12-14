@@ -4,7 +4,7 @@ import { useUser } from "../../components/Auth";
 
 const ProfilePage: NextPage = ({}) => {
   const { user, loading } = useUser("profile");
-  if (loading || !user) {
+  if (loading) {
     return null;
   }
 

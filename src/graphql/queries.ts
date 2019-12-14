@@ -1,10 +1,9 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
+export type IUser = { _id: string; email: string };
+
 export const CURRENT_USER: DocumentNode<{
-  currentUser?: {
-    _id: string;
-    email: string;
-  };
+  currentUser?: IUser;
 }> = gql`
   query {
     currentUser {
@@ -16,10 +15,7 @@ export const CURRENT_USER: DocumentNode<{
 
 export const LOGIN: DocumentNode<
   {
-    login: {
-      _id: string;
-      email: string;
-    };
+    login: IUser;
   },
   {
     data: {
@@ -38,10 +34,7 @@ export const LOGIN: DocumentNode<
 
 export const SIGN_UP: DocumentNode<
   {
-    signUp: {
-      _id: string;
-      email: string;
-    };
+    signUp: IUser;
   },
   {
     data: {

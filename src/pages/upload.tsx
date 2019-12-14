@@ -4,12 +4,13 @@ import { useDropzone } from "react-dropzone";
 import { useUser } from "../components/Auth";
 
 const UploadPage: NextPage = () => {
-  const { loading, user } = useUser("upload");
+  const { loading } = useUser("upload");
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: () => {},
   });
-  if (loading || !user) {
+
+  if (loading) {
     return null;
   }
 
