@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { Document } from "mongoose";
 
-import { SECRET } from "../../constants";
+import { SECRET } from "../constants";
 import { User, UserModel } from "../entities/user";
 import { AuthResolver } from "../resolvers/auth";
 

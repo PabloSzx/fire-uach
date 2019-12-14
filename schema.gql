@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input ChangePasswordInput {
+  oldPassword: String!
+  password: String!
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
@@ -23,7 +28,17 @@ type Image {
   createdAt: DateTime!
 }
 
+input LoginInput {
+  email: EmailAddress!
+  password: String!
+}
+
 type Mutation {
+  login(data: LoginInput!): User!
+  signUp(data: SignUpInput!): User!
+  logout: Boolean!
+  unlock(data: UnlockInput!): User!
+  changePassword(data: ChangePasswordInput!): User!
   uploadImage(file: Upload!): Image!
 }
 
@@ -34,6 +49,17 @@ type Query {
   currentUser: User
 }
 
+input SignUpInput {
+  email: EmailAddress!
+  password: String!
+}
+
+input UnlockInput {
+  email: EmailAddress!
+  password: String!
+  unlockKey: String!
+}
+
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
@@ -42,4 +68,5 @@ type User {
   email: EmailAddress!
   admin: Boolean!
   locked: Boolean!
+  unlockKey: String!
 }

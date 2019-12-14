@@ -1,5 +1,6 @@
 import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
 import { ObjectId } from "mongodb";
+import { generate } from "randomstring";
 import { Field, ObjectType } from "type-graphql";
 
 import { getModelForClass, prop as Property } from "@typegoose/typegoose";
@@ -25,6 +26,10 @@ export class User {
   @Field()
   @Property({ default: false })
   locked: boolean;
+
+  @Field()
+  @Property({ default: () => generate() })
+  unlockKey: string;
 }
 
 export const UserModel = getModelForClass(User);

@@ -6,10 +6,13 @@ import cookieParser from "cookie-parser";
 import express from "express";
 
 import { apolloServer } from "./apollo/server";
+import { ImagesRouter } from "./routes/images";
 
 const app = express();
 
 app.use(cookieParser());
+
+app.use("/api/images", ImagesRouter);
 
 apolloServer.applyMiddleware({
   app,

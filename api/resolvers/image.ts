@@ -1,4 +1,5 @@
 import assert, { AssertionError } from "assert";
+import encodeUrl from "encodeurl";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
 import mime from "mime";
 import { Arg, Mutation, Resolver } from "type-graphql";
@@ -35,6 +36,8 @@ export class ImageResolver {
         throw new AssertionError({ message: "La imagen debe ser PNG o JPEG!" });
       }
     }
+
+    filename = encodeUrl(filename);
 
     try {
       const imageDoc = await ImageModel.findOneAndUpdate(
