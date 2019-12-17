@@ -10,8 +10,7 @@
     "build-api": "tsc -P api",
     "build-client": "next build",
     "dev": "cross-env NODE_ENV=development run-p -l watch-*",
-    "postinstall2": "run-p -l build-*",
-    "tsc": "tsc",
+    "typecheck": "tsc",
     "watch-api-build": "tsc -P api -w",
     "watch-api-run": "nodemon --delay 1 --inspect=27052 ./api/dist/api/index.js",
     "watch-client": "next"
@@ -96,6 +95,8 @@
     "@types/shelljs": "^0.8.6",
     "@types/validator": "10.11.3",
     "apollo-server-integration-testing": "^2.3.0",
+    "babel-plugin-graphql-tag": "^2.5.0",
+    "babel-plugin-lodash": "^3.3.4",
     "jest": "^24.9.0",
     "nodemon": "^2.0.2",
     "npm-run-all": "^4.1.5",
@@ -106,5 +107,8 @@
     "ts-node": "^8.5.4",
     "typescript": "^3.7.3",
     "utility-types": "^3.10.0"
+  },
+  "resolutions": {
+    "fs-capacitor": "5.0.0"
   }
 }

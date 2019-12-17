@@ -22,7 +22,7 @@ export class TagImageAssociation extends TimeStamps {
   @Property({ ref: "Image" })
   image?: Ref<Image>;
 
-  @Field()
+  @Field({ nullable: true })
   @Property({ _id: false })
   location?: Location;
 

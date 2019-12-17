@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Field, ObjectType } from "type-graphql";
+import { Field, InputType, ObjectType } from "type-graphql";
 
 import {
   arrayProp as PropertyArray,
@@ -35,11 +35,10 @@ export class Image extends TimeStamps {
   validated: boolean;
 
   @Field(() => [Tag])
-  @PropertyArray({ items: "Tag", ref: "Tag" })
-  possibleTags: Ref<Tag>[];
+  possibleTags: Tag[];
 
   @Field(() => [Category])
-  @PropertyArray({ items: "Category", ref: "Category" })
+  @PropertyArray({ items: "Category", ref: "Category", default: [] })
   categories: Ref<Category>[];
 
   @Field(() => Date)
@@ -50,3 +49,21 @@ export class Image extends TimeStamps {
 }
 
 export const ImageModel = getModelForClass(Image);
+
+@InputType()
+export class EditImage implements Partial<Image> {
+  @Field(() => ObjectIdScalar)
+  _id: ObjectId;
+
+  @Field()
+  validated: boolean;
+
+  @Field(() => [ObjectIdScalar])
+  categories: ObjectId[];
+}
+
+@InputType()
+export class RemoveImage implements Partial<Image> {
+  @Field(() => ObjectIdScalar)
+  _id: ObjectId;
+}

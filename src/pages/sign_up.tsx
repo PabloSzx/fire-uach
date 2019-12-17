@@ -20,9 +20,12 @@ import {
   Text,
 } from "@chakra-ui/core";
 
+import { useUser } from "../components/Auth";
+import { LoadingPage } from "../components/LoadingPage";
 import { CURRENT_USER, SIGN_UP } from "../graphql/queries";
 
 const SignUpPage: NextPage = () => {
+  const { user, loading } = useUser();
   const {
     query: { route, email },
     push,
@@ -39,23 +42,27 @@ const SignUpPage: NextPage = () => {
         });
       }
     },
-    onCompleted: () => {
-      switch (route) {
-        case "/profile":
-        case "/upload":
-        case "/": {
-          push(route);
-          return;
-        }
-        default:
-          push("/");
-          return;
-      }
-    },
     onError: err => {
       console.error(JSON.stringify(err, null, 2));
     },
   });
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+  if (user) {
+    switch (route) {
+      case "/profile":
+      case "/upload":
+      case "/": {
+        push(route);
+        break;
+      }
+      default:
+        push("/");
+    }
+    return <LoadingPage />;
+  }
 
   return (
     <Formik

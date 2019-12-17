@@ -1,14 +1,19 @@
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC } from "react";
-import { IoIosHome, IoIosPerson, IoMdAddCircle } from "react-icons/io";
+import {
+  IoIosHome,
+  IoIosPerson,
+  IoMdAddCircle,
+  IoMdSettings,
+} from "react-icons/io";
 
 import { Box, Flex } from "@chakra-ui/core";
 
 import { useUser } from "./Auth";
+import { FakeHref } from "./FakeHref";
 
 export const Navigation: FC = () => {
-  const user = useUser();
+  const { user } = useUser();
   const { push } = useRouter();
 
   return (
@@ -26,41 +31,57 @@ export const Navigation: FC = () => {
       alignItems="center"
       p={0}
     >
-      <Box
-        cursor="pointer"
-        as={IoIosHome}
-        color="black"
-        fontSize="2em"
-        onClick={() => {
-          push("/");
-        }}
-      />
-      <Box
-        cursor="pointer"
-        as={IoMdAddCircle}
-        color="black"
-        fontSize="2em"
-        onClick={() => {
-          if (user) {
-            push("/upload");
-          } else {
-            push("/login?route=upload");
-          }
-        }}
-      />
-      <Box
-        cursor="pointer"
-        as={IoIosPerson}
-        color="black"
-        fontSize="2em"
-        onClick={() => {
-          if (user) {
-            push("/profile");
-          } else {
-            push("/login?route=profile");
-          }
-        }}
-      />
+      <FakeHref href="/">
+        <Box
+          as={IoIosHome}
+          color="black"
+          fontSize="2em"
+          onClick={() => {
+            push("/");
+          }}
+        />
+      </FakeHref>
+      <FakeHref href="/upload">
+        <Box
+          as={IoMdAddCircle}
+          color="black"
+          fontSize="2em"
+          onClick={() => {
+            if (user) {
+              push("/upload");
+            } else {
+              push("/login?route=upload");
+            }
+          }}
+        />
+      </FakeHref>
+
+      <FakeHref href="/profile">
+        <Box
+          as={IoIosPerson}
+          color="black"
+          fontSize="2em"
+          onClick={() => {
+            if (user) {
+              push("/profile");
+            } else {
+              push("/login?route=profile");
+            }
+          }}
+        />
+      </FakeHref>
+      {user?.admin && (
+        <FakeHref href="/admin">
+          <Box
+            as={IoMdSettings}
+            color="black"
+            fontSize="2em"
+            onClick={() => {
+              push("/admin");
+            }}
+          />
+        </FakeHref>
+      )}
     </Flex>
   );
 };

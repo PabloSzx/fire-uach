@@ -25,6 +25,17 @@ const bucket = new Promise<GridFSBucket>(async (resolve, reject) => {
   }
 });
 
+export const removeFileGridFS = (_id: ObjectId) => {
+  return new Promise<void>(async resolve => {
+    (await bucket).delete(_id, async err => {
+      if (err) {
+        console.error(err);
+      }
+      resolve();
+    });
+  });
+};
+
 export const uploadFileGridFSStream = (
   stream: ReadStream,
   filename: string,

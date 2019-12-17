@@ -4,12 +4,22 @@ import { useQuery } from "@apollo/react-hooks";
 
 import { CURRENT_USER, IUser } from "../graphql/queries";
 
-export function useUser(): { user?: IUser; loading: boolean };
-export function useUser(requireAuth: string): { user: IUser; loading: boolean };
-export function useUser(requireAuth?: string) {
+export function useUser(
+  requireAuth?: undefined,
+  admin?: undefined
+): {
+  user: IUser | undefined;
+  loading: boolean;
+  refetch: () => Promise<any>;
+};
+export function useUser(
+  requireAuth: string,
+  admin?: boolean
+): { user: IUser; loading: boolean; refetch: () => Promise<any> };
+export function useUser(requireAuth?: string, admin?: boolean) {
   const { push } = useRouter();
 
-  const { data, error, loading } = useQuery(CURRENT_USER, {
+  const { data, error, loading, refetch } = useQuery(CURRENT_USER, {
     ssr: false,
   });
 
@@ -17,15 +27,19 @@ export function useUser(requireAuth?: string) {
     throw error;
   }
 
-  if (requireAuth && !data?.currentUser) {
+  if (
+    (requireAuth && !data?.currentUser) ||
+    (admin && !data?.currentUser?.admin)
+  ) {
     if (!loading) {
       push(`/login?route=${requireAuth}`);
     }
     return {
       user: { email: "", _id: "" },
       loading: true,
+      refetch,
     };
   }
 
-  return { user: data?.currentUser, loading };
+  return { user: data?.currentUser, loading, refetch };
 }

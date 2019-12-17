@@ -14,10 +14,36 @@ input ChangePasswordInput {
   password: String!
 }
 
+input CreateCategory {
+  name: String!
+}
+
+input CreateTag {
+  name: String!
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
 scalar DateTime
+
+input EditCategory {
+  _id: ObjectId!
+  name: String!
+  tags: [ObjectId!]!
+}
+
+input EditImage {
+  _id: ObjectId!
+  validated: Boolean!
+  categories: [ObjectId!]!
+}
+
+input EditTag {
+  _id: ObjectId!
+  name: String!
+  possibleTagAssociations: [ObjectId!]!
+}
 
 """
 A field whose value conforms to the standard internet email address format as
@@ -53,7 +79,15 @@ type Mutation {
   logout: Boolean!
   unlock(data: UnlockInput!): User!
   changePassword(data: ChangePasswordInput!): User!
+  createCategory(data: CreateCategory!): [Category!]!
+  editCategory(data: EditCategory!): [Category!]!
+  removeCategory(data: RemoveCategory!): [Category!]!
   uploadImage(file: Upload!): Image!
+  editImage(data: EditImage!): [Image!]!
+  removeImage(data: RemoveImage!): [Image!]!
+  createTag(data: CreateTag!): [Tag!]!
+  editTag(data: EditTag!): [Tag!]!
+  removeTag(data: RemoveTag!): [Tag!]!
 }
 
 """Mongo object id scalar type"""
@@ -61,8 +95,22 @@ scalar ObjectId
 
 type Query {
   currentUser: User
+  categories: [Category!]!
+  images: [Image!]!
   validatedImages: [Image!]!
   tags: [Tag!]!
+}
+
+input RemoveCategory {
+  _id: ObjectId!
+}
+
+input RemoveImage {
+  _id: ObjectId!
+}
+
+input RemoveTag {
+  _id: ObjectId!
 }
 
 input SignUpInput {
@@ -90,7 +138,7 @@ type TagImageAssociation {
   _id: ObjectId!
   tag: Tag
   image: Image
-  location: Location!
+  location: Location
   updatedAt: DateTime!
   createdAt: DateTime!
 }

@@ -1,31 +1,70 @@
-import { Authorized, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 
 import { isDocumentArray } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
 import { CategoryModel } from "../entities/category";
-import { Tag, TagModel } from "../entities/tag";
+import { CreateTag, EditTag, RemoveTag, Tag, TagModel } from "../entities/tag";
 
 @Resolver(() => Tag)
 export class TagResolver {
-  @Authorized([ADMIN])
   @Query(() => [Tag])
   async tags() {
     return await TagModel.find({});
   }
 
-  @FieldResolver()
-  async categories(@Root() { categories }: Partial<Tag>) {
-    if (categories) {
-      if (isDocumentArray(categories)) {
-        return categories;
-      } else {
-        return await CategoryModel.find({
-          _id: {
-            $in: categories,
-          },
-        });
+  @Authorized([ADMIN])
+  @Mutation(() => [Tag])
+  async createTag(@Arg("data") { name }: CreateTag) {
+    await TagModel.create({
+      name,
+    });
+
+    return await TagModel.find({});
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [Tag])
+  async editTag(@Arg("data") { _id, name, possibleTagAssociations }: EditTag) {
+    await TagModel.findByIdAndUpdate(
+      _id,
+      {
+        name,
+        possibleTagAssociations,
+      },
+      {
+        setDefaultsOnInsert: true,
+        select: "_id",
       }
+    );
+
+    return await TagModel.find({});
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [Tag])
+  async removeTag(@Arg("data") { _id }: RemoveTag) {
+    await TagModel.findByIdAndRemove(_id, {
+      select: "_id",
+    });
+
+    return await TagModel.find({});
+  }
+
+  @FieldResolver()
+  async categories(@Root() { _id }: Partial<Tag>) {
+    if (_id) {
+      return await CategoryModel.find({
+        tags: _id,
+      });
     }
     return [];
   }

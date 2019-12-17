@@ -41,15 +41,15 @@ export class User {
   unlockKey: string;
 
   @Field(() => [Image])
-  @PropertyArray({ items: "Image", ref: "Image" })
+  @PropertyArray({ items: "Image", ref: "Image", default: [] })
   imagesUploaded: Ref<Image>[];
 
   @Field(() => [TagAssociation])
-  @PropertyArray({ items: TagAssociation })
+  @PropertyArray({ items: TagAssociation, default: [] })
   tagAssociations: TagAssociation[];
 
   @Field(() => [TagImageAssociation])
-  @PropertyArray({ items: TagImageAssociation })
+  @PropertyArray({ items: TagImageAssociation, default: [] })
   tagImageAssociations: TagImageAssociation[];
 
   @Field(() => [Image])

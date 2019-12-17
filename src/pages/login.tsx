@@ -21,10 +21,12 @@ import {
 } from "@chakra-ui/core";
 
 import { useUser } from "../components/Auth";
+import { LoadingPage } from "../components/LoadingPage";
 import { CURRENT_USER, LOGIN } from "../graphql/queries";
 
 const LoginPage: NextPage = () => {
-  const { loading } = useUser();
+  const { user, loading } = useUser();
+
   const {
     query: { route },
     push,
@@ -41,26 +43,27 @@ const LoginPage: NextPage = () => {
         });
       }
     },
-    onCompleted: () => {
-      switch (route) {
-        case "/profile":
-        case "/upload":
-        case "/": {
-          push(route);
-          return;
-        }
-        default:
-          push("/");
-          return;
-      }
-    },
     onError: err => {
       console.error(JSON.stringify(err, null, 2));
     },
   });
 
   if (loading) {
-    return null;
+    return <LoadingPage />;
+  }
+  if (user) {
+    switch (route) {
+      case "/profile":
+      case "/upload":
+      case "/admin":
+      case "/": {
+        push(route);
+        break;
+      }
+      default:
+        push("/");
+    }
+    return <LoadingPage />;
   }
 
   return (
