@@ -161,13 +161,15 @@ export const EDIT_TAG: DocumentNode<
 
 export type IImages = {
   _id: string;
+  filename: string;
   validated: boolean;
-  categories: { _id: string; name: string };
+  categories: { _id: string; name: string }[];
 }[];
 
 const ImageFragment = gql`
   fragment ImageFragment on Image {
     _id
+    filename
     validated
     categories {
       _id
