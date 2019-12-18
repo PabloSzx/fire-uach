@@ -97,3 +97,9 @@ export const VALIDATED_IMAGES: DocumentNode<{
     }
   }
 `;
+
+export const LOGOUT: DocumentNode = gql`
+  mutation {
+    logout
+  }
+`;

@@ -14,13 +14,14 @@ import {
   Root,
 } from "type-graphql";
 
-import { isDocumentArray } from "@typegoose/typegoose";
+import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
 import { removeFileGridFS, uploadFileGridFSStream } from "../db/gridFS";
 import { CategoryModel } from "../entities/category";
 import { EditImage, Image, ImageModel, RemoveImage } from "../entities/image";
 import { TagModel } from "../entities/tag";
+import { UserModel } from "../entities/user";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 
@@ -67,6 +68,7 @@ export class ImageResolver {
           filename,
           mimetype,
           extension,
+          uploader: user._id,
         },
         {
           new: true,
@@ -166,5 +168,17 @@ export class ImageResolver {
     }
 
     return [];
+  }
+
+  @FieldResolver()
+  async uploader(@Root() { uploader }: Partial<Image>) {
+    if (uploader) {
+      if (isDocument(uploader)) {
+        return uploader;
+      } else {
+        return await UserModel.findById(uploader);
+      }
+    }
+    return null;
   }
 }

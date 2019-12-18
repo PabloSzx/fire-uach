@@ -28,9 +28,14 @@ import { Confirm } from "../Confirm";
 
 const AdminCategories: FC = () => {
   const { data: dataAllCategories, loading: loadingAllCategories } = useQuery(
-    CATEGORIES
+    CATEGORIES,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
-  const { data: dataAllTags } = useQuery(TAGS);
+  const { data: dataAllTags } = useQuery(TAGS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const [newCategory, setNewCategory] = useRememberState(
     "create_category_input",

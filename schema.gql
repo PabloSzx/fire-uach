@@ -59,6 +59,7 @@ type Image {
   validated: Boolean!
   possibleTags: [Tag!]!
   categories: [Category!]!
+  uploader: User
   updatedAt: DateTime!
   createdAt: DateTime!
 }

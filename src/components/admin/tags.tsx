@@ -25,7 +25,9 @@ import {
 import { Confirm } from "../Confirm";
 
 const AdminTags: FC = () => {
-  const { data: dataAllTags, loading: loadingAllTags } = useQuery(TAGS);
+  const { data: dataAllTags, loading: loadingAllTags } = useQuery(TAGS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const [newTag, setNewTag] = useRememberState("new_tag_input", "");
 
@@ -75,7 +77,7 @@ const AdminTags: FC = () => {
   });
   return (
     <Stack align="center" pt={5}>
-      <Divider width="100vw" />
+      <Divider border="1px solid" width="100vw" />
       {loadingAllTags && <Spinner />}
 
       {dataAllTags?.tags.map(({ _id, name, possibleTagAssociations }) => {

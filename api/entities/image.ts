@@ -12,6 +12,7 @@ import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 import { Category } from "./category";
 import { Tag } from "./tag";
+import { User } from "./user";
 
 @ObjectType()
 export class Image extends TimeStamps {
@@ -40,6 +41,10 @@ export class Image extends TimeStamps {
   @Field(() => [Category])
   @PropertyArray({ items: "Category", ref: "Category", default: [] })
   categories: Ref<Category>[];
+
+  @Field(() => User, { nullable: true })
+  @Property({ ref: "User", index: true })
+  uploader: Ref<User>;
 
   @Field(() => Date)
   readonly updatedAt: Readonly<Date>;

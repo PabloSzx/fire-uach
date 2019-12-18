@@ -1,7 +1,7 @@
 import { FC } from "react";
-import LazyLoad from "react-lazyload";
+import LazyImage from "react-lazy-progressive-image";
 import Select from "react-select";
-import { Checkbox } from "semantic-ui-react";
+import { Checkbox, Icon } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Box, Button, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
@@ -15,8 +15,17 @@ import {
 import { Confirm } from "../Confirm";
 
 const AdminImages: FC = () => {
-  const { data: dataImages, loading: loadingDataImages } = useQuery(IMAGES);
-  const { data: dataAllCategories } = useQuery(CATEGORIES);
+  const {
+    data: dataImages,
+    loading: loadingDataImages,
+    refetch: refetchAllImages,
+  } = useQuery(IMAGES, {
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
+  });
+  const { data: dataAllCategories } = useQuery(CATEGORIES, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const [editImage, { loading: loadingEditImage }] = useMutation(EDIT_IMAGE, {
     update: (cache, { data }) => {
@@ -46,8 +55,21 @@ const AdminImages: FC = () => {
     }
   );
   return (
-    <Stack pt={5} spacing="2em">
-      {loadingDataImages && <Spinner />}
+    <Stack pt={5} spacing="2em" align="center">
+      {loadingDataImages ? (
+        <Spinner />
+      ) : (
+        <Box cursor="pointer">
+          <Icon
+            disabled={loadingDataImages}
+            name="repeat"
+            onClick={() => {
+              refetchAllImages();
+            }}
+          />
+        </Box>
+      )}
+
       {dataImages?.images.map(({ _id, filename, validated, categories }) => {
         const data = {
           _id,
@@ -66,17 +88,26 @@ const AdminImages: FC = () => {
             align="center"
           >
             <Box>
-              <LazyLoad height={300} once>
-                <Image
-                  pos="relative"
-                  w="100%"
-                  h="100%"
-                  maxH="40vh"
-                  maxW="70vw"
-                  objectFit="contain"
-                  src={`/api/images/${filename}`}
-                />
-              </LazyLoad>
+              <LazyImage
+                src={`/api/images/${filename}`}
+                placeholder={`/api/images/${filename}`}
+              >
+                {(src, loading) => {
+                  return loading ? (
+                    <Spinner />
+                  ) : (
+                    <Image
+                      pos="relative"
+                      w="100%"
+                      h="100%"
+                      maxH="40vh"
+                      maxW="70vw"
+                      objectFit="contain"
+                      src={src}
+                    />
+                  );
+                }}
+              </LazyImage>
             </Box>
             <Flex align="center" justify="center">
               <Tag>Válido</Tag>

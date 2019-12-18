@@ -13,7 +13,7 @@ import { useUser } from "./Auth";
 import { FakeHref } from "./FakeHref";
 
 export const Navigation: FC = () => {
-  const { user } = useUser();
+  const { user, refetch } = useUser();
   const { push } = useRouter();
 
   return (
@@ -37,6 +37,7 @@ export const Navigation: FC = () => {
           color="black"
           fontSize="2em"
           onClick={() => {
+            refetch();
             push("/");
           }}
         />
@@ -47,6 +48,7 @@ export const Navigation: FC = () => {
           color="black"
           fontSize="2em"
           onClick={() => {
+            refetch();
             if (user) {
               push("/upload");
             } else {
@@ -62,6 +64,7 @@ export const Navigation: FC = () => {
           color="black"
           fontSize="2em"
           onClick={() => {
+            refetch();
             if (user) {
               push("/profile");
             } else {
@@ -77,6 +80,7 @@ export const Navigation: FC = () => {
             color="black"
             fontSize="2em"
             onClick={() => {
+              refetch();
               push("/admin");
             }}
           />

@@ -41,8 +41,7 @@ export class User {
   unlockKey: string;
 
   @Field(() => [Image])
-  @PropertyArray({ items: "Image", ref: "Image", default: [] })
-  imagesUploaded: Ref<Image>[];
+  imagesUploaded: Image[];
 
   @Field(() => [TagAssociation])
   @PropertyArray({ items: TagAssociation, default: [] })
