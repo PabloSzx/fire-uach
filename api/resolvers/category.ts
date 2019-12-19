@@ -39,12 +39,15 @@ export class CategoryResolver {
 
   @Authorized([ADMIN])
   @Mutation(() => [Category])
-  async editCategory(@Arg("data") { _id, name, tags }: EditCategory) {
+  async editCategory(
+    @Arg("data") { _id, name, tags, correctTags }: EditCategory
+  ) {
     await CategoryModel.findByIdAndUpdate(
       _id,
       {
         name,
         tags,
+        correctTags,
       },
       {
         setDefaultsOnInsert: true,
@@ -61,6 +64,22 @@ export class CategoryResolver {
     await CategoryModel.findByIdAndRemove(_id, { select: "_id" });
 
     return await CategoryModel.find({});
+  }
+
+  @FieldResolver()
+  async correctTags(@Root() { correctTags }: Partial<Category>) {
+    if (correctTags) {
+      if (isDocumentArray(correctTags)) {
+        return correctTags;
+      } else {
+        return await TagModel.find({
+          _id: {
+            $in: correctTags,
+          },
+        });
+      }
+    }
+    return [];
   }
 
   @FieldResolver()

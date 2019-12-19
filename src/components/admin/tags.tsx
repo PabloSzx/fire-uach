@@ -1,5 +1,7 @@
-import { ChangeEvent, FC, useMemo } from "react";
+import { intersectionBy } from "lodash";
+import { ChangeEvent, FC, useCallback, useMemo } from "react";
 import Select from "react-select";
+import { useSetState } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -75,131 +77,212 @@ const AdminTags: FC = () => {
       }
     },
   });
+
+  const EditTagComponent = useCallback<
+    FC<{
+      _id: string;
+      name: string;
+      possibleTagAssociations: { _id: string; name: string }[];
+      correctTagAssociations: { _id: string; name: string }[];
+    }>
+  >(
+    ({ _id, name, possibleTagAssociations, correctTagAssociations }) => {
+      const [data, setData] = useSetState({
+        name,
+        possibleTagAssociations: [...possibleTagAssociations],
+        correctTagAssociations: [...correctTagAssociations],
+      });
+
+      const correctTagsAssociationsFiltered = useMemo(() => {
+        return intersectionBy(
+          data.correctTagAssociations,
+          data.possibleTagAssociations,
+          ({ _id }) => _id
+        );
+      }, [data.correctTagAssociations, data.possibleTagAssociations]);
+
+      return (
+        <Stack align="center" spacing="2em" p={2}>
+          <InputGroup>
+            <InputLeftAddon>
+              <Text>Nombre tag</Text>
+            </InputLeftAddon>
+            <Input
+              value={data.name}
+              onChange={({
+                target: { value },
+              }: ChangeEvent<HTMLInputElement>) => {
+                setData({
+                  name: value,
+                });
+              }}
+            />
+          </InputGroup>
+          <Box
+            width="100%"
+            pl={10}
+            pr={10}
+            key={"0" + possibleTagAssociations.map(({ name }) => name).join("")}
+          >
+            <Tag textAlign="center">
+              <Text justifyContent="center" textAlign="center">
+                Asociaciones de Tags posibles
+              </Text>
+            </Tag>
+            <Select<{ value: string; label: string }>
+              value={data.possibleTagAssociations.map(({ _id, name }) => {
+                return {
+                  label: name,
+                  value: _id,
+                };
+              })}
+              options={dataAllTags?.tags
+                .map(({ _id, name }) => {
+                  return {
+                    label: name,
+                    value: _id,
+                  };
+                })
+                .filter(({ value }) => {
+                  return value !== _id;
+                })}
+              isMulti
+              onChange={(selected: any) => {
+                const selectedPossibleTags =
+                  (selected as {
+                    label: string;
+                    value: string;
+                  }[])?.map(({ value, label }) => {
+                    return {
+                      _id: value,
+                      name: label,
+                    };
+                  }) ?? [];
+                setData({
+                  possibleTagAssociations: selectedPossibleTags,
+                });
+              }}
+              placeholder="Seleccionar posibles asociaciones de tag"
+              noOptionsMessage={() => "No hay tags disponibles"}
+            />
+          </Box>
+          <Box
+            width="100%"
+            pl={10}
+            pr={10}
+            key={"1" + correctTagAssociations.map(({ name }) => name).join("")}
+          >
+            <Tag textAlign="center">
+              <Text justifyContent="center" textAlign="center">
+                Asociaciones de Tags correctas
+              </Text>
+            </Tag>
+            <Select<{ value: string; label: string }>
+              value={correctTagsAssociationsFiltered.map(({ _id, name }) => {
+                return {
+                  label: name,
+                  value: _id,
+                };
+              })}
+              options={data.possibleTagAssociations
+                .map(({ _id, name }) => {
+                  return {
+                    label: name,
+                    value: _id,
+                  };
+                })
+                .filter(({ value }) => {
+                  return value !== _id;
+                })}
+              isMulti
+              onChange={(selected: any) => {
+                const selectedCorrectTags =
+                  (selected as {
+                    label: string;
+                    value: string;
+                  }[])?.map(({ value, label }) => {
+                    return {
+                      _id: value,
+                      name: label,
+                    };
+                  }) ?? [];
+                setData({
+                  correctTagAssociations: selectedCorrectTags,
+                });
+              }}
+              placeholder="Seleccionar asociaciones de tag correctas"
+              noOptionsMessage={() => "No hay tags disponibles"}
+            />
+          </Box>
+          <Box>
+            <Button
+              isLoading={loadingEditTag}
+              onClick={() => {
+                if (data.name) {
+                  editTag({
+                    variables: {
+                      data: {
+                        _id,
+                        name: data.name,
+                        possibleTagAssociations: data.possibleTagAssociations.map(
+                          ({ _id }) => {
+                            return _id;
+                          }
+                        ),
+                        correctTagAssociations: correctTagsAssociationsFiltered.map(
+                          ({ _id }) => {
+                            return _id;
+                          }
+                        ),
+                      },
+                    },
+                  });
+                } else {
+                  alert("Favor especificar nombre para editar un tag");
+                }
+              }}
+              variantColor="blue"
+            >
+              Guardar cambios
+            </Button>
+          </Box>
+          <Box>
+            <Confirm
+              content={`¿Está seguro que desea eliminar el tag ${name}?`}
+              confirmButton="Estoy seguro"
+              cancelButton="Cancelar"
+            >
+              <Button
+                variantColor="red"
+                onClick={() => {
+                  removeTag({
+                    variables: {
+                      data: {
+                        _id,
+                      },
+                    },
+                  });
+                }}
+                isLoading={loadingRemoveTag}
+                isDisabled={loadingRemoveTag}
+              >
+                Eliminar tag
+              </Button>
+            </Confirm>
+          </Box>
+          <Divider width="100vw" />
+        </Stack>
+      );
+    },
+    [removeTag, editTag, loadingRemoveTag, loadingEditTag, dataAllTags]
+  );
   return (
     <Stack align="center" pt={5}>
       <Divider border="1px solid" width="100vw" />
       {loadingAllTags && <Spinner />}
 
-      {dataAllTags?.tags.map(({ _id, name, possibleTagAssociations }) => {
-        const data = {
-          name,
-          possibleTagAssociations: [...possibleTagAssociations],
-        };
-
-        return (
-          <Stack key={_id} align="center" spacing="2em" p={2}>
-            <InputGroup>
-              <InputLeftAddon>
-                <Text>Nombre tag</Text>
-              </InputLeftAddon>
-              <Input
-                defaultValue={name}
-                onChange={({
-                  target: { value },
-                }: ChangeEvent<HTMLInputElement>) => {
-                  data.name = value;
-                }}
-              />
-            </InputGroup>
-            <Box
-              width="100%"
-              pl={10}
-              pr={10}
-              key={possibleTagAssociations.map(({ name }) => name).join("")}
-            >
-              <Tag textAlign="center">
-                <Text justifyContent="center" textAlign="center">
-                  Asociaciones de Tags posibles
-                </Text>
-              </Tag>
-              <Select<{ value: string; label: string }>
-                defaultValue={possibleTagAssociations.map(({ _id, name }) => {
-                  return {
-                    label: name,
-                    value: _id,
-                  };
-                })}
-                options={dataAllTags?.tags
-                  .map(({ _id, name }) => {
-                    return {
-                      label: name,
-                      value: _id,
-                    };
-                  })
-                  .filter(({ value }) => {
-                    return value !== _id;
-                  })}
-                isMulti
-                onChange={(selected: any) => {
-                  const selectedPossibleTags = (selected as {
-                    label: string;
-                    value: string;
-                  }[]).map(({ value, label }) => {
-                    return {
-                      _id: value,
-                      name: label,
-                    };
-                  });
-                  data.possibleTagAssociations = selectedPossibleTags;
-                }}
-                placeholder="Seleccionar posibles asociaciones de tag"
-                noOptionsMessage={() => "No hay tags disponibles"}
-              />
-            </Box>
-            <Box>
-              <Button
-                isLoading={loadingEditTag}
-                onClick={() => {
-                  if (data.name) {
-                    editTag({
-                      variables: {
-                        data: {
-                          _id,
-                          name: data.name,
-                          possibleTagAssociations: data.possibleTagAssociations.map(
-                            ({ _id }) => {
-                              return _id;
-                            }
-                          ),
-                        },
-                      },
-                    });
-                  } else {
-                    alert("Favor especificar nombre para editar un tag");
-                  }
-                }}
-                variantColor="blue"
-              >
-                Guardar cambios
-              </Button>
-            </Box>
-            <Box>
-              <Confirm
-                content={`¿Está seguro que desea eliminar el tag ${name}?`}
-                confirmButton="Estoy seguro"
-                cancelButton="Cancelar"
-              >
-                <Button
-                  variantColor="red"
-                  onClick={() => {
-                    removeTag({
-                      variables: {
-                        data: {
-                          _id,
-                        },
-                      },
-                    });
-                  }}
-                  isLoading={loadingRemoveTag}
-                  isDisabled={loadingRemoveTag}
-                >
-                  Eliminar tag
-                </Button>
-              </Confirm>
-            </Box>
-            <Divider width="100vw" />
-          </Stack>
-        );
+      {dataAllTags?.tags.map(tag => {
+        return <EditTagComponent key={tag._id} {...tag} />;
       })}
       <Stack align="center">
         <InputGroup>

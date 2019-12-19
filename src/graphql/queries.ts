@@ -130,6 +130,10 @@ export const IMAGE_TAG_ASSOCIATIONS: DocumentNode<
           _id: string;
           name: string;
         }[];
+        correctTags: {
+          _id: string;
+          name: string;
+        }[];
       }[];
     };
   },
@@ -144,6 +148,10 @@ export const IMAGE_TAG_ASSOCIATIONS: DocumentNode<
         _id
         name
         tags {
+          _id
+          name
+        }
+        correctTags {
           _id
           name
         }
@@ -210,6 +218,10 @@ export const ALL_TAGS_WITH_ASSOCIATIONS: DocumentNode<{
       _id: string;
       name: string;
     }[];
+    correctTagAssociations: {
+      _id: string;
+      name: string;
+    }[];
   }[];
 }> = gql`
   query {
@@ -217,6 +229,10 @@ export const ALL_TAGS_WITH_ASSOCIATIONS: DocumentNode<{
       _id
       name
       possibleTagAssociations {
+        _id
+        name
+      }
+      correctTagAssociations {
         _id
         name
       }

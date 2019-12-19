@@ -4,6 +4,7 @@ export type ICategories = {
   _id: string;
   name: string;
   tags: { _id: string; name: string }[];
+  correctTags: { _id: string; name: string }[];
 }[];
 
 const CategoryFragment = gql`
@@ -11,6 +12,10 @@ const CategoryFragment = gql`
     _id
     name
     tags {
+      _id
+      name
+    }
+    correctTags {
       _id
       name
     }
@@ -64,7 +69,7 @@ export const EDIT_CATEGORY: DocumentNode<
     editCategory: ICategories;
   },
   {
-    data: { _id: string; name: string; tags: string[] };
+    data: { _id: string; name: string; tags: string[]; correctTags: string[] };
   }
 > = gql`
   mutation($data: EditCategory!) {
@@ -79,6 +84,7 @@ export type ITags = {
   _id: string;
   name: string;
   possibleTagAssociations: { _id: string; name: string }[];
+  correctTagAssociations: { _id: string; name: string }[];
 }[];
 
 const TagFragment = gql`
@@ -86,6 +92,10 @@ const TagFragment = gql`
     _id
     name
     possibleTagAssociations {
+      _id
+      name
+    }
+    correctTagAssociations {
       _id
       name
     }
@@ -148,6 +158,7 @@ export const EDIT_TAG: DocumentNode<
       _id: string;
       name: string;
       possibleTagAssociations: string[];
+      correctTagAssociations: string[];
     };
   }
 > = gql`

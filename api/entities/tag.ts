@@ -25,6 +25,10 @@ export class Tag {
 
   @Field(() => [Tag])
   @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
+  correctTagAssociations: Ref<Tag>[];
+
+  @Field(() => [Tag])
+  @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
   possibleTagAssociations: Ref<Tag>[];
 }
 
@@ -49,6 +53,9 @@ export class EditTag implements Partial<Tag> {
 
   @Field()
   name: string;
+
+  @Field(() => [ObjectIdScalar])
+  correctTagAssociations: ObjectId[];
 
   @Field(() => [ObjectIdScalar])
   possibleTagAssociations: ObjectId[];

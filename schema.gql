@@ -6,6 +6,7 @@
 type Category {
   _id: ObjectId!
   name: String!
+  correctTags: [Tag!]
   tags: [Tag!]!
 }
 
@@ -30,6 +31,7 @@ scalar DateTime
 input EditCategory {
   _id: ObjectId!
   name: String!
+  correctTags: [ObjectId!]!
   tags: [ObjectId!]!
 }
 
@@ -42,6 +44,7 @@ input EditImage {
 input EditTag {
   _id: ObjectId!
   name: String!
+  correctTagAssociations: [ObjectId!]!
   possibleTagAssociations: [ObjectId!]!
 }
 
@@ -127,6 +130,7 @@ type Tag {
   _id: ObjectId!
   name: String!
   categories: [Category!]!
+  correctTagAssociations: [Tag!]!
   possibleTagAssociations: [Tag!]!
 }
 
