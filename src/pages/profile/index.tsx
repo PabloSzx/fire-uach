@@ -6,11 +6,14 @@ import { Box, Button, Image, Spinner, Stack, Text } from "@chakra-ui/core";
 
 import { useUser } from "../../components/Auth";
 import { LoadingPage } from "../../components/LoadingPage";
+import { TagAssociation } from "../../components/TagAssociation";
+import { TagImageAssociation } from "../../components/TagImageAssociation";
 import { LOGOUT } from "../../graphql/queries";
 
 const ProfilePage: NextPage = ({}) => {
   const { user, loading, refetch } = useUser("profile");
   const [logout] = useMutation(LOGOUT, { ignoreResults: true });
+
   if (loading) {
     return <LoadingPage />;
   }
@@ -27,31 +30,37 @@ const ProfilePage: NextPage = ({}) => {
       >
         Logout
       </Button>
-      <Stack spacing="15em" mt={10}>
-        {user.imagesUploaded.map(({ filename, _id }) => {
+      <Stack align="center" spacing="5em" mt={10}>
+        {user.imagesUploaded.map(({ filename, _id, categories }) => {
           return (
-            <Box maxHeight="80vh" maxWidth="90vw" key={_id}>
-              <LazyImage
-                src={`/api/images/${filename}`}
-                placeholder={`/api/images/${filename}`}
-              >
-                {(src, loading) => {
-                  return loading ? (
-                    <Spinner size="xl" />
-                  ) : (
-                    <Image
-                      width="100%"
-                      height="100%"
-                      objectFit="contain"
-                      src={src}
-                    />
-                  );
-                }}
-              </LazyImage>
+            <Box border="1px solid" maxHeight="80vh" maxWidth="90vw" key={_id}>
+              <Box m={5}>
+                <LazyImage
+                  src={`/api/images/${filename}`}
+                  placeholder={`/api/images/${filename}`}
+                >
+                  {(src, loading) => {
+                    return loading ? (
+                      <Spinner size="xl" />
+                    ) : (
+                      <Image
+                        width="100%"
+                        height="100%"
+                        maxH="40vh"
+                        maxW="70vw"
+                        objectFit="contain"
+                        src={src}
+                      />
+                    );
+                  }}
+                </LazyImage>
+                <TagImageAssociation image_id={_id} />
+              </Box>
             </Box>
           );
         })}
       </Stack>
+      <TagAssociation />
     </Stack>
   );
 };

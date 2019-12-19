@@ -24,6 +24,7 @@ import { TagModel } from "../entities/tag";
 import { UserModel } from "../entities/user";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
+import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => Image)
 export class ImageResolver {
@@ -92,6 +93,11 @@ export class ImageResolver {
     }
   }
 
+  @Query(() => Image, { nullable: true })
+  async image(@Arg("id", () => ObjectIdScalar) id: ObjectId) {
+    return await ImageModel.findById(id);
+  }
+
   @Authorized([ADMIN])
   @Query(() => [Image])
   async images() {
@@ -130,27 +136,6 @@ export class ImageResolver {
     ]);
 
     return await ImageModel.find({});
-  }
-
-  @FieldResolver()
-  async possibleTags(@Root() { categories }: Partial<Image>) {
-    if (categories && !isDocumentArray(categories)) {
-      const tags: ObjectId[] = await CategoryModel.find({
-        _id: {
-          $in: categories,
-        },
-      }).distinct("tags");
-
-      // TODO: Check if works
-
-      return await TagModel.find({
-        _id: {
-          $in: tags,
-        },
-      });
-    }
-
-    return [];
   }
 
   @FieldResolver()

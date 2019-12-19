@@ -13,8 +13,8 @@ import {
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 import { Image } from "./image";
 import { Tag } from "./tag";
-import { TagAssociation } from "./TagAssociation";
-import { TagImageAssociation } from "./TagImageAssociation";
+import { TagAssociation } from "./tagAssociation";
+import { TagImageAssociation } from "./tagImageAssociation";
 
 @ObjectType()
 export class User {
@@ -44,11 +44,9 @@ export class User {
   imagesUploaded: Image[];
 
   @Field(() => [TagAssociation])
-  @PropertyArray({ items: TagAssociation, default: [] })
   tagAssociations: TagAssociation[];
 
   @Field(() => [TagImageAssociation])
-  @PropertyArray({ items: TagImageAssociation, default: [] })
   tagImageAssociations: TagImageAssociation[];
 
   @Field(() => [Image])

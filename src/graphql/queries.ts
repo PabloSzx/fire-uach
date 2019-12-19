@@ -4,7 +4,22 @@ export type IUser = {
   _id: string;
   email: string;
   admin: boolean;
-  imagesUploaded: { _id: string; filename: string }[];
+  imagesUploaded: {
+    _id: string;
+    filename: string;
+    categories: {
+      _id: string;
+      name: string;
+      tags: {
+        _id: string;
+        name: string;
+        possibleTagAssociations: {
+          _id: string;
+          name: string;
+        }[];
+      }[];
+    }[];
+  }[];
 };
 
 export const UserFragment = gql`
@@ -101,5 +116,151 @@ export const VALIDATED_IMAGES: DocumentNode<{
 export const LOGOUT: DocumentNode = gql`
   mutation {
     logout
+  }
+`;
+
+export const IMAGE_TAG_ASSOCIATIONS: DocumentNode<
+  {
+    image?: {
+      _id: string;
+      categories: {
+        _id: string;
+        name: string;
+        tags: {
+          _id: string;
+          name: string;
+        }[];
+      }[];
+    };
+  },
+  {
+    image_id: string;
+  }
+> = gql`
+  query($image_id: ObjectId!) {
+    image(id: $image_id) {
+      _id
+      categories {
+        _id
+        name
+        tags {
+          _id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const RESULTS_TAG_IMAGE_ASSOCIATIONS: DocumentNode<{
+  resultsTagImageAssociations: {
+    _id: string;
+    image?: { _id: string };
+    category?: { _id: string };
+  }[];
+}> = gql`
+  query {
+    resultsTagImageAssociations {
+      _id
+      image {
+        _id
+      }
+      category {
+        _id
+      }
+    }
+  }
+`;
+
+export const ANSWER_TAG_IMAGE_ASSOCIATION: DocumentNode<
+  {
+    answerTagImageAssociation: {
+      _id: string;
+      image?: { _id: string };
+      category?: { _id: string };
+    }[];
+  },
+  {
+    data: {
+      category: string;
+      image: string;
+      tag: string;
+      rejectedTags: string[];
+    };
+  }
+> = gql`
+  mutation($data: TagImageAssociationInput!) {
+    answerTagImageAssociation(data: $data) {
+      _id
+      image {
+        _id
+      }
+      category {
+        _id
+      }
+    }
+  }
+`;
+
+export const ALL_TAGS_WITH_ASSOCIATIONS: DocumentNode<{
+  tags: {
+    _id: string;
+    name: string;
+    possibleTagAssociations: {
+      _id: string;
+      name: string;
+    }[];
+  }[];
+}> = gql`
+  query {
+    tags {
+      _id
+      name
+      possibleTagAssociations {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export const RESULTS_TAG_ASSOCIATIONS: DocumentNode<{
+  resultsTagAssociations: {
+    _id: string;
+    tagMain?: { _id: string };
+  }[];
+}> = gql`
+  query {
+    resultsTagAssociations {
+      _id
+      tagMain {
+        _id
+      }
+    }
+  }
+`;
+
+export const ANSWER_TAG_ASSOCIATION: DocumentNode<
+  {
+    answerTagAssociation: {
+      _id: string;
+      tagMain?: { _id: string };
+    }[];
+  },
+  {
+    data: {
+      tagMain: string;
+      tagChosen: string;
+      rejectedTags: string[];
+    };
+  }
+> = gql`
+  mutation($data: TagAssociationInput!) {
+    answerTagAssociation(data: $data) {
+      _id
+      tagMain {
+        _id
+      }
+    }
   }
 `;

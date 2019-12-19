@@ -35,9 +35,6 @@ export class Image extends TimeStamps {
   @Property({ default: false })
   validated: boolean;
 
-  @Field(() => [Tag])
-  possibleTags: Tag[];
-
   @Field(() => [Category])
   @PropertyArray({ items: "Category", ref: "Category", default: [] })
   categories: Ref<Category>[];

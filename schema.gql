@@ -57,7 +57,6 @@ type Image {
   mimetype: String!
   extension: String!
   validated: Boolean!
-  possibleTags: [Tag!]!
   categories: [Category!]!
   uploader: User
   updatedAt: DateTime!
@@ -89,6 +88,8 @@ type Mutation {
   createTag(data: CreateTag!): [Tag!]!
   editTag(data: EditTag!): [Tag!]!
   removeTag(data: RemoveTag!): [Tag!]!
+  answerTagAssociation(data: TagAssociationInput!): [TagAssociation!]!
+  answerTagImageAssociation(data: TagImageAssociationInput!): [TagImageAssociation!]!
 }
 
 """Mongo object id scalar type"""
@@ -97,9 +98,12 @@ scalar ObjectId
 type Query {
   currentUser: User
   categories: [Category!]!
+  image(id: ObjectId!): Image
   images: [Image!]!
   validatedImages: [Image!]!
   tags: [Tag!]!
+  resultsTagAssociations: [TagAssociation!]!
+  resultsTagImageAssociations: [TagImageAssociation!]!
 }
 
 input RemoveCategory {
@@ -128,20 +132,38 @@ type Tag {
 
 type TagAssociation {
   _id: ObjectId!
-  tag1: Tag
-  tag2: Tag
+  user: User
+  tagMain: Tag
+  tagChosen: Tag
+  rejectedTags: [Tag!]!
   location: Location
   updatedAt: DateTime!
   createdAt: DateTime!
 }
 
+input TagAssociationInput {
+  tagMain: ObjectId!
+  tagChosen: ObjectId!
+  rejectedTags: [ObjectId!]!
+}
+
 type TagImageAssociation {
   _id: ObjectId!
+  user: User
+  category: Category
   tag: Tag
+  rejectedTags: [Tag!]!
   image: Image
   location: Location
   updatedAt: DateTime!
   createdAt: DateTime!
+}
+
+input TagImageAssociationInput {
+  category: ObjectId!
+  image: ObjectId!
+  tag: ObjectId!
+  rejectedTags: [ObjectId!]!
 }
 
 input UnlockInput {
