@@ -2,7 +2,7 @@ import { differenceWith, sample } from "lodash";
 import { FC, useMemo } from "react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Stack, Tag } from "@chakra-ui/core";
+import { Badge, Box, Spinner, Stack, Tag } from "@chakra-ui/core";
 
 import {
   ANSWER_TAG_IMAGE_ASSOCIATION,
@@ -17,7 +17,7 @@ export const TagImageAssociation: FC<{
     RESULTS_TAG_IMAGE_ASSOCIATIONS
   );
 
-  const [answerImageTagAssociation] = useMutation(
+  const [answerImageTagAssociation, { loading: loadingAnswer }] = useMutation(
     ANSWER_TAG_IMAGE_ASSOCIATION,
     {
       update: (cache, { data }) => {
@@ -47,9 +47,12 @@ export const TagImageAssociation: FC<{
         differenceWith(
           dataImageTagAssociations.image.categories,
           resultsTagImageAssociations.resultsTagImageAssociations,
-          (dataCategory, { category: resultCategory }) => {
-            if (resultCategory) {
-              return dataCategory._id === resultCategory._id;
+          (dataCategory, { category: resultCategory, image: resultImage }) => {
+            if (resultCategory && resultImage) {
+              return (
+                dataCategory._id === resultCategory._id &&
+                image_id === resultImage._id
+              );
             }
 
             return false;
@@ -61,15 +64,20 @@ export const TagImageAssociation: FC<{
     return undefined;
   }, [dataImageTagAssociations, resultsTagImageAssociations]);
 
+  if (loadingAnswer) {
+    return <Spinner />;
+  }
+
   if (sampleCategory) {
     return (
-      <Stack border="1px solid" align="center">
-        <Badge>{`Category ${sampleCategory.name}`}</Badge>
+      <Stack border="1px solid" align="center" p={5}>
+        <Badge p={3}>{sampleCategory.name}</Badge>
 
-        <Stack isInline spacing="3em">
+        <Stack isInline spacing="3em" mt={5}>
           {sampleCategory.tags.map(({ _id, name }) => {
             return (
               <Tag
+                cursor="pointer"
                 key={_id}
                 onClick={() => {
                   answerImageTagAssociation({

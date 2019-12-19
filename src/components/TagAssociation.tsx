@@ -12,7 +12,10 @@ import {
 
 export const TagAssociation: FC = () => {
   const { data: dataResultsTagAssociations } = useQuery(
-    RESULTS_TAG_ASSOCIATIONS
+    RESULTS_TAG_ASSOCIATIONS,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [answerTagAssociation] = useMutation(ANSWER_TAG_ASSOCIATION, {
     update: (cache, { data }) => {
@@ -41,9 +44,6 @@ export const TagAssociation: FC = () => {
           dataAllTagsWithAssociations.tags,
           dataResultsTagAssociations.resultsTagAssociations,
           (dataTag, { tagMain }) => {
-            console.log({
-              tagMain,
-            });
             if (tagMain) {
               return dataTag._id === tagMain._id;
             }
@@ -57,15 +57,20 @@ export const TagAssociation: FC = () => {
 
   if (sampleTag) {
     return (
-      <Stack border="1px solid" align="center">
+      <Stack border="1px solid" align="center" p={5}>
         <Box>
-          <Badge fontSize="xl">{sampleTag.name}</Badge>
+          <Badge p={5} fontSize="3em">
+            {sampleTag.name}
+          </Badge>
         </Box>
-        <Stack isInline spacing="1em">
+        <Stack isInline spacing="1em" mt={5}>
           {sampleTag.possibleTagAssociations.map(({ _id, name }) => {
             return (
               <Tag
                 key={_id}
+                fontSize="2em"
+                p={4}
+                cursor="pointer"
                 onClick={() => {
                   answerTagAssociation({
                     variables: {

@@ -25,6 +25,8 @@ export default () => {
                   <Image
                     width="100%"
                     height="100%"
+                    maxH="60vh"
+                    maxW="90vw"
                     objectFit="contain"
                     src={src}
                   />

@@ -33,6 +33,7 @@ const UploadPage: NextPage = () => {
         });
       }
     },
+    multiple: false,
   });
 
   if (loadingUser) {
@@ -47,13 +48,17 @@ const UploadPage: NextPage = () => {
         <Box as={IoIosImages} size="4em" />
       </Flex>
       <Box maxHeight="80vh">
-        {uploadedImageData?.uploadImage.filename && (
-          <Image
-            objectFit="fill"
-            width="100%"
-            height="100%"
-            src={`/api/images/${uploadedImageData.uploadImage.filename}`}
-          />
+        {loadingUpload ? (
+          <Spinner />
+        ) : (
+          uploadedImageData?.uploadImage.filename && (
+            <Image
+              objectFit="fill"
+              width="100%"
+              height="100%"
+              src={`/api/images/${uploadedImageData.uploadImage.filename}`}
+            />
+          )
         )}
       </Box>
     </Stack>

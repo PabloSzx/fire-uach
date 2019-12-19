@@ -6,7 +6,8 @@ import { CURRENT_USER, IUser } from "../graphql/queries";
 
 export function useUser(
   requireAuth?: undefined,
-  admin?: undefined
+  admin?: undefined,
+  fetchPolicy?: "cache-first" | "cache-and-network"
 ): {
   user: IUser | undefined;
   loading: boolean;
@@ -14,13 +15,19 @@ export function useUser(
 };
 export function useUser(
   requireAuth: string,
-  admin?: boolean
+  admin?: boolean,
+  fetchPolicy?: "cache-first" | "cache-and-network"
 ): { user: IUser; loading: boolean; refetch: () => Promise<any> };
-export function useUser(requireAuth?: string, admin?: boolean) {
+export function useUser(
+  requireAuth?: string,
+  admin?: boolean,
+  fetchPolicy: "cache-first" | "cache-and-network" = "cache-first"
+) {
   const { push } = useRouter();
 
   const { data, error, loading, refetch } = useQuery(CURRENT_USER, {
     ssr: false,
+    fetchPolicy,
   });
 
   if (error) {

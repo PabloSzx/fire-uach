@@ -172,9 +172,19 @@ const LoginPage: NextPage = () => {
                   variantColor="green"
                   onClick={() => {
                     if (route) {
-                      push(`/sign_up?route=${route}&email=${values.email}`);
+                      push(
+                        `/sign_up?route=${route}${
+                          values.email ? "&email=" + values.email : ""
+                        }`
+                      );
                     } else {
-                      push(`/sign_up?email=${values.email}`);
+                      if (values.email) {
+                        push(
+                          `/sign_up${
+                            values.email ? "?email=" + values.email : ""
+                          }`
+                        );
+                      }
                     }
                   }}
                 >
