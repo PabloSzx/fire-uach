@@ -6,7 +6,16 @@ import Select from "react-select";
 import { useUpdateEffect } from "react-use";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Flex, Icon, Image, Spinner, Stack } from "@chakra-ui/core";
+import {
+  Badge,
+  Box,
+  Flex,
+  Icon,
+  Image,
+  Spinner,
+  Stack,
+  Text,
+} from "@chakra-ui/core";
 
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
@@ -59,6 +68,7 @@ const UploadPage: NextPage = () => {
 
   return (
     <Stack align="center" justify="space-around" spacing="2em">
+      {errorUpload && <Text>{JSON.stringify(errorUpload, null, 2)}</Text>}
       <Flex
         {...getRootProps()}
         justify="center"
