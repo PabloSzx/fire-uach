@@ -1,10 +1,10 @@
 import { FieldResolver, Resolver, Root } from "type-graphql";
 
+import { User } from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
-import { TagModel } from "../entities/tag";
-import { TagAssociationModel } from "../entities/tagAssociation";
-import { TagImageAssociationModel } from "../entities/tagImageAssociation";
-import { User } from "../entities/user";
+import { TagModel } from "../entities/tags/tag";
+import { TagAssociationModel } from "../entities/tags/tagAssociation";
+import { TagImageAssociationModel } from "../entities/tags/tagImageAssociation";
 
 @Resolver(() => User)
 export class UserResolver {

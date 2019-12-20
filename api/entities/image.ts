@@ -10,9 +10,9 @@ import {
 import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
-import { Category } from "./category";
-import { Tag } from "./tag";
-import { User } from "./user";
+import { User } from "./auth/user";
+import { Category } from "./tags/category";
+import { Tag } from "./tags/tag";
 
 @ObjectType()
 export class Image extends TimeStamps {

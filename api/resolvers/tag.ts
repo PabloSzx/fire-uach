@@ -11,8 +11,14 @@ import {
 import { isDocumentArray } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
-import { CategoryModel } from "../entities/category";
-import { CreateTag, EditTag, RemoveTag, Tag, TagModel } from "../entities/tag";
+import { CategoryModel } from "../entities/tags/category";
+import {
+  CreateTag,
+  EditTag,
+  RemoveTag,
+  Tag,
+  TagModel,
+} from "../entities/tags/tag";
 
 @Resolver(() => Tag)
 export class TagResolver {

@@ -11,15 +11,15 @@ import {
 
 import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
-import { CategoryModel } from "../entities/category";
+import { UserModel } from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
-import { TagModel } from "../entities/tag";
+import { CategoryModel } from "../entities/tags/category";
+import { TagModel } from "../entities/tags/tag";
 import {
   TagImageAssociation,
   TagImageAssociationInput,
   TagImageAssociationModel,
-} from "../entities/tagImageAssociation";
-import { UserModel } from "../entities/user";
+} from "../entities/tags/tagImageAssociation";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 

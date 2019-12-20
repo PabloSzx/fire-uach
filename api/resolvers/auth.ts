@@ -16,8 +16,8 @@ import {
   LoginInput,
   SignUpInput,
   UnlockInput,
-} from "../entities/auth";
-import { User, UserModel } from "../entities/user";
+} from "../entities/auth/auth";
+import { User, UserModel } from "../entities/auth/user";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 

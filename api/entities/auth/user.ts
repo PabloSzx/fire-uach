@@ -10,11 +10,11 @@ import {
   Ref,
 } from "@typegoose/typegoose";
 
-import { ObjectIdScalar } from "../utils/ObjectIdScalar";
-import { Image } from "./image";
-import { Tag } from "./tag";
-import { TagAssociation } from "./tagAssociation";
-import { TagImageAssociation } from "./tagImageAssociation";
+import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
+import { Image } from "../image";
+import { Tag } from "../tags/tag";
+import { TagAssociation } from "../tags/tagAssociation";
+import { TagImageAssociation } from "../tags/tagImageAssociation";
 
 @ObjectType()
 export class User {

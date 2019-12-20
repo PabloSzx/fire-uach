@@ -9,10 +9,10 @@ import {
 } from "@typegoose/typegoose";
 import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 
-import { ObjectIdScalar } from "../utils/ObjectIdScalar";
-import { Location } from "./location";
+import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
+import { User } from "../auth/user";
+import { Location } from "../location";
 import { Tag } from "./tag";
-import { User } from "./user";
 
 @ObjectType()
 export class TagAssociation extends TimeStamps {

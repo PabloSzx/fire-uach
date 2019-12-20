@@ -18,10 +18,10 @@ import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
 import { removeFileGridFS, uploadFileGridFSStream } from "../db/gridFS";
-import { CategoryModel } from "../entities/category";
+import { UserModel } from "../entities/auth/user";
 import { EditImage, Image, ImageModel, RemoveImage } from "../entities/image";
-import { TagModel } from "../entities/tag";
-import { UserModel } from "../entities/user";
+import { CategoryModel } from "../entities/tags/category";
+import { TagModel } from "../entities/tags/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";

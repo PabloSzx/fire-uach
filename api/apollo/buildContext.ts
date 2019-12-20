@@ -3,7 +3,7 @@ import { verify } from "jsonwebtoken";
 import { Document } from "mongoose";
 
 import { SECRET } from "../constants";
-import { User, UserModel } from "../entities/user";
+import { User, UserModel } from "../entities/auth/user";
 import { AuthResolver } from "../resolvers/auth";
 
 export const buildContext = async ({

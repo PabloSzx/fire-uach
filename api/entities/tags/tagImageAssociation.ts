@@ -9,12 +9,12 @@ import {
 } from "@typegoose/typegoose";
 import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 
-import { ObjectIdScalar } from "../utils/ObjectIdScalar";
+import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
+import { User } from "../auth/user";
+import { Image } from "../image";
+import { Location } from "../location";
 import { Category } from "./category";
-import { Image } from "./image";
-import { Location } from "./location";
 import { Tag } from "./tag";
-import { User } from "./user";
 
 @ObjectType()
 export class TagImageAssociation extends TimeStamps {

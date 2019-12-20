@@ -11,13 +11,13 @@ import {
 
 import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
-import { TagModel } from "../entities/tag";
+import { UserModel } from "../entities/auth/user";
+import { TagModel } from "../entities/tags/tag";
 import {
   TagAssociation,
   TagAssociationInput,
   TagAssociationModel,
-} from "../entities/tagAssociation";
-import { UserModel } from "../entities/user";
+} from "../entities/tags/tagAssociation";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 

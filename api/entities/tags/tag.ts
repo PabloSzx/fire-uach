@@ -8,11 +8,11 @@ import {
   Ref,
 } from "@typegoose/typegoose";
 
-import { ObjectIdScalar } from "../utils/ObjectIdScalar";
-import { Tag } from "./tag";
+import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
+import { Category } from "./category";
 
 @ObjectType()
-export class Category {
+export class Tag {
   @Field(() => ObjectIdScalar)
   readonly _id: ObjectId;
 
@@ -20,40 +20,43 @@ export class Category {
   @Property({ required: true, unique: true })
   name: string;
 
-  @Field(() => [Tag], { nullable: true })
-  @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
-  correctTags: Ref<Tag>[];
+  @Field(() => [Category])
+  categories: Category[];
 
   @Field(() => [Tag])
   @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
-  tags: Ref<Tag>[];
+  correctTagAssociations: Ref<Tag>[];
+
+  @Field(() => [Tag])
+  @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
+  possibleTagAssociations: Ref<Tag>[];
 }
 
-export const CategoryModel = getModelForClass(Category);
+export const TagModel = getModelForClass(Tag);
 
 @InputType()
-export class CreateCategory implements Partial<Category> {
+export class CreateTag implements Partial<Tag> {
   @Field()
   name: string;
 }
 
 @InputType()
-export class RemoveCategory implements Partial<Category> {
+export class RemoveTag implements Partial<Tag> {
   @Field(() => ObjectIdScalar)
   _id: ObjectId;
 }
 
 @InputType()
-export class EditCategory implements Partial<Category> {
+export class EditTag implements Partial<Tag> {
   @Field(() => ObjectIdScalar)
-  readonly _id: ObjectId;
+  _id: ObjectId;
 
   @Field()
   name: string;
 
   @Field(() => [ObjectIdScalar])
-  correctTags: ObjectId[];
+  correctTagAssociations: ObjectId[];
 
   @Field(() => [ObjectIdScalar])
-  tags: ObjectId[];
+  possibleTagAssociations: ObjectId[];
 }

@@ -17,8 +17,8 @@ import {
   CreateCategory,
   EditCategory,
   RemoveCategory,
-} from "../entities/category";
-import { TagModel } from "../entities/tag";
+} from "../entities/tags/category";
+import { TagModel } from "../entities/tags/tag";
 
 @Resolver(() => Category)
 export class CategoryResolver {
