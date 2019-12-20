@@ -11,7 +11,7 @@ import { LoadingPage } from "../components/LoadingPage";
 import { UPLOAD_IMAGE } from "../graphql/queries";
 
 const UploadPage: NextPage = () => {
-  const { loading: loadingUser, refetch } = useUser("/upload");
+  const { loading: loadingUser, refetch, user } = useUser("/upload");
 
   const [
     uploadImage,
@@ -33,7 +33,7 @@ const UploadPage: NextPage = () => {
         });
       }
     },
-    multiple: false,
+    multiple: user.admin ?? false,
   });
 
   if (loadingUser) {

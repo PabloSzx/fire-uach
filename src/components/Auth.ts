@@ -42,7 +42,7 @@ export function useUser(
       push(`/login?route=${requireAuth}`);
     }
     return {
-      user: { email: "", _id: "" },
+      user: { email: "", _id: "", admin: false, imagesUploaded: [] },
       loading: true,
       refetch,
     };
