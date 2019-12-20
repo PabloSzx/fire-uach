@@ -68,6 +68,15 @@ export class EditImage implements Partial<Image> {
 }
 
 @InputType()
+export class EditOwnImage implements Partial<Image> {
+  @Field(() => ObjectIdScalar)
+  _id: ObjectId;
+
+  @Field(() => [ObjectIdScalar])
+  categories: ObjectId[];
+}
+
+@InputType()
 export class RemoveImage implements Partial<Image> {
   @Field(() => ObjectIdScalar)
   _id: ObjectId;

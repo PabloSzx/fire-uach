@@ -19,7 +19,13 @@ import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 import { ADMIN } from "../../constants";
 import { removeFileGridFS, uploadFileGridFSStream } from "../db/gridFS";
 import { UserModel } from "../entities/auth/user";
-import { EditImage, Image, ImageModel, RemoveImage } from "../entities/image";
+import {
+  EditImage,
+  EditOwnImage,
+  Image,
+  ImageModel,
+  RemoveImage,
+} from "../entities/image";
 import { CategoryModel } from "../entities/tags/category";
 import { TagModel } from "../entities/tags/tag";
 import { TagImageAssociationModel } from "../entities/tags/tagImageAssociation";
@@ -59,7 +65,7 @@ export class ImageResolver {
       }
     }
 
-    filename = encodeUrl(filename);
+    filename = user._id.toHexString() + "_" + encodeUrl(filename);
 
     try {
       const imageDoc = await ImageModel.findOneAndUpdate(
@@ -108,6 +114,34 @@ export class ImageResolver {
   @Query(() => [Image])
   async validatedImages() {
     return await ImageModel.find({ validated: true });
+  }
+
+  @Authorized()
+  @Query(() => Image, { nullable: true })
+  async ownImages(@Ctx() { user }: IContext) {
+    return await ImageModel.find({
+      uploader: user?._id,
+    });
+  }
+
+  @Authorized()
+  @Mutation(() => Image, { nullable: true })
+  async editOwnImage(
+    @Ctx() { user }: IContext,
+    @Arg("data") { _id, categories }: EditOwnImage
+  ) {
+    if (user) {
+      return await ImageModel.findOneAndUpdate(
+        { _id, uploader: user._id },
+        {
+          categories,
+        },
+        {
+          new: true,
+        }
+      );
+    }
+    return null;
   }
 
   @Authorized([ADMIN])
@@ -161,15 +195,16 @@ export class ImageResolver {
     @Ctx() { user }: IContext,
     @Root() { _id, categories }: Partial<Image>
   ) {
-    if (user && _id && categories) {
-      const answeredCategories = (
-        await TagImageAssociationModel.find(
-          {
-            user: user._id,
-            image: _id,
-          },
-          "category"
-        )
+    if (_id && categories) {
+      const answeredCategories = (user
+        ? await TagImageAssociationModel.find(
+            {
+              user: user._id,
+              image: _id,
+            },
+            "category"
+          )
+        : []
       ).map(({ category }) => category);
       return await CategoryModel.find({
         $and: [

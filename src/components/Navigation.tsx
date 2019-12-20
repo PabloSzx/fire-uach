@@ -1,11 +1,13 @@
 import { useRouter } from "next/router";
 import { FC } from "react";
 import {
-  IoIosHome,
-  IoIosPerson,
-  IoMdAddCircle,
-  IoMdSettings,
-} from "react-icons/io";
+  AiFillHome,
+  AiFillSetting,
+  AiOutlineHome,
+  AiOutlineSetting,
+} from "react-icons/ai";
+import { IoMdAddCircle, IoMdAddCircleOutline } from "react-icons/io";
+import { MdPerson, MdPersonOutline } from "react-icons/md";
 
 import { Box, Flex } from "@chakra-ui/core";
 
@@ -14,7 +16,7 @@ import { FakeHref } from "./FakeHref";
 
 export const Navigation: FC = () => {
   const { user, refetch } = useUser();
-  const { push } = useRouter();
+  const { push, pathname } = useRouter();
 
   return (
     <Flex
@@ -33,7 +35,7 @@ export const Navigation: FC = () => {
     >
       <FakeHref href="/">
         <Box
-          as={IoIosHome}
+          as={pathname === "/" ? AiFillHome : AiOutlineHome}
           color="black"
           fontSize="2em"
           onClick={() => {
@@ -44,7 +46,7 @@ export const Navigation: FC = () => {
       </FakeHref>
       <FakeHref href="/upload">
         <Box
-          as={IoMdAddCircle}
+          as={pathname === "/upload" ? IoMdAddCircle : IoMdAddCircleOutline}
           color="black"
           fontSize="2em"
           onClick={() => {
@@ -60,7 +62,7 @@ export const Navigation: FC = () => {
 
       <FakeHref href="/profile">
         <Box
-          as={IoIosPerson}
+          as={pathname === "/profile" ? MdPerson : MdPersonOutline}
           color="black"
           fontSize="2em"
           onClick={() => {
@@ -76,7 +78,7 @@ export const Navigation: FC = () => {
       {user?.admin && (
         <FakeHref href="/admin">
           <Box
-            as={IoMdSettings}
+            as={pathname === "/admin" ? AiFillSetting : AiOutlineSetting}
             color="black"
             fontSize="2em"
             onClick={() => {

@@ -110,7 +110,7 @@ const AdminImages: FC = () => {
             </LazyImage>
           </Box>
           <Flex align="center" justify="center">
-            <Tag>Válido</Tag>
+            <Tag>Vista pública</Tag>
             <Checkbox
               toggle
               checked={data.validated}

@@ -11,6 +11,7 @@ import {
 
 import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
+import { ADMIN } from "../../constants";
 import { UserModel } from "../entities/auth/user";
 import { Image, ImageModel } from "../entities/image";
 import { CategoryModel } from "../entities/tags/category";
@@ -25,14 +26,12 @@ import { assertIsDefined } from "../utils/assert";
 
 @Resolver(() => TagImageAssociation)
 export class TagImageAssociationResolver {
-  @Authorized()
+  @Authorized([ADMIN])
   @Query(() => [TagImageAssociation])
   async resultsTagImageAssociations(@Ctx() { user }: IContext) {
     assertIsDefined(user, "Auth context is not working properly!");
 
-    return await TagImageAssociationModel.find({
-      user: user._id,
-    });
+    return await TagImageAssociationModel.find({});
   }
 
   @Authorized()

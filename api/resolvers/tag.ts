@@ -30,28 +30,24 @@ export class TagResolver {
     return await TagModel.find({});
   }
 
-  @Authorized()
   @Query(() => [Tag])
   async notAnsweredTags(@Ctx() { user }: IContext) {
-    if (user) {
-      const answeredTags = (
-        await TagAssociationModel.find(
+    const answeredTags = (user
+      ? await TagAssociationModel.find(
           {
             user: user._id,
           },
           "tagMain"
         )
-      ).map(({ tagMain }) => tagMain);
-      return await TagModel.find({
-        _id: {
-          $not: {
-            $in: answeredTags,
-          },
+      : []
+    ).map(({ tagMain }) => tagMain);
+    return await TagModel.find({
+      _id: {
+        $not: {
+          $in: answeredTags,
         },
-      });
-    }
-
-    return [];
+      },
+    });
   }
 
   @Authorized([ADMIN])

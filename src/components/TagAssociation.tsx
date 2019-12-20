@@ -1,14 +1,19 @@
 import { sample } from "lodash";
-import { Dispatch, FC, ReactNode, SetStateAction, useMemo } from "react";
+import { useRouter } from "next/router";
+import { FC, useMemo } from "react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Stack, Tag } from "@chakra-ui/core";
+import { Badge, Box, Flex, Stack, Tag } from "@chakra-ui/core";
 
 import { ANSWER_TAG_ASSOCIATION, NOT_ANSWERED_TAGS } from "../graphql/queries";
+import { useUser } from "./Auth";
 
-export const TagAssociation: FC<{}> = ({}) => {
-  const { data: dataNotAnsweredTags } = useQuery(NOT_ANSWERED_TAGS);
-
+export const TagAssociation: FC = () => {
+  const { user } = useUser();
+  const { data: dataNotAnsweredTags } = useQuery(NOT_ANSWERED_TAGS, {
+    fetchPolicy: "cache-and-network",
+  });
+  const { push } = useRouter();
   const [answerTagAssociation] = useMutation(ANSWER_TAG_ASSOCIATION, {
     update: (cache, { data }) => {
       if (data?.answerTagAssociation) {
@@ -28,41 +33,47 @@ export const TagAssociation: FC<{}> = ({}) => {
 
   if (sampleTag) {
     return (
-      <Stack border="1px solid" align="center" p={5} key={1}>
+      <Stack border="1px solid" align="center" p={5}>
         <Box>
-          <Badge p={5} fontSize="3em">
+          <Badge p={5} fontSize="3em" variant="solid" variantColor="green">
             {sampleTag.name}
           </Badge>
         </Box>
-        <Stack isInline spacing="1em" mt={5}>
+        <Flex wrap="wrap" mt={5} justifyContent="center">
           {sampleTag.possibleTagAssociations.map(({ _id, name }) => {
             return (
               <Tag
+                variantColor="green"
                 key={_id}
                 fontSize="2em"
                 p={4}
+                m="0.5em"
                 cursor="pointer"
                 onClick={() => {
-                  answerTagAssociation({
-                    variables: {
-                      data: {
-                        tagMain: sampleTag._id,
-                        tagChosen: _id,
-                        rejectedTags: sampleTag.possibleTagAssociations
-                          .filter(tag => {
-                            return tag._id !== _id;
-                          })
-                          .map(({ _id }) => _id),
+                  if (user) {
+                    answerTagAssociation({
+                      variables: {
+                        data: {
+                          tagMain: sampleTag._id,
+                          tagChosen: _id,
+                          rejectedTags: sampleTag.possibleTagAssociations
+                            .filter(tag => {
+                              return tag._id !== _id;
+                            })
+                            .map(({ _id }) => _id),
+                        },
                       },
-                    },
-                  });
+                    });
+                  } else {
+                    push("/login");
+                  }
                 }}
               >
                 {name}
               </Tag>
             );
           })}
-        </Stack>
+        </Flex>
       </Stack>
     );
   }

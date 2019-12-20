@@ -164,7 +164,7 @@ const SignUpPage: NextPage = () => {
                   variantColor="blue"
                   isDisabled={!isValid || !dirty}
                 >
-                  Sign Up
+                  Registrarse
                 </Button>
               </Box>
             </Stack>

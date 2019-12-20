@@ -76,6 +76,10 @@ export const UPLOAD_IMAGE: DocumentNode<
     uploadImage: {
       _id: string;
       filename: string;
+      categories: {
+        _id: string;
+        name: string;
+      }[];
     };
   },
   {
@@ -86,6 +90,10 @@ export const UPLOAD_IMAGE: DocumentNode<
     uploadImage(file: $file) {
       _id
       filename
+      categories {
+        _id
+        name
+      }
     }
   }
 `;
@@ -283,6 +291,44 @@ export const ANSWER_TAG_ASSOCIATION: DocumentNode<
         name
       }
       correctTagAssociations {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export const CATEGORIES_OPTIONS: DocumentNode<{
+  categories: { _id: string; name: string }[];
+}> = gql`
+  query {
+    categories {
+      _id
+      name
+    }
+  }
+`;
+
+export const EDIT_OWN_IMAGE: DocumentNode<
+  {
+    editOwnImage?: {
+      _id: string;
+      filename: string;
+      categories: {
+        _id: string;
+        name: string;
+      }[];
+    };
+  },
+  {
+    data: { _id: string; categories: string[] };
+  }
+> = gql`
+  mutation($data: EditOwnImage!) {
+    editOwnImage(data: $data) {
+      _id
+      filename
+      categories {
         _id
         name
       }

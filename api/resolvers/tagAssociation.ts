@@ -11,6 +11,7 @@ import {
 
 import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
+import { ADMIN } from "../../constants";
 import { UserModel } from "../entities/auth/user";
 import { Tag, TagModel } from "../entities/tags/tag";
 import {
@@ -23,14 +24,12 @@ import { assertIsDefined } from "../utils/assert";
 
 @Resolver(() => TagAssociation)
 export class TagAssociationResolver {
-  @Authorized()
+  @Authorized([ADMIN])
   @Query(() => [TagAssociation])
   async resultsTagAssociations(@Ctx() { user }: IContext) {
     assertIsDefined(user, "Auth context is not working properly!");
 
-    return await TagAssociationModel.find({
-      user: user._id,
-    });
+    return await TagAssociationModel.find({});
   }
 
   @Authorized()

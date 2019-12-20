@@ -1,24 +1,29 @@
 import { sample } from "lodash";
+import { useRouter } from "next/router";
 import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import LazyImage from "react-lazy-progressive-image";
+import { pushd } from "shelljs";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
+import { Badge, Box, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
 
 import {
   ANSWER_TAG_IMAGE_ASSOCIATION,
   IMAGE_TAG_ASSOCIATIONS,
 } from "../graphql/queries";
+import { useUser } from "./Auth";
 
 export const TagImageAssociation: FC<{
   image_id: string;
   image_filename: string;
 }> = ({ image_id, image_filename }) => {
+  const { user } = useUser();
+  const { push } = useRouter();
   const { data: dataImageTagAssociations } = useQuery(IMAGE_TAG_ASSOCIATIONS, {
-    onCompleted: data => {},
     variables: {
       image_id,
     },
+    fetchPolicy: "cache-and-network",
   });
   const [answerImageTagAssociation, { loading: loadingAnswer }] = useMutation(
     ANSWER_TAG_IMAGE_ASSOCIATION,
@@ -69,36 +74,55 @@ export const TagImageAssociation: FC<{
             );
           }}
         </LazyImage>
-        <Badge p={3}>{sampleCategory.name}</Badge>
+        <Box mb={0} m={0}>
+          <Badge
+            variant="solid"
+            variantColor="cyan"
+            mt={5}
+            p={4}
+            fontSize="2em"
+          >
+            {sampleCategory.name}
+          </Badge>
+        </Box>
 
-        <Stack isInline spacing="3em" mt={5}>
+        <Flex wrap="wrap" mt={5} justifyContent="center">
           {sampleCategory.tags.map(({ _id, name }) => {
             return (
               <Tag
+                variantColor="cyan"
                 cursor="pointer"
                 key={_id}
+                fontSize="2em"
+                p={4}
+                ml="0.5em"
+                mr="0.5em"
                 onClick={() => {
-                  answerImageTagAssociation({
-                    variables: {
-                      data: {
-                        category: sampleCategory._id,
-                        image: image_id,
-                        tag: _id,
-                        rejectedTags: sampleCategory.tags
-                          .filter(tag => {
-                            return tag._id !== _id;
-                          })
-                          .map(({ _id }) => _id),
+                  if (user) {
+                    answerImageTagAssociation({
+                      variables: {
+                        data: {
+                          category: sampleCategory._id,
+                          image: image_id,
+                          tag: _id,
+                          rejectedTags: sampleCategory.tags
+                            .filter(tag => {
+                              return tag._id !== _id;
+                            })
+                            .map(({ _id }) => _id),
+                        },
                       },
-                    },
-                  });
+                    });
+                  } else {
+                    push("/login");
+                  }
                 }}
               >
                 {name}
               </Tag>
             );
           })}
-        </Stack>
+        </Flex>
       </Stack>
     );
   }

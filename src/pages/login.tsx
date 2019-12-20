@@ -163,7 +163,7 @@ const LoginPage: NextPage = () => {
                   variantColor="blue"
                   isDisabled={!isValid || !dirty}
                 >
-                  Login
+                  Inicar Sesión
                 </Button>
               </Box>
               <Box width="50%" textAlign="center">
@@ -188,7 +188,7 @@ const LoginPage: NextPage = () => {
                     }
                   }}
                 >
-                  Sign Up
+                  Registrarse
                 </Button>
               </Box>
             </Stack>
