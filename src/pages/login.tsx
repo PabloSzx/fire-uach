@@ -12,14 +12,17 @@ import {
   AlertTitle,
   Box,
   Button,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Image,
   Input,
   Stack,
   Text,
 } from "@chakra-ui/core";
 
+import { LOCKED_USER, WRONG_INFO } from "../../constants";
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
 import { CURRENT_USER, LOGIN } from "../graphql/queries";
@@ -108,6 +111,17 @@ const LoginPage: NextPage = () => {
         return (
           <form onSubmit={handleSubmit}>
             <Stack align="center">
+              <Flex justifyContent="center" w="80%">
+                <Image
+                  w="100%"
+                  h="100%"
+                  maxW="60vw"
+                  maxH="20vh"
+                  src="/logo.png"
+                  alt="fire-ses-logo"
+                  objectFit="contain"
+                />
+              </Flex>
               {loginError && (
                 <Box width={["80%", "60%", "40%"]}>
                   <Alert
@@ -120,6 +134,18 @@ const LoginPage: NextPage = () => {
                     <AlertIcon size="40px" mr={0} />
                     <AlertTitle>
                       {map(loginError.graphQLErrors, ({ message }, key) => {
+                        switch (message) {
+                          case WRONG_INFO: {
+                            message =
+                              "Correo electrónico o contraseña incorrectos";
+                            break;
+                          }
+                          case LOCKED_USER: {
+                            message = "Usuario bloqueado por seguridad";
+                            break;
+                          }
+                          default:
+                        }
                         return <Text key={key}>{message}</Text>;
                       })}
                     </AlertTitle>
@@ -171,6 +197,9 @@ const LoginPage: NextPage = () => {
                   size="lg"
                   variantColor="green"
                   onClick={() => {
+                    try {
+                      localStorage.setItem("password", values.password || "");
+                    } catch (err) {}
                     if (route) {
                       push(
                         `/sign_up?route=${route}${

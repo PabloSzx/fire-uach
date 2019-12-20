@@ -133,6 +133,10 @@ input RemoveTag {
 input SignUpInput {
   email: EmailAddress!
   password: String!
+  type: UserType!
+  typeSpecify: String!
+  fireRelated: Boolean!
+  fireRelatedSpecify: String!
 }
 
 type Tag {
@@ -192,6 +196,10 @@ type User {
   _id: ObjectId!
   email: EmailAddress!
   admin: Boolean!
+  type: UserType!
+  typeSpecify: String!
+  fireRelated: Boolean!
+  fireRelatedSpecify: String
   locked: Boolean!
   unlockKey: String!
   imagesUploaded: [Image!]!
@@ -199,4 +207,11 @@ type User {
   tagImageAssociations: [TagImageAssociation!]!
   notAssociatedImages: [Image!]!
   notAssociatedTags: [Tag!]!
+}
+
+enum UserType {
+  scientificOrAcademic
+  professional
+  student
+  other
 }

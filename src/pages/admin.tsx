@@ -4,7 +4,6 @@ import { FC } from "react";
 import { useRememberState } from "use-remember-state";
 
 import {
-  Flex,
   Stack,
   Tab,
   TabList,

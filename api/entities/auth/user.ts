@@ -10,6 +10,7 @@ import {
   Ref,
 } from "@typegoose/typegoose";
 
+import { UserType } from "../../../constants";
 import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
 import { Image } from "../image";
 import { Tag } from "../tags/tag";
@@ -31,6 +32,22 @@ export class User {
   @Field()
   @Property({ default: false })
   admin: boolean;
+
+  @Field(() => UserType)
+  @Property({ enum: UserType, type: String, default: UserType.other })
+  type: UserType;
+
+  @Field()
+  @Property({ default: "" })
+  typeSpecify: string;
+
+  @Field()
+  @Property({ default: false })
+  fireRelated: boolean;
+
+  @Field({ nullable: true })
+  @Property({ default: "" })
+  fireRelatedSpecify: string;
 
   @Field()
   @Property({ default: false })

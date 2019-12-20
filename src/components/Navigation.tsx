@@ -1,12 +1,13 @@
 import { useRouter } from "next/router";
 import { FC } from "react";
 import {
+  AiFillCamera,
   AiFillHome,
   AiFillSetting,
+  AiOutlineCamera,
   AiOutlineHome,
   AiOutlineSetting,
 } from "react-icons/ai";
-import { IoMdAddCircle, IoMdAddCircleOutline } from "react-icons/io";
 import { MdPerson, MdPersonOutline } from "react-icons/md";
 
 import { Box, Flex } from "@chakra-ui/core";
@@ -46,7 +47,7 @@ export const Navigation: FC = () => {
       </FakeHref>
       <FakeHref href="/upload">
         <Box
-          as={pathname === "/upload" ? IoMdAddCircle : IoMdAddCircleOutline}
+          as={pathname === "/upload" ? AiFillCamera : AiOutlineCamera}
           color="black"
           fontSize="2em"
           onClick={() => {

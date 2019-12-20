@@ -7,3 +7,9 @@ export const GRAPHQL_URL =
     ? `${process?.env?.DOMAIN ?? "http://localhost:3000"}/api/graphql`
     : "/api/graphql";
 export const USER_ALREADY_EXISTS = "user_already_exists";
+export enum UserType {
+  scientificOrAcademic = "scientificOrAcademic",
+  professional = "professional",
+  student = "student",
+  other = "other",
+}

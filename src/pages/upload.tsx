@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { IoIosImages } from "react-icons/io";
 import Select from "react-select";

@@ -1,5 +1,7 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
+import { UserType } from "../../constants";
+
 export type IUser = {
   _id: string;
   email: string;
@@ -60,6 +62,10 @@ export const SIGN_UP: DocumentNode<
     data: {
       email: string;
       password: string;
+      type: UserType;
+      typeSpecify: string;
+      fireRelated: boolean;
+      fireRelatedSpecify: string;
     };
   }
 > = gql`
