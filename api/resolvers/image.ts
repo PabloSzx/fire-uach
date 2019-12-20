@@ -1,6 +1,7 @@
 import assert, { AssertionError } from "assert";
 import encodeUrl from "encodeurl";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
+import { shuffle } from "lodash";
 import mime from "mime";
 import { ObjectId } from "mongodb";
 import {
@@ -27,7 +28,6 @@ import {
   RemoveImage,
 } from "../entities/image";
 import { CategoryModel } from "../entities/tags/category";
-import { TagModel } from "../entities/tags/tag";
 import { TagImageAssociationModel } from "../entities/tags/tagImageAssociation";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
@@ -55,6 +55,17 @@ export class ImageResolver {
     const extension = mime.getExtension(mimetype);
 
     assertIsDefined(extension, "Extensión de imagen no válida!");
+
+    switch (extension) {
+      case "png":
+      case "jpeg":
+        break;
+      default: {
+        throw new AssertionError({
+          message: "La imagen debe ser PNG o JPEG!",
+        });
+      }
+    }
 
     filename = user._id.toHexString() + "_" + encodeUrl(filename);
 
@@ -197,22 +208,24 @@ export class ImageResolver {
           )
         : []
       ).map(({ category }) => category);
-      return await CategoryModel.find({
-        $and: [
-          {
-            _id: {
-              $not: {
-                $in: answeredCategories,
+      return shuffle(
+        await CategoryModel.find({
+          $and: [
+            {
+              _id: {
+                $not: {
+                  $in: answeredCategories,
+                },
               },
             },
-          },
-          {
-            _id: {
-              $in: categories,
+            {
+              _id: {
+                $in: categories,
+              },
             },
-          },
-        ],
-      });
+          ],
+        })
+      );
     }
     return [];
   }

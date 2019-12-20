@@ -20,7 +20,7 @@ export const Navigation: FC = () => {
 
   return (
     <Flex
-      zIndex={1}
+      zIndex={10}
       position="fixed"
       left={0}
       bottom={0}

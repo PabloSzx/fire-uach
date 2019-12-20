@@ -1,6 +1,6 @@
-import { sample } from "lodash";
+import { head } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Badge, Box, Flex, Stack, Tag } from "@chakra-ui/core";
@@ -11,7 +11,7 @@ import { useUser } from "./Auth";
 export const TagAssociation: FC = () => {
   const { user } = useUser();
   const { data: dataNotAnsweredTags } = useQuery(NOT_ANSWERED_TAGS, {
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
   });
   const { push } = useRouter();
   const [answerTagAssociation] = useMutation(ANSWER_TAG_ASSOCIATION, {
@@ -28,7 +28,7 @@ export const TagAssociation: FC = () => {
   });
 
   const sampleTag = useMemo(() => {
-    return sample(dataNotAnsweredTags?.notAnsweredTags);
+    return head(dataNotAnsweredTags?.notAnsweredTags);
   }, [dataNotAnsweredTags]);
 
   if (sampleTag) {

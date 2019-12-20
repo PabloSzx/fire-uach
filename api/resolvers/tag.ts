@@ -1,3 +1,4 @@
+import { shuffle } from "lodash";
 import {
   Arg,
   Authorized,
@@ -41,13 +42,15 @@ export class TagResolver {
         )
       : []
     ).map(({ tagMain }) => tagMain);
-    return await TagModel.find({
-      _id: {
-        $not: {
-          $in: answeredTags,
+    return shuffle(
+      await TagModel.find({
+        _id: {
+          $not: {
+            $in: answeredTags,
+          },
         },
-      },
-    });
+      })
+    );
   }
 
   @Authorized([ADMIN])

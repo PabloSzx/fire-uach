@@ -1,8 +1,7 @@
-import { sample } from "lodash";
+import { head } from "lodash";
 import { useRouter } from "next/router";
-import { Dispatch, FC, SetStateAction, useMemo } from "react";
+import { FC, useMemo } from "react";
 import LazyImage from "react-lazy-progressive-image";
-import { pushd } from "shelljs";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Badge, Box, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
@@ -23,7 +22,7 @@ export const TagImageAssociation: FC<{
     variables: {
       image_id,
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
   });
   const [answerImageTagAssociation, { loading: loadingAnswer }] = useMutation(
     ANSWER_TAG_IMAGE_ASSOCIATION,
@@ -48,7 +47,7 @@ export const TagImageAssociation: FC<{
     dataImageTagAssociations?.image?.categoriesNotAnswered ?? [];
 
   const sampleCategory = useMemo(() => {
-    return sample(categoriesNotAnswered);
+    return head(categoriesNotAnswered);
   }, [categoriesNotAnswered]);
 
   if (sampleCategory) {
