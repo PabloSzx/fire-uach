@@ -56,15 +56,6 @@ export class ImageResolver {
 
     assertIsDefined(extension, "Extensión de imagen no válida!");
 
-    switch (extension) {
-      case "png":
-      case "jpeg":
-        break;
-      default: {
-        throw new AssertionError({ message: "La imagen debe ser PNG o JPEG!" });
-      }
-    }
-
     filename = user._id.toHexString() + "_" + encodeUrl(filename);
 
     try {
