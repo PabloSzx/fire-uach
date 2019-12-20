@@ -61,6 +61,7 @@ type Image {
   extension: String!
   validated: Boolean!
   categories: [Category!]!
+  categoriesNotAnswered: [Category!]!
   uploader: User
   updatedAt: DateTime!
   createdAt: DateTime!
@@ -91,8 +92,8 @@ type Mutation {
   createTag(data: CreateTag!): [Tag!]!
   editTag(data: EditTag!): [Tag!]!
   removeTag(data: RemoveTag!): [Tag!]!
-  answerTagAssociation(data: TagAssociationInput!): [TagAssociation!]!
-  answerTagImageAssociation(data: TagImageAssociationInput!): [TagImageAssociation!]!
+  answerTagAssociation(data: TagAssociationInput!): [Tag!]!
+  answerTagImageAssociation(data: TagImageAssociationInput!): Image
 }
 
 """Mongo object id scalar type"""
@@ -105,6 +106,7 @@ type Query {
   images: [Image!]!
   validatedImages: [Image!]!
   tags: [Tag!]!
+  notAnsweredTags: [Tag!]!
   resultsTagAssociations: [TagAssociation!]!
   resultsTagImageAssociations: [TagImageAssociation!]!
 }

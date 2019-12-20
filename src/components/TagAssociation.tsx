@@ -1,63 +1,34 @@
-import { differenceWith, sample } from "lodash";
-import { FC, useMemo } from "react";
+import { sample } from "lodash";
+import { Dispatch, FC, ReactNode, SetStateAction, useMemo } from "react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Flex, Stack, Tag } from "@chakra-ui/core";
+import { Badge, Box, Stack, Tag } from "@chakra-ui/core";
 
-import {
-  ALL_TAGS_WITH_ASSOCIATIONS,
-  ANSWER_TAG_ASSOCIATION,
-  RESULTS_TAG_ASSOCIATIONS,
-} from "../graphql/queries";
+import { ANSWER_TAG_ASSOCIATION, NOT_ANSWERED_TAGS } from "../graphql/queries";
 
-export const TagAssociation: FC = () => {
-  const { data: dataResultsTagAssociations } = useQuery(
-    RESULTS_TAG_ASSOCIATIONS,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+export const TagAssociation: FC<{}> = ({}) => {
+  const { data: dataNotAnsweredTags } = useQuery(NOT_ANSWERED_TAGS);
+
   const [answerTagAssociation] = useMutation(ANSWER_TAG_ASSOCIATION, {
     update: (cache, { data }) => {
       if (data?.answerTagAssociation) {
         cache.writeQuery({
-          query: RESULTS_TAG_ASSOCIATIONS,
+          query: NOT_ANSWERED_TAGS,
           data: {
-            resultsTagAssociations: data.answerTagAssociation,
+            notAnsweredTags: data.answerTagAssociation,
           },
         });
       }
     },
   });
 
-  const { data: dataAllTagsWithAssociations } = useQuery(
-    ALL_TAGS_WITH_ASSOCIATIONS
-  );
-
   const sampleTag = useMemo(() => {
-    if (
-      dataResultsTagAssociations?.resultsTagAssociations &&
-      dataAllTagsWithAssociations?.tags
-    ) {
-      return sample(
-        differenceWith(
-          dataAllTagsWithAssociations.tags,
-          dataResultsTagAssociations.resultsTagAssociations,
-          (dataTag, { tagMain }) => {
-            if (tagMain) {
-              return dataTag._id === tagMain._id;
-            }
-            return false;
-          }
-        )
-      );
-    }
-    return undefined;
-  }, [dataAllTagsWithAssociations, dataResultsTagAssociations]);
+    return sample(dataNotAnsweredTags?.notAnsweredTags);
+  }, [dataNotAnsweredTags]);
 
   if (sampleTag) {
     return (
-      <Stack border="1px solid" align="center" p={5}>
+      <Stack border="1px solid" align="center" p={5} key={1}>
         <Box>
           <Badge p={5} fontSize="3em">
             {sampleTag.name}
@@ -95,5 +66,6 @@ export const TagAssociation: FC = () => {
       </Stack>
     );
   }
+
   return null;
 };

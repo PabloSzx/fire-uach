@@ -1,7 +1,7 @@
 import { intersectionBy } from "lodash";
-import { ChangeEvent, FC, useCallback, useMemo } from "react";
+import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
 import Select from "react-select";
-import { useSetState } from "react-use";
+import { useSetState, useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -111,9 +111,14 @@ const AdminCategories: FC = () => {
     ({ name, tags, correctTags, _id }) => {
       const [data, setData] = useSetState({
         name,
-        tags: [...tags],
-        correctTags: [...correctTags],
+        tags,
+        correctTags,
       });
+      const dirty =
+        data.name !== name ||
+        data.tags !== tags ||
+        data.correctTags !== correctTags;
+
       const correctTagsFiltered = useMemo(() => {
         return intersectionBy(data.correctTags, data.tags, ({ _id }) => _id);
       }, [data.correctTags, data.tags]);
@@ -241,6 +246,7 @@ const AdminCategories: FC = () => {
                 }
               }}
               variantColor="blue"
+              isDisabled={!dirty}
             >
               Guardar cambios
             </Button>

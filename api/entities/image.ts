@@ -39,6 +39,9 @@ export class Image extends TimeStamps {
   @PropertyArray({ items: "Category", ref: "Category", default: [] })
   categories: Ref<Category>[];
 
+  @Field(() => [Category])
+  categoriesNotAnswered: Category[];
+
   @Field(() => User, { nullable: true })
   @Property({ ref: "User", index: true })
   uploader: Ref<User>;

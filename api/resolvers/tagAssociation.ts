@@ -12,7 +12,7 @@ import {
 import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
 import { UserModel } from "../entities/auth/user";
-import { TagModel } from "../entities/tags/tag";
+import { Tag, TagModel } from "../entities/tags/tag";
 import {
   TagAssociation,
   TagAssociationInput,
@@ -34,11 +34,11 @@ export class TagAssociationResolver {
   }
 
   @Authorized()
-  @Mutation(() => [TagAssociation])
+  @Mutation(() => [Tag])
   async answerTagAssociation(
     @Ctx() { user }: IContext,
     @Arg("data", () => TagAssociationInput)
-    { tagMain, tagChosen, rejectedTags }: TagAssociation
+    { tagMain, tagChosen, rejectedTags }: TagAssociationInput
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
 
@@ -49,8 +49,20 @@ export class TagAssociationResolver {
       rejectedTags,
     });
 
-    return await TagAssociationModel.find({
-      user: user._id,
+    const answeredTags = (
+      await TagAssociationModel.find(
+        {
+          user: user._id,
+        },
+        "tagMain"
+      )
+    ).map(({ tagMain }) => tagMain);
+    return await TagModel.find({
+      _id: {
+        $not: {
+          $in: answeredTags,
+        },
+      },
     });
   }
 

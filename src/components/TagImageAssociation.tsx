@@ -1,76 +1,74 @@
-import { differenceWith, sample } from "lodash";
-import { FC, useMemo } from "react";
+import { sample } from "lodash";
+import { Dispatch, FC, SetStateAction, useMemo } from "react";
+import LazyImage from "react-lazy-progressive-image";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Spinner, Stack, Tag } from "@chakra-ui/core";
+import { Badge, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
 
 import {
   ANSWER_TAG_IMAGE_ASSOCIATION,
   IMAGE_TAG_ASSOCIATIONS,
-  RESULTS_TAG_IMAGE_ASSOCIATIONS,
 } from "../graphql/queries";
 
 export const TagImageAssociation: FC<{
   image_id: string;
-}> = ({ image_id }) => {
-  const { data: resultsTagImageAssociations } = useQuery(
-    RESULTS_TAG_IMAGE_ASSOCIATIONS
-  );
-
+  image_filename: string;
+}> = ({ image_id, image_filename }) => {
+  const { data: dataImageTagAssociations } = useQuery(IMAGE_TAG_ASSOCIATIONS, {
+    onCompleted: data => {},
+    variables: {
+      image_id,
+    },
+  });
   const [answerImageTagAssociation, { loading: loadingAnswer }] = useMutation(
     ANSWER_TAG_IMAGE_ASSOCIATION,
     {
       update: (cache, { data }) => {
         if (data?.answerTagImageAssociation) {
           cache.writeQuery({
-            query: RESULTS_TAG_IMAGE_ASSOCIATIONS,
+            query: IMAGE_TAG_ASSOCIATIONS,
+            variables: {
+              image_id,
+            },
             data: {
-              resultsTagImageAssociations: data.answerTagImageAssociation,
+              image: data.answerTagImageAssociation,
             },
           });
         }
       },
     }
   );
-  const { data: dataImageTagAssociations } = useQuery(IMAGE_TAG_ASSOCIATIONS, {
-    variables: {
-      image_id,
-    },
-  });
+
+  const categoriesNotAnswered =
+    dataImageTagAssociations?.image?.categoriesNotAnswered ?? [];
 
   const sampleCategory = useMemo(() => {
-    if (
-      resultsTagImageAssociations?.resultsTagImageAssociations &&
-      dataImageTagAssociations?.image?.categories
-    ) {
-      return sample(
-        differenceWith(
-          dataImageTagAssociations.image.categories,
-          resultsTagImageAssociations.resultsTagImageAssociations,
-          (dataCategory, { category: resultCategory, image: resultImage }) => {
-            if (resultCategory && resultImage) {
-              return (
-                dataCategory._id === resultCategory._id &&
-                image_id === resultImage._id
-              );
-            }
-
-            return false;
-          }
-        )
-      );
-    }
-
-    return undefined;
-  }, [dataImageTagAssociations, resultsTagImageAssociations]);
-
-  if (loadingAnswer) {
-    return <Spinner />;
-  }
+    return sample(categoriesNotAnswered);
+  }, [categoriesNotAnswered]);
 
   if (sampleCategory) {
     return (
-      <Stack border="1px solid" align="center" p={5}>
+      <Stack border="1px solid" align="center" p={5} spacing="5em" mt={10}>
+        <LazyImage
+          src={`/api/images/${image_filename}`}
+          placeholder={`/api/images/${image_filename}`}
+        >
+          {(src, loading) => {
+            if (loading) {
+              return <Spinner size="xl" />;
+            }
+            return (
+              <Image
+                width="100%"
+                height="100%"
+                maxH="40vh"
+                maxW="90vw"
+                objectFit="contain"
+                src={src}
+              />
+            );
+          }}
+        </LazyImage>
         <Badge p={3}>{sampleCategory.name}</Badge>
 
         <Stack isInline spacing="3em" mt={5}>
@@ -104,5 +102,6 @@ export const TagImageAssociation: FC<{
       </Stack>
     );
   }
+
   return null;
 };

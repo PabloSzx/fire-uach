@@ -1,8 +1,8 @@
 import { NextPage } from "next";
-import LazyImage from "react-lazy-progressive-image";
+import { useMemo } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
-import { Box, Button, Image, Spinner, Stack, Text } from "@chakra-ui/core";
+import { Button, Stack, Text } from "@chakra-ui/core";
 
 import { useUser } from "../../components/Auth";
 import { LoadingPage } from "../../components/LoadingPage";
@@ -18,15 +18,28 @@ const ProfilePage: NextPage = ({}) => {
   );
   const [logout] = useMutation(LOGOUT, { ignoreResults: true });
 
+  const tagAssociationComponent = useMemo(() => {
+    return <TagAssociation />;
+  }, []);
+
+  const tagImagesComponent = useMemo(() => {
+    return user.imagesUploaded.map(({ filename, _id }) => {
+      return (
+        <TagImageAssociation
+          image_id={_id}
+          key={_id}
+          image_filename={filename}
+        />
+      );
+    });
+  }, [user.imagesUploaded]);
+
   if (loading) {
     return <LoadingPage />;
   }
 
   return (
     <Stack align="center">
-      <Text fontSize="3em">
-        Bienvenido <b>{user.email}</b>
-      </Text>
       <Button
         cursor="pointer"
         variantColor="red"
@@ -39,41 +52,13 @@ const ProfilePage: NextPage = ({}) => {
       >
         Salir
       </Button>
-      <TagAssociation />
+      <Text fontSize="3em">
+        Bienvenido <b>{user.email}</b>
+      </Text>
 
-      <Stack align="center" spacing="5em" mt={10}>
-        {user.imagesUploaded.map(({ filename, _id, categories }) => {
-          return (
-            <Box border="1px solid" maxHeight="80vh" maxWidth="90vw" key={_id}>
-              <Stack m={5} align="center">
-                <Box mb={5}>
-                  <LazyImage
-                    src={`/api/images/${filename}`}
-                    placeholder={`/api/images/${filename}`}
-                  >
-                    {(src, loading) => {
-                      return loading ? (
-                        <Spinner size="xl" />
-                      ) : (
-                        <Image
-                          width="100%"
-                          height="100%"
-                          maxH="40vh"
-                          maxW="90vw"
-                          objectFit="contain"
-                          src={src}
-                        />
-                      );
-                    }}
-                  </LazyImage>
-                </Box>
+      {tagAssociationComponent}
 
-                <TagImageAssociation image_id={_id} />
-              </Stack>
-            </Box>
-          );
-        })}
-      </Stack>
+      {tagImagesComponent}
     </Stack>
   );
 };

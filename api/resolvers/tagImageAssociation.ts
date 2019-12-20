@@ -12,7 +12,7 @@ import {
 import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
 import { UserModel } from "../entities/auth/user";
-import { ImageModel } from "../entities/image";
+import { Image, ImageModel } from "../entities/image";
 import { CategoryModel } from "../entities/tags/category";
 import { TagModel } from "../entities/tags/tag";
 import {
@@ -36,7 +36,7 @@ export class TagImageAssociationResolver {
   }
 
   @Authorized()
-  @Mutation(() => [TagImageAssociation])
+  @Mutation(() => Image, { nullable: true })
   async answerTagImageAssociation(
     @Ctx() { user }: IContext,
     @Arg("data")
@@ -52,9 +52,7 @@ export class TagImageAssociationResolver {
       image,
     });
 
-    return await TagImageAssociationModel.find({
-      user: user._id,
-    });
+    return await ImageModel.findById(image);
   }
 
   @FieldResolver()

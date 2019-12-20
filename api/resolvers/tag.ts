@@ -1,6 +1,7 @@
 import {
   Arg,
   Authorized,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -19,12 +20,38 @@ import {
   Tag,
   TagModel,
 } from "../entities/tags/tag";
+import { TagAssociationModel } from "../entities/tags/tagAssociation";
+import { IContext } from "../interfaces";
 
 @Resolver(() => Tag)
 export class TagResolver {
   @Query(() => [Tag])
   async tags() {
     return await TagModel.find({});
+  }
+
+  @Authorized()
+  @Query(() => [Tag])
+  async notAnsweredTags(@Ctx() { user }: IContext) {
+    if (user) {
+      const answeredTags = (
+        await TagAssociationModel.find(
+          {
+            user: user._id,
+          },
+          "tagMain"
+        )
+      ).map(({ tagMain }) => tagMain);
+      return await TagModel.find({
+        _id: {
+          $not: {
+            $in: answeredTags,
+          },
+        },
+      });
+    }
+
+    return [];
   }
 
   @Authorized([ADMIN])

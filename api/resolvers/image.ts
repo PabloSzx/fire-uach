@@ -22,6 +22,7 @@ import { UserModel } from "../entities/auth/user";
 import { EditImage, Image, ImageModel, RemoveImage } from "../entities/image";
 import { CategoryModel } from "../entities/tags/category";
 import { TagModel } from "../entities/tags/tag";
+import { TagImageAssociationModel } from "../entities/tags/tagImageAssociation";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
@@ -152,6 +153,41 @@ export class ImageResolver {
       }
     }
 
+    return [];
+  }
+
+  @FieldResolver()
+  async categoriesNotAnswered(
+    @Ctx() { user }: IContext,
+    @Root() { _id, categories }: Partial<Image>
+  ) {
+    if (user && _id && categories) {
+      const answeredCategories = (
+        await TagImageAssociationModel.find(
+          {
+            user: user._id,
+            image: _id,
+          },
+          "category"
+        )
+      ).map(({ category }) => category);
+      return await CategoryModel.find({
+        $and: [
+          {
+            _id: {
+              $not: {
+                $in: answeredCategories,
+              },
+            },
+          },
+          {
+            _id: {
+              $in: categories,
+            },
+          },
+        ],
+      });
+    }
     return [];
   }
 
