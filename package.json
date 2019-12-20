@@ -10,6 +10,8 @@
     "build-api": "tsc -P api",
     "build-client": "next build",
     "dev": "cross-env NODE_ENV=development run-p -l watch-*",
+    "start": "pm2 start ecosystem.yaml",
+    "stop": "pm2 delete ecosystem.yaml",
     "typecheck": "tsc",
     "watch-api": "tsc-watch -P api --onSuccess \"node --inspect=27052 ./api/dist/api/index.js\"",
     "watch-client": "next"
