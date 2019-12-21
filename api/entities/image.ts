@@ -32,7 +32,7 @@ export class Image extends TimeStamps {
   extension: string;
 
   @Field()
-  @Property({ default: false })
+  @Property({ default: false, index: true })
   validated: boolean;
 
   @Field(() => [Category])

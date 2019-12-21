@@ -1,7 +1,7 @@
 import { intersectionBy } from "lodash";
-import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
+import { ChangeEvent, FC, useCallback, useMemo } from "react";
 import Select from "react-select";
-import { useSetState, useUpdateEffect } from "react-use";
+import { useSetState } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -83,28 +83,17 @@ const AdminTags: FC = () => {
       _id: string;
       name: string;
       possibleTagAssociations: { _id: string; name: string }[];
-      correctTagAssociations: { _id: string; name: string }[];
     }>
   >(
-    ({ _id, name, possibleTagAssociations, correctTagAssociations }) => {
+    ({ _id, name, possibleTagAssociations }) => {
       const [data, setData] = useSetState({
         name,
         possibleTagAssociations,
-        correctTagAssociations,
       });
 
       const dirty =
         data.name !== name ||
-        data.possibleTagAssociations !== possibleTagAssociations ||
-        data.correctTagAssociations !== correctTagAssociations;
-
-      const correctTagsAssociationsFiltered = useMemo(() => {
-        return intersectionBy(
-          data.correctTagAssociations,
-          data.possibleTagAssociations,
-          ({ _id }) => _id
-        );
-      }, [data.correctTagAssociations, data.possibleTagAssociations]);
+        data.possibleTagAssociations !== possibleTagAssociations;
 
       return (
         <Stack align="center" spacing="2em" p={2}>
@@ -171,54 +160,7 @@ const AdminTags: FC = () => {
               noOptionsMessage={() => "No hay tags disponibles"}
             />
           </Box>
-          <Box
-            width="100%"
-            pl={10}
-            pr={10}
-            key={"1" + correctTagAssociations.map(({ name }) => name).join("")}
-          >
-            <Tag textAlign="center">
-              <Text justifyContent="center" textAlign="center">
-                Asociaciones de Tags correctas
-              </Text>
-            </Tag>
-            <Select<{ value: string; label: string }>
-              value={correctTagsAssociationsFiltered.map(({ _id, name }) => {
-                return {
-                  label: name,
-                  value: _id,
-                };
-              })}
-              options={data.possibleTagAssociations
-                .map(({ _id, name }) => {
-                  return {
-                    label: name,
-                    value: _id,
-                  };
-                })
-                .filter(({ value }) => {
-                  return value !== _id;
-                })}
-              isMulti
-              onChange={(selected: any) => {
-                const selectedCorrectTags =
-                  (selected as {
-                    label: string;
-                    value: string;
-                  }[])?.map(({ value, label }) => {
-                    return {
-                      _id: value,
-                      name: label,
-                    };
-                  }) ?? [];
-                setData({
-                  correctTagAssociations: selectedCorrectTags,
-                });
-              }}
-              placeholder="Seleccionar asociaciones de tag correctas"
-              noOptionsMessage={() => "No hay tags disponibles"}
-            />
-          </Box>
+
           <Box>
             <Button
               isLoading={loadingEditTag}
@@ -230,11 +172,6 @@ const AdminTags: FC = () => {
                         _id,
                         name: data.name,
                         possibleTagAssociations: data.possibleTagAssociations.map(
-                          ({ _id }) => {
-                            return _id;
-                          }
-                        ),
-                        correctTagAssociations: correctTagsAssociationsFiltered.map(
                           ({ _id }) => {
                             return _id;
                           }

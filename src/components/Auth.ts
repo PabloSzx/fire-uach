@@ -39,7 +39,11 @@ export function useUser(
     (admin && !data?.currentUser?.admin)
   ) {
     if (!loading) {
-      push(`/login?route=${requireAuth}`);
+      if (data?.currentUser) {
+        push("/profile");
+      } else {
+        push(`/login?route=${requireAuth}`);
+      }
     }
     return {
       user: { email: "", _id: "", admin: false, imagesUploaded: [] },

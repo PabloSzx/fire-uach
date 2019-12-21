@@ -6,7 +6,6 @@
 type Category {
   _id: ObjectId!
   name: String!
-  correctTags: [Tag!]
   tags: [Tag!]!
 }
 
@@ -31,7 +30,6 @@ scalar DateTime
 input EditCategory {
   _id: ObjectId!
   name: String!
-  correctTags: [ObjectId!]!
   tags: [ObjectId!]!
 }
 
@@ -49,8 +47,17 @@ input EditOwnImage {
 input EditTag {
   _id: ObjectId!
   name: String!
-  correctTagAssociations: [ObjectId!]!
   possibleTagAssociations: [ObjectId!]!
+}
+
+input EditUser {
+  _id: ObjectId!
+  admin: Boolean!
+  type: UserType!
+  typeSpecify: String!
+  fireRelated: Boolean!
+  fireRelatedSpecify: String!
+  locked: Boolean!
 }
 
 """
@@ -100,6 +107,8 @@ type Mutation {
   removeTag(data: RemoveTag!): [Tag!]!
   answerTagAssociation(data: TagAssociationInput!): [Tag!]!
   answerTagImageAssociation(data: TagImageAssociationInput!): Image
+  editUser(data: EditUser!): [User!]!
+  removeUser(id: ObjectId!): [User!]!
 }
 
 """Mongo object id scalar type"""
@@ -116,6 +125,7 @@ type Query {
   notAnsweredTags: [Tag!]!
   resultsTagAssociations: [TagAssociation!]!
   resultsTagImageAssociations: [TagImageAssociation!]!
+  allUsers: [User!]!
 }
 
 input RemoveCategory {
@@ -143,7 +153,6 @@ type Tag {
   _id: ObjectId!
   name: String!
   categories: [Category!]!
-  correctTagAssociations: [Tag!]!
   possibleTagAssociations: [Tag!]!
 }
 
@@ -196,17 +205,15 @@ type User {
   _id: ObjectId!
   email: EmailAddress!
   admin: Boolean!
+  unlockKey: String!
   type: UserType!
   typeSpecify: String!
   fireRelated: Boolean!
-  fireRelatedSpecify: String
+  fireRelatedSpecify: String!
   locked: Boolean!
-  unlockKey: String!
   imagesUploaded: [Image!]!
   tagAssociations: [TagAssociation!]!
   tagImageAssociations: [TagImageAssociation!]!
-  notAssociatedImages: [Image!]!
-  notAssociatedTags: [Tag!]!
 }
 
 enum UserType {

@@ -12,8 +12,8 @@ export type IUser = {
   }[];
 };
 
-export const UserFragment = gql`
-  fragment UserFragment on User {
+export const CurrentUserFragment = gql`
+  fragment CurrentUserFragment on User {
     _id
     email
     admin
@@ -29,10 +29,10 @@ export const CURRENT_USER: DocumentNode<{
 }> = gql`
   query {
     currentUser {
-      ...UserFragment
+      ...CurrentUserFragment
     }
   }
-  ${UserFragment}
+  ${CurrentUserFragment}
 `;
 
 export const LOGIN: DocumentNode<
@@ -48,10 +48,10 @@ export const LOGIN: DocumentNode<
 > = gql`
   mutation($data: LoginInput!) {
     login(data: $data) {
-      ...UserFragment
+      ...CurrentUserFragment
     }
   }
-  ${UserFragment}
+  ${CurrentUserFragment}
 `;
 
 export const SIGN_UP: DocumentNode<
@@ -71,10 +71,10 @@ export const SIGN_UP: DocumentNode<
 > = gql`
   mutation($data: SignUpInput!) {
     signUp(data: $data) {
-      ...UserFragment
+      ...CurrentUserFragment
     }
   }
-  ${UserFragment}
+  ${CurrentUserFragment}
 `;
 
 export const UPLOAD_IMAGE: DocumentNode<
@@ -134,7 +134,6 @@ export const IMAGE_TAG_ASSOCIATIONS: DocumentNode<
         tags: {
           _id: string;
           name: string;
-          correctTagAssociations: { _id: string; name: string }[];
           possibleTagAssociations: { _id: string; name: string }[];
         }[];
       }[];
@@ -153,10 +152,6 @@ export const IMAGE_TAG_ASSOCIATIONS: DocumentNode<
         tags {
           _id
           name
-          correctTagAssociations {
-            _id
-            name
-          }
           possibleTagAssociations {
             _id
             name
@@ -177,7 +172,6 @@ export const ANSWER_TAG_IMAGE_ASSOCIATION: DocumentNode<
         tags: {
           _id: string;
           name: string;
-          correctTagAssociations: { _id: string; name: string }[];
           possibleTagAssociations: { _id: string; name: string }[];
         }[];
       }[];
@@ -201,10 +195,7 @@ export const ANSWER_TAG_IMAGE_ASSOCIATION: DocumentNode<
         tags {
           _id
           name
-          correctTagAssociations {
-            _id
-            name
-          }
+
           possibleTagAssociations {
             _id
             name
@@ -243,10 +234,6 @@ export const NOT_ANSWERED_TAGS: DocumentNode<{
       _id: string;
       name: string;
     }[];
-    correctTagAssociations: {
-      _id: string;
-      name: string;
-    }[];
   }[];
 }> = gql`
   query {
@@ -254,10 +241,6 @@ export const NOT_ANSWERED_TAGS: DocumentNode<{
       _id
       name
       possibleTagAssociations {
-        _id
-        name
-      }
-      correctTagAssociations {
         _id
         name
       }
@@ -271,10 +254,6 @@ export const ANSWER_TAG_ASSOCIATION: DocumentNode<
       _id: string;
       name: string;
       possibleTagAssociations: {
-        _id: string;
-        name: string;
-      }[];
-      correctTagAssociations: {
         _id: string;
         name: string;
       }[];
@@ -293,10 +272,6 @@ export const ANSWER_TAG_ASSOCIATION: DocumentNode<
       _id
       name
       possibleTagAssociations {
-        _id
-        name
-      }
-      correctTagAssociations {
         _id
         name
       }

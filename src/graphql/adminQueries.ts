@@ -1,10 +1,11 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
+import { UserType } from "../../constants";
+
 export type ICategories = {
   _id: string;
   name: string;
   tags: { _id: string; name: string }[];
-  correctTags: { _id: string; name: string }[];
 }[];
 
 const CategoryFragment = gql`
@@ -12,10 +13,6 @@ const CategoryFragment = gql`
     _id
     name
     tags {
-      _id
-      name
-    }
-    correctTags {
       _id
       name
     }
@@ -69,7 +66,7 @@ export const EDIT_CATEGORY: DocumentNode<
     editCategory: ICategories;
   },
   {
-    data: { _id: string; name: string; tags: string[]; correctTags: string[] };
+    data: { _id: string; name: string; tags: string[] };
   }
 > = gql`
   mutation($data: EditCategory!) {
@@ -84,7 +81,6 @@ export type ITags = {
   _id: string;
   name: string;
   possibleTagAssociations: { _id: string; name: string }[];
-  correctTagAssociations: { _id: string; name: string }[];
 }[];
 
 const TagFragment = gql`
@@ -92,10 +88,6 @@ const TagFragment = gql`
     _id
     name
     possibleTagAssociations {
-      _id
-      name
-    }
-    correctTagAssociations {
       _id
       name
     }
@@ -158,7 +150,6 @@ export const EDIT_TAG: DocumentNode<
       _id: string;
       name: string;
       possibleTagAssociations: string[];
-      correctTagAssociations: string[];
     };
   }
 > = gql`
@@ -175,6 +166,7 @@ export type IImages = {
   filename: string;
   validated: boolean;
   categories: { _id: string; name: string }[];
+  uploader?: { _id: string; email: string };
 }[];
 
 const ImageFragment = gql`
@@ -185,6 +177,10 @@ const ImageFragment = gql`
     categories {
       _id
       name
+    }
+    uploader {
+      _id
+      email
     }
   }
 `;
@@ -236,4 +232,79 @@ export const REMOVE_IMAGE: DocumentNode<
     }
   }
   ${ImageFragment}
+`;
+
+export type IUser = {
+  _id: string;
+  email: string;
+  admin: boolean;
+  type: UserType;
+  typeSpecify: string;
+  fireRelated: boolean;
+  fireRelatedSpecify: string;
+  locked: boolean;
+};
+
+const UserFragment = gql`
+  fragment UserFragment on User {
+    _id
+    email
+    admin
+    type
+    typeSpecify
+    fireRelated
+    fireRelatedSpecify
+    locked
+  }
+`;
+
+export const ALL_USERS: DocumentNode<{
+  allUsers: IUser[];
+}> = gql`
+  query {
+    allUsers {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;
+
+export const EDIT_USER: DocumentNode<
+  {
+    editUser: IUser[];
+  },
+  {
+    data: {
+      _id: string;
+      admin: boolean;
+      type: UserType;
+      typeSpecify: string;
+      fireRelated: boolean;
+      fireRelatedSpecify: string;
+      locked: boolean;
+    };
+  }
+> = gql`
+  mutation($data: EditUser!) {
+    editUser(data: $data) {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;
+
+export const REMOVE_USER: DocumentNode<
+  {
+    removeUser: IUser[];
+  },
+  {
+    id: string;
+  }
+> = gql`
+  mutation($id: ObjectId!) {
+    removeUser(id: $id) {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
 `;

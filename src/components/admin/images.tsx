@@ -1,7 +1,8 @@
-import { FC, useCallback, useState } from "react";
+import { isEqual } from "lodash";
+import { FC, useCallback } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import Select from "react-select";
-import { useSetState, useUpdateEffect } from "react-use";
+import { useSetState } from "react-use";
 import { Checkbox, Icon } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -28,18 +29,7 @@ const AdminImages: FC = () => {
     fetchPolicy: "cache-and-network",
   });
 
-  const [editImage, { loading: loadingEditImage }] = useMutation(EDIT_IMAGE, {
-    update: (cache, { data }) => {
-      if (data?.editImage) {
-        cache.writeQuery({
-          query: IMAGES,
-          data: {
-            images: data.editImage,
-          },
-        });
-      }
-    },
-  });
+  const [editImage, { loading: loadingEditImage }] = useMutation(EDIT_IMAGE);
   const [removeImage, { loading: loadingRemoveImage }] = useMutation(
     REMOVE_IMAGE,
     {
@@ -64,14 +54,8 @@ const AdminImages: FC = () => {
       categories: { _id: string; name: string }[];
     }>
   >(
-    ({ _id, filename, validated, categories }) => {
-      const [data, setData] = useSetState({
-        validated,
-        categories,
-      });
-
-      const dirty =
-        data.validated !== validated || data.categories !== categories;
+    imageProp => {
+      const [data, setData] = useSetState(imageProp);
 
       return (
         <Stack
@@ -85,15 +69,12 @@ const AdminImages: FC = () => {
         >
           <Box>
             <LazyImage
-              src={`/api/images/${filename}`}
-              placeholder={`/api/images/${filename}`}
+              src={`/api/images/${imageProp.filename}`}
+              placeholder={`/api/images/${imageProp.filename}`}
             >
               {(src, loading) => {
-                if (loading) {
-                  return <Spinner />;
-                }
                 return (
-                  <>
+                  <Box>
                     {loading && <Spinner />}
                     <Image
                       pos="relative"
@@ -104,7 +85,7 @@ const AdminImages: FC = () => {
                       objectFit="contain"
                       src={src}
                     />
-                  </>
+                  </Box>
                 );
               }}
             </LazyImage>
@@ -123,7 +104,10 @@ const AdminImages: FC = () => {
               }}
             />
           </Flex>
-          <Box width="100%" key={categories.map(({ name }) => name).join("")}>
+          <Box
+            width="100%"
+            key={imageProp.categories.map(({ name }) => name).join("")}
+          >
             <Select<{ value: string; label: string }>
               value={data.categories.map(({ _id, name }) => {
                 return {
@@ -165,7 +149,7 @@ const AdminImages: FC = () => {
                 editImage({
                   variables: {
                     data: {
-                      _id,
+                      _id: imageProp._id,
                       validated: data.validated,
                       categories: data.categories.map(({ _id }) => _id),
                     },
@@ -173,14 +157,14 @@ const AdminImages: FC = () => {
                 });
               }}
               variantColor="blue"
-              isDisabled={!dirty}
+              isDisabled={loadingEditImage || isEqual(data, imageProp)}
             >
               Guardar cambios
             </Button>
           </Box>
           <Box>
             <Confirm
-              content={`¿Está seguro que desea eliminar la imagen ${filename}?`}
+              content={`¿Está seguro que desea eliminar la imagen ${imageProp.filename}?`}
               confirmButton="Estoy seguro"
               cancelButton="Cancelar"
             >
@@ -190,7 +174,7 @@ const AdminImages: FC = () => {
                   removeImage({
                     variables: {
                       data: {
-                        _id,
+                        _id: imageProp._id,
                       },
                     },
                   });

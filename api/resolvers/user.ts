@@ -1,13 +1,47 @@
-import { FieldResolver, Resolver, Root } from "type-graphql";
+import { ObjectId } from "mongodb";
+import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 
-import { User } from "../entities/auth/user";
+import { ADMIN } from "../../constants";
+import { EditUser, User, UserModel } from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
-import { TagModel } from "../entities/tags/tag";
 import { TagAssociationModel } from "../entities/tags/tagAssociation";
 import { TagImageAssociationModel } from "../entities/tags/tagImageAssociation";
+import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => User)
 export class UserResolver {
+  @Authorized([ADMIN])
+  @Query(() => [User])
+  async allUsers() {
+    return await UserModel.find({});
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [User])
+  async editUser(@Arg("data") { _id, ...user }: EditUser) {
+    await UserModel.findByIdAndUpdate(_id, user, {
+      new: true,
+      setDefaultsOnInsert: true,
+    });
+    return await UserModel.find({});
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [User])
+  async removeUser(@Arg("id", () => ObjectIdScalar) id: ObjectId) {
+    await UserModel.findByIdAndRemove(id);
+
+    return await UserModel.find({});
+  }
+
   @FieldResolver()
   async imagesUploaded(@Root() { _id }: Pick<User, "_id">) {
     return await ImageModel.find({
@@ -27,17 +61,5 @@ export class UserResolver {
     return await TagImageAssociationModel.find({
       user: _id,
     });
-  }
-
-  @FieldResolver()
-  async notAssociatedImages() {
-    // TODO: Filter
-    return await ImageModel.find({});
-  }
-
-  @FieldResolver()
-  async notAssociatedTags() {
-    // TODO: Filter
-    return await TagModel.find({});
   }
 }

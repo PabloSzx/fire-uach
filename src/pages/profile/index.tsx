@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import { useMemo } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
-import { Button, Stack, Text } from "@chakra-ui/core";
+import { Box, Button, Stack, Text } from "@chakra-ui/core";
 
 import { useUser } from "../../components/Auth";
 import { LoadingPage } from "../../components/LoadingPage";
@@ -12,8 +12,8 @@ import { TagImageAssociation } from "../../components/TagImageAssociation";
 import { LOGOUT } from "../../graphql/queries";
 
 const ProfilePage: NextPage = ({}) => {
-  const { user, loading, refetch } = useUser(
-    "profile",
+  const { user, loading: loadingUser, refetch: refetchUser } = useUser(
+    "/profile",
     false,
     "cache-and-network"
   );
@@ -35,7 +35,7 @@ const ProfilePage: NextPage = ({}) => {
     });
   }, [user.imagesUploaded]);
 
-  if (loading) {
+  if (loadingUser) {
     return <LoadingPage />;
   }
 
@@ -46,16 +46,18 @@ const ProfilePage: NextPage = ({}) => {
         variantColor="red"
         onClick={async () => {
           await logout();
-          refetch();
+          refetchUser();
         }}
         size="lg"
         fontSize="3xl"
       >
         Salir
       </Button>
-      <Text fontSize={["0.7em", "1em", "2em"]} textAlign="center">
-        Bienvenido <b>{truncate(user.email, { length: 45 })}</b>
-      </Text>
+      <Box p={10}>
+        <Text fontSize={["1em", "1em", "2em"]} textAlign="center">
+          Bienvenido <b>{truncate(user.email, { length: 45 })}</b>
+        </Text>
+      </Box>
 
       {tagAssociationComponent}
 

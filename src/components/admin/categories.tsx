@@ -1,7 +1,7 @@
-import { intersectionBy } from "lodash";
-import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
+import { intersectionBy, isEqual } from "lodash";
+import { ChangeEvent, FC, useCallback, useMemo } from "react";
 import Select from "react-select";
-import { useSetState, useUpdateEffect } from "react-use";
+import { useSetState } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -67,19 +67,7 @@ const AdminCategories: FC = () => {
     }
   );
   const [editCategory, { loading: loadingEditCategory }] = useMutation(
-    EDIT_CATEGORY,
-    {
-      update: (cache, { data }) => {
-        if (data?.editCategory) {
-          cache.writeQuery({
-            query: CATEGORIES,
-            data: {
-              categories: data.editCategory,
-            },
-          });
-        }
-      },
-    }
+    EDIT_CATEGORY
   );
   const [removeCategory, { loading: loadingRemoveCategory }] = useMutation(
     REMOVE_CATEGORY,
@@ -102,26 +90,10 @@ const AdminCategories: FC = () => {
       _id: string;
       name: string;
       tags: { _id: string; name: string }[];
-      correctTags: {
-        _id: string;
-        name: string;
-      }[];
     }>
   >(
-    ({ name, tags, correctTags, _id }) => {
-      const [data, setData] = useSetState({
-        name,
-        tags,
-        correctTags,
-      });
-      const dirty =
-        data.name !== name ||
-        data.tags !== tags ||
-        data.correctTags !== correctTags;
-
-      const correctTagsFiltered = useMemo(() => {
-        return intersectionBy(data.correctTags, data.tags, ({ _id }) => _id);
-      }, [data.correctTags, data.tags]);
+    ({ _id, ...categoryProp }) => {
+      const [data, setData] = useSetState(categoryProp);
 
       return (
         <Stack key={_id} align="center" spacing="2em" p={2}>
@@ -142,7 +114,7 @@ const AdminCategories: FC = () => {
             width="100%"
             pl={10}
             pr={10}
-            key={"0" + tags.map(({ name }) => name).join("")}
+            key={"0" + categoryProp.tags.map(({ name }) => name).join("")}
           >
             <Tag>
               <Text>Tags posibles</Text>
@@ -180,48 +152,7 @@ const AdminCategories: FC = () => {
               noOptionsMessage={() => "No hay tags disponibles"}
             />
           </Box>
-          <Box
-            width="100%"
-            pl={10}
-            pr={10}
-            key={"1" + tags.map(({ name }) => name).join("")}
-          >
-            <Tag>
-              <Text>Tags correctos</Text>
-            </Tag>
-            <Select<{ value: string; label: string }>
-              value={correctTagsFiltered.map(({ _id, name }) => {
-                return {
-                  label: name,
-                  value: _id,
-                };
-              })}
-              options={data.tags.map(({ _id, name }) => {
-                return {
-                  label: name,
-                  value: _id,
-                };
-              })}
-              isMulti
-              onChange={(selected: any) => {
-                const selectedTags =
-                  (selected as {
-                    label: string;
-                    value: string;
-                  }[])?.map(({ value, label }) => {
-                    return {
-                      _id: value,
-                      name: label,
-                    };
-                  }) ?? [];
-                setData({
-                  correctTags: selectedTags,
-                });
-              }}
-              placeholder="Seleccionar tags correctos"
-              noOptionsMessage={() => "No hay tags disponibles"}
-            />
-          </Box>
+
           <Box>
             <Button
               isLoading={loadingEditCategory}
@@ -235,9 +166,6 @@ const AdminCategories: FC = () => {
                         tags: data.tags.map(({ _id }) => {
                           return _id;
                         }),
-                        correctTags: correctTagsFiltered.map(({ _id }) => {
-                          return _id;
-                        }),
                       },
                     },
                   });
@@ -246,7 +174,7 @@ const AdminCategories: FC = () => {
                 }
               }}
               variantColor="blue"
-              isDisabled={!dirty}
+              isDisabled={loadingEditCategory || isEqual(categoryProp, data)}
             >
               Guardar cambios
             </Button>

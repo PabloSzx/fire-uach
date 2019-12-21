@@ -15,6 +15,7 @@ import {
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
 
+const Users = dynamic(() => import("../components/admin/users"));
 const Images = dynamic(() => import("../components/admin/images"));
 const Categories = dynamic(() => import("../components/admin/categories"));
 const Tags = dynamic(() => import("../components/admin/tags"));
@@ -32,11 +33,15 @@ const AdminDashboard: FC = () => {
         }}
       >
         <TabList justifyContent="center">
+          <Tab>Usuarios</Tab>
           <Tab>Imágenes</Tab>
           <Tab>Categorías</Tab>
           <Tab>Tags</Tab>
         </TabList>
         <TabPanels>
+          <TabPanel>
+            <Users />
+          </TabPanel>
           <TabPanel>
             <Images />
           </TabPanel>

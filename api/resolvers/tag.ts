@@ -67,14 +67,13 @@ export class TagResolver {
   @Mutation(() => [Tag])
   async editTag(
     @Arg("data")
-    { _id, name, possibleTagAssociations, correctTagAssociations }: EditTag
+    { _id, name, possibleTagAssociations }: EditTag
   ) {
     await TagModel.findByIdAndUpdate(
       _id,
       {
         name,
         possibleTagAssociations,
-        correctTagAssociations,
       },
       {
         setDefaultsOnInsert: true,
@@ -101,24 +100,6 @@ export class TagResolver {
       return await CategoryModel.find({
         tags: _id,
       });
-    }
-    return [];
-  }
-
-  @FieldResolver()
-  async correctTagAssociations(
-    @Root() { correctTagAssociations }: Partial<Tag>
-  ) {
-    if (correctTagAssociations) {
-      if (isDocumentArray(correctTagAssociations)) {
-        return correctTagAssociations;
-      } else {
-        return await TagModel.find({
-          _id: {
-            $in: correctTagAssociations,
-          },
-        });
-      }
     }
     return [];
   }

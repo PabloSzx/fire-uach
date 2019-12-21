@@ -20,10 +20,6 @@ export class Category {
   @Property({ required: true, unique: true })
   name: string;
 
-  @Field(() => [Tag], { nullable: true })
-  @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
-  correctTags: Ref<Tag>[];
-
   @Field(() => [Tag])
   @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
   tags: Ref<Tag>[];
@@ -50,9 +46,6 @@ export class EditCategory implements Partial<Category> {
 
   @Field()
   name: string;
-
-  @Field(() => [ObjectIdScalar])
-  correctTags: ObjectId[];
 
   @Field(() => [ObjectIdScalar])
   tags: ObjectId[];
