@@ -161,13 +161,13 @@ export const EDIT_TAG: DocumentNode<
   ${TagFragment}
 `;
 
-export type IImages = {
+export type IImage = {
   _id: string;
   filename: string;
   validated: boolean;
   categories: { _id: string; name: string }[];
   uploader?: { _id: string; email: string };
-}[];
+};
 
 const ImageFragment = gql`
   fragment ImageFragment on Image {
@@ -186,7 +186,7 @@ const ImageFragment = gql`
 `;
 
 export const IMAGES: DocumentNode<{
-  images: IImages;
+  images: IImage[];
 }> = gql`
   query {
     images {
@@ -198,7 +198,7 @@ export const IMAGES: DocumentNode<{
 
 export const EDIT_IMAGE: DocumentNode<
   {
-    editImage: IImages;
+    editImage: IImage[];
   },
   {
     data: {
@@ -218,7 +218,7 @@ export const EDIT_IMAGE: DocumentNode<
 
 export const REMOVE_IMAGE: DocumentNode<
   {
-    removeImage: IImages;
+    removeImage: IImage[];
   },
   {
     data: {

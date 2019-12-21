@@ -11,6 +11,7 @@ import { Box, Button, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
 import {
   CATEGORIES,
   EDIT_IMAGE,
+  IImage,
   IMAGES,
   REMOVE_IMAGE,
 } from "../../graphql/adminQueries";
@@ -46,14 +47,7 @@ const AdminImages: FC = () => {
     }
   );
 
-  const ImageEditComponent = useCallback<
-    FC<{
-      _id: string;
-      filename: string;
-      validated: boolean;
-      categories: { _id: string; name: string }[];
-    }>
-  >(
+  const ImageEditComponent = useCallback<FC<IImage>>(
     imageProp => {
       const [data, setData] = useSetState(imageProp);
 
@@ -90,6 +84,14 @@ const AdminImages: FC = () => {
               }}
             </LazyImage>
           </Box>
+          {imageProp.uploader?.email && (
+            <Box>
+              <Tag>Subido por:</Tag>
+
+              <Tag variantColor="blue">{imageProp.uploader.email}</Tag>
+            </Box>
+          )}
+
           <Flex align="center" justify="center">
             <Tag>Vista pública</Tag>
             <Checkbox
