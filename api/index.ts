@@ -5,6 +5,7 @@ import "./db";
 import cookieParser from "cookie-parser";
 import express from "express";
 import { express as voyagerMiddleware } from "graphql-voyager/middleware";
+import mongoose from "mongoose";
 
 import { apolloServer } from "./apollo/server";
 import { ImagesRouter } from "./routes/images";
@@ -35,3 +36,12 @@ app.listen(
     );
   }
 );
+
+process.on("SIGINT", () => {
+  mongoose.disconnect(err => {
+    if (err) {
+      console.error("Error on mongoose disconnection!", err);
+    }
+    process.exit(err ? 1 : 0);
+  });
+});
