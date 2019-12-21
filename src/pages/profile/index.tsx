@@ -1,3 +1,4 @@
+import { truncate } from "lodash";
 import { NextPage } from "next";
 import { useMemo } from "react";
 
@@ -52,8 +53,8 @@ const ProfilePage: NextPage = ({}) => {
       >
         Salir
       </Button>
-      <Text fontSize="3em">
-        Bienvenido <b>{user.email}</b>
+      <Text fontSize={["0.7em", "1em", "2em"]} textAlign="center">
+        Bienvenido <b>{truncate(user.email, { length: 45 })}</b>
       </Text>
 
       {tagAssociationComponent}
