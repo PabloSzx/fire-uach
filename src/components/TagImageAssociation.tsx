@@ -83,8 +83,7 @@ export const TagImageAssociation: FC<{
                 key={_id}
                 fontSize="2em"
                 p={4}
-                ml="0.5em"
-                mr="0.5em"
+                m="0.5em"
                 onClick={() => {
                   if (user) {
                     answerImageTagAssociation({

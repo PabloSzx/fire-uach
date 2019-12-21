@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Divider,
   FormControl,
   FormLabel,
   Heading,
@@ -16,7 +15,6 @@ import {
   RadioGroup,
   Stack,
   Tag,
-  Text,
 } from "@chakra-ui/core";
 
 import { UserType } from "../../../constants";
@@ -67,8 +65,7 @@ const AdminUsers: FC = () => {
     userProp => {
       const [data, setData] = useSetState(userProp);
       return (
-        <Stack mt={3} align="center" spacing="2em" p={2}>
-          <Divider width="100%" />
+        <Stack mt={3} align="center" spacing="2em" p={2} border="1px solid">
           <Box>
             <Tag variantColor="blue">{data.email}</Tag>
           </Box>
