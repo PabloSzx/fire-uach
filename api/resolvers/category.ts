@@ -1,3 +1,4 @@
+import { shuffle } from "lodash";
 import {
   Arg,
   Authorized,
@@ -69,11 +70,13 @@ export class CategoryResolver {
       if (isDocumentArray(tags)) {
         return tags;
       } else {
-        return await TagModel.find({
-          _id: {
-            $in: tags,
-          },
-        });
+        return shuffle(
+          await TagModel.find({
+            _id: {
+              $in: tags,
+            },
+          })
+        );
       }
     }
     return [];

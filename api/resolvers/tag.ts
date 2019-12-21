@@ -112,11 +112,13 @@ export class TagResolver {
       if (isDocumentArray(possibleTagAssociations)) {
         return possibleTagAssociations;
       } else {
-        return await TagModel.find({
-          _id: {
-            $in: possibleTagAssociations,
-          },
-        });
+        return shuffle(
+          await TagModel.find({
+            _id: {
+              $in: possibleTagAssociations,
+            },
+          })
+        );
       }
     }
     return [];
