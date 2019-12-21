@@ -73,17 +73,6 @@ export const TagImageAssociation: FC<{
             );
           }}
         </LazyImage>
-        <Box mb={0} m={0}>
-          <Badge
-            variant="solid"
-            variantColor="cyan"
-            mt={5}
-            p={4}
-            fontSize="2em"
-          >
-            {sampleCategory.name}
-          </Badge>
-        </Box>
 
         <Flex wrap="wrap" mt={5} justifyContent="center">
           {sampleCategory.tags.map(({ _id, name }) => {
