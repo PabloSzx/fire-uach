@@ -213,7 +213,7 @@ const AdminTags: FC = () => {
               </Button>
             </Confirm>
           </Box>
-          <Divider width="100vw" />
+          <Divider width="100%" borderBottom="1px solid" />
         </Stack>
       );
     },
@@ -221,7 +221,7 @@ const AdminTags: FC = () => {
   );
   return (
     <Stack align="center" pt={5}>
-      <Divider border="1px solid" width="100vw" />
+      <Divider borderBottom="1px solid" width="100%" />
       {loadingAllTags && <Spinner />}
 
       {dataAllTags?.tags.map(tag => {

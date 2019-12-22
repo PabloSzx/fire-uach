@@ -4,8 +4,9 @@ import { FC, useMemo } from "react";
 import LazyImage from "react-lazy-progressive-image";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
+import { Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
 
+import { imagePlaceholder } from "../../constants";
 import {
   ANSWER_TAG_IMAGE_ASSOCIATION,
   IMAGE_TAG_ASSOCIATIONS,
@@ -22,7 +23,7 @@ export const TagImageAssociation: FC<{
     variables: {
       image_id,
     },
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
   });
   const [answerImageTagAssociation, { loading: loadingAnswer }] = useMutation(
     ANSWER_TAG_IMAGE_ASSOCIATION,
@@ -55,21 +56,21 @@ export const TagImageAssociation: FC<{
       <Stack border="1px solid" align="center" p={5} spacing="5em" mt={10}>
         <LazyImage
           src={`/api/images/${image_filename}`}
-          placeholder={`/api/images/${image_filename}`}
+          placeholder={imagePlaceholder}
         >
           {(src, loading) => {
-            if (loading) {
-              return <Spinner size="xl" />;
-            }
             return (
-              <Image
-                width="100%"
-                height="100%"
-                maxH="40vh"
-                maxW="90vw"
-                objectFit="contain"
-                src={src}
-              />
+              <Stack align="center">
+                {loading && <Spinner size="xl" />}
+                <Image
+                  width="100%"
+                  height="100%"
+                  maxH="40vh"
+                  maxW="90vw"
+                  objectFit="contain"
+                  src={src}
+                />
+              </Stack>
             );
           }}
         </LazyImage>

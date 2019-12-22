@@ -243,6 +243,44 @@ export type IUser = {
   fireRelated: boolean;
   fireRelatedSpecify: string;
   locked: boolean;
+  imagesUploaded: {
+    _id: string;
+    filename: string;
+  }[];
+  tagAssociations: {
+    _id: string;
+    tagMain?: {
+      _id: string;
+      name: string;
+    };
+    tagChosen?: {
+      _id: string;
+      name: string;
+    };
+    rejectedTags: {
+      _id: string;
+      name: string;
+    }[];
+  }[];
+  tagImageAssociations: {
+    _id: string;
+    category?: {
+      _id: string;
+      name: string;
+    };
+    tag?: {
+      _id: string;
+      name: string;
+    };
+    rejectedTags: {
+      _id: string;
+      name: string;
+    }[];
+    image?: {
+      _id: string;
+      filename: string;
+    };
+  }[];
 };
 
 const UserFragment = gql`
@@ -255,6 +293,44 @@ const UserFragment = gql`
     fireRelated
     fireRelatedSpecify
     locked
+    imagesUploaded {
+      _id
+      filename
+    }
+    tagAssociations {
+      _id
+      tagMain {
+        _id
+        name
+      }
+      tagChosen {
+        _id
+        name
+      }
+      rejectedTags {
+        _id
+        name
+      }
+    }
+    tagImageAssociations {
+      _id
+      category {
+        _id
+        name
+      }
+      tag {
+        _id
+        name
+      }
+      rejectedTags {
+        _id
+        name
+      }
+      image {
+        _id
+        filename
+      }
+    }
   }
 `;
 

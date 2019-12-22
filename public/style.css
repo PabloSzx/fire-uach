@@ -5,3 +5,11 @@ body {
 a {
   color: inherit;
 }
+
+.pointer {
+  cursor: pointer;
+}
+
+.modals {
+  z-index: 3000 !important;
+}

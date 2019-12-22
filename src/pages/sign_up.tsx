@@ -39,6 +39,7 @@ import { USER_ALREADY_EXISTS, UserType } from "../../constants";
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
 import { CURRENT_USER, SIGN_UP } from "../graphql/queries";
+import { userTypeToText } from "../utils/enums";
 
 const SignUpPage: NextPage = () => {
   const { user, loading } = useUser();
@@ -248,28 +249,28 @@ const SignUpPage: NextPage = () => {
                       aria-label="scientific"
                       borderColor="grey"
                     >
-                      Científic@ y/o académic@
+                      {userTypeToText(UserType.scientificOrAcademic)}
                     </Radio>
                     <Radio
                       variantColor="green"
                       value={UserType.professional}
                       borderColor="grey"
                     >
-                      Profesional
+                      {userTypeToText(UserType.professional)}
                     </Radio>
                     <Radio
                       variantColor="green"
                       value={UserType.student}
                       borderColor="grey"
                     >
-                      Estudiante
+                      {userTypeToText(UserType.student)}
                     </Radio>
                     <Radio
                       variantColor="green"
                       value={UserType.other}
                       borderColor="grey"
                     >
-                      Otros
+                      {userTypeToText(UserType.other)}
                     </Radio>
                   </RadioGroup>
                 </Box>
