@@ -24,8 +24,9 @@ const ImageEdit: FC<IImage> = ({
   filename,
   uploader,
   validated,
-  categories,
+  categories: categoriesProp,
 }) => {
+  const categories = categoriesProp.map(({ _id, name }) => ({ _id, name }));
   const { data: dataAllCategories } = useQuery(CATEGORIES);
 
   const [editImage, { loading: loadingEditImage }] = useMutation(EDIT_IMAGE);
@@ -46,7 +47,6 @@ const ImageEdit: FC<IImage> = ({
   );
 
   const [data, setData] = useSetState({
-    filename,
     validated,
     categories,
   });
@@ -106,7 +106,7 @@ const ImageEdit: FC<IImage> = ({
           }}
         />
       </Flex>
-      <Box width="100%" key={categories.map(({ name }) => name).join("")}>
+      <Box width="100%" key={categoriesProp.map(({ name }) => name).join("")}>
         <Select<{ value: string; label: string }>
           value={data.categories.map(({ _id, name }) => {
             return {
@@ -124,15 +124,16 @@ const ImageEdit: FC<IImage> = ({
           }
           isMulti
           onChange={(selected: any) => {
-            const selectedCategories = (selected as {
-              label: string;
-              value: string;
-            }[]).map(({ value, label }) => {
-              return {
-                _id: value,
-                name: label,
-              };
-            });
+            const selectedCategories =
+              (selected as {
+                label: string;
+                value: string;
+              }[])?.map(({ value, label }) => {
+                return {
+                  _id: value,
+                  name: label,
+                };
+              }) ?? [];
             setData({
               categories: selectedCategories,
             });
@@ -159,7 +160,6 @@ const ImageEdit: FC<IImage> = ({
           isDisabled={
             loadingEditImage ||
             isEqual(data, {
-              filename,
               validated,
               categories,
             })

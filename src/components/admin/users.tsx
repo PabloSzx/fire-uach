@@ -33,7 +33,13 @@ import {
   RadioGroup,
   Spinner,
   Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Tag,
+  Text,
   useDisclosure,
 } from "@chakra-ui/core";
 
@@ -139,14 +145,19 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
           <Icon name={locked ? "lock" : "unlock"} />
         </Table.Cell>
       </Table.Row>
-      <Modal isOpen={isOpen} onClose={onClose} size="80vw">
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="80vw"
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
             <Tag variantColor="blue">{email}</Tag>
           </ModalHeader>
           <ModalCloseButton cursor="pointer" />
-          <ModalBody>
+          <ModalBody overflowY="scroll">
             <Stack align="center">
               <Stack align="center" spacing="2em" p={2} border="1px solid">
                 <Box>
@@ -323,91 +334,98 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                   </Confirm>
                 </Stack>
               </Stack>
-              <Box w="100%">
-                <Accordion defaultIndex={-1} allowToggle w="100%">
-                  <AccordionItem>
-                    <AccordionHeader cursor="pointer">
-                      <Box flex="1" textAlign="left">
-                        Imágenes subidas
-                      </Box>
-
-                      <AccordionIcon />
-                    </AccordionHeader>
-                    <AccordionPanel textAlign="center">
-                      <Pagination
-                        activePage={activePagination}
-                        onPageChange={(_e, { activePage }) => {
-                          setActivePagination(toInteger(activePage));
-                        }}
-                        totalPages={paginatedImagesUploaded.length}
-                      />
-                      <Box mt={3}>
-                        {paginatedImagesUploaded[activePagination - 1]?.map(
-                          image => {
-                            return (
-                              <LazyImage
-                                key={image._id}
-                                src={`/api/images/${image.filename}`}
-                                placeholder={imagePlaceholder}
-                              >
-                                {(src, loading) => {
-                                  return (
-                                    <Stack
-                                      align="center"
-                                      mt={3}
-                                      border="1px solid"
-                                      p={3}
-                                    >
-                                      {loading && <Spinner />}
-                                      <Image
-                                        src={src}
-                                        w="100%"
-                                        h="100%"
-                                        objectFit="contain"
-                                        maxH="30vh"
-                                        maxW="70vw"
-                                      />
-                                      <Confirm
-                                        header={`¿Estás seguro que quieres eliminar la imagen ${image.filename}?`}
-                                        content="Será eliminada permanentemente"
-                                        confirmButton="Estoy seguro"
-                                        cancelButton="Cancelar"
-                                      >
-                                        <Button
-                                          variantColor="red"
-                                          cursor="pointer"
-                                          onClick={async () => {
-                                            await removeImage({
-                                              variables: {
-                                                data: {
-                                                  _id: image._id,
-                                                },
-                                              },
-                                            });
-                                          }}
-                                        >
-                                          Eliminar imagen
-                                        </Button>
-                                      </Confirm>
-                                    </Stack>
-                                  );
-                                }}
-                              </LazyImage>
-                            );
-                          }
+              <Stack align="center" spacing="1em">
+                <Tabs
+                  defaultIndex={-1}
+                  variant="soft-rounded"
+                  variantColor="green"
+                  align="center"
+                >
+                  <TabList>
+                    <Tab>Imágenes subidas</Tab>
+                    <Tab>Asociaciones de Tags</Tab>
+                    <Tab>Asociaciones de Imagenes - Tags</Tab>
+                  </TabList>
+                  <TabPanels>
+                    <TabPanel>
+                      <Stack align="center" textAlign="center">
+                        {paginatedImagesUploaded.length === 0 ? (
+                          <Text pt={3}>Sin imagenes subídas</Text>
+                        ) : (
+                          <Box pt={3}>
+                            <Pagination
+                              activePage={activePagination}
+                              onPageChange={(_e, { activePage }) => {
+                                setActivePagination(toInteger(activePage));
+                              }}
+                              totalPages={paginatedImagesUploaded.length}
+                            />
+                          </Box>
                         )}
-                      </Box>
-                    </AccordionPanel>
-                  </AccordionItem>
-                  <AccordionItem>
-                    <AccordionHeader cursor="pointer">
-                      <Box flex="1" textAlign="left">
-                        Asociaciones de Tags
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionHeader>
-                    <AccordionPanel>
-                      <Stack spacing="2em">
+
+                        <Box mt={3}>
+                          {paginatedImagesUploaded[activePagination - 1]?.map(
+                            image => {
+                              return (
+                                <LazyImage
+                                  key={image._id}
+                                  src={`/api/images/${image.filename}`}
+                                  placeholder={imagePlaceholder}
+                                >
+                                  {(src, loading) => {
+                                    return (
+                                      <Stack
+                                        align="center"
+                                        mt={3}
+                                        border="1px solid"
+                                        p={3}
+                                      >
+                                        {loading && <Spinner />}
+                                        <Image
+                                          src={src}
+                                          w="100%"
+                                          h="100%"
+                                          objectFit="contain"
+                                          maxH="30vh"
+                                          maxW="70vw"
+                                        />
+                                        <Confirm
+                                          header={`¿Estás seguro que quieres eliminar la imagen ${image.filename}?`}
+                                          content="Será eliminada permanentemente"
+                                          confirmButton="Estoy seguro"
+                                          cancelButton="Cancelar"
+                                        >
+                                          <Button
+                                            variantColor="red"
+                                            cursor="pointer"
+                                            onClick={async () => {
+                                              await removeImage({
+                                                variables: {
+                                                  data: {
+                                                    _id: image._id,
+                                                  },
+                                                },
+                                              });
+                                            }}
+                                          >
+                                            Eliminar imagen
+                                          </Button>
+                                        </Confirm>
+                                      </Stack>
+                                    );
+                                  }}
+                                </LazyImage>
+                              );
+                            }
+                          )}
+                        </Box>
+                      </Stack>
+                    </TabPanel>
+                    <TabPanel>
+                      <Stack spacing="2em" align="center">
+                        {tagAssociations.length === 0 && (
+                          <Text pt={3}>Sin asociaciones realizadas</Text>
+                        )}
                         {tagAssociations.map((tagAssoc, key) => {
                           return (
                             <Fragment key={tagAssoc._id}>
@@ -418,7 +436,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                 />
                               )}
                               {tagAssoc.tagMain && tagAssoc.tagChosen && (
-                                <Stack>
+                                <Stack align="center">
                                   <Flex mt={1} p={2} wrap="wrap">
                                     <Tag>Principal:</Tag>
                                     <Tag ml={1} variantColor="blue">
@@ -452,18 +470,12 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                           );
                         })}
                       </Stack>
-                    </AccordionPanel>
-                  </AccordionItem>
-                  <AccordionItem>
-                    <AccordionHeader cursor="pointer">
-                      <Box flex="1" textAlign="left">
-                        Asociaciones de Imagenes - Tags
-                      </Box>
-
-                      <AccordionIcon />
-                    </AccordionHeader>
-                    <AccordionPanel>
+                    </TabPanel>
+                    <TabPanel>
                       <Stack spacing="2em" align="center">
+                        {tagImageAssociations.length === 0 && (
+                          <Text pt={3}>Sin asociaciones realizadas</Text>
+                        )}
                         {tagImageAssociations.map((tagImgAssoc, key) => {
                           return (
                             <Fragment key={tagImgAssoc._id}>
@@ -476,7 +488,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                               {tagImgAssoc.category &&
                                 tagImgAssoc.image &&
                                 tagImgAssoc.tag && (
-                                  <Stack align="center">
+                                  <Stack align="center" pt={3}>
                                     <LazyImage
                                       placeholder={imagePlaceholder}
                                       src={`/api/images/${tagImgAssoc.image.filename}`}
@@ -531,10 +543,10 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                           );
                         })}
                       </Stack>
-                    </AccordionPanel>
-                  </AccordionItem>
-                </Accordion>
-              </Box>
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </Stack>
             </Stack>
           </ModalBody>
           <ModalFooter>
