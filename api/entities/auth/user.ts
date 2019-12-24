@@ -63,6 +63,9 @@ export class User {
 
   @Field(() => [CategoryImageAssociation])
   tagImageAssociations: CategoryImageAssociation[];
+
+  @Property({ default: true })
+  active: boolean;
 }
 
 export const UserModel = getModelForClass(User);

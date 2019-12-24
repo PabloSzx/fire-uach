@@ -40,7 +40,9 @@ export class CategoryResolver {
       name,
     });
 
-    return await CategoryModel.find({});
+    return await CategoryModel.find({
+      active: true,
+    });
   }
 
   @Authorized([ADMIN])
@@ -57,7 +59,9 @@ export class CategoryResolver {
       }
     );
 
-    return await CategoryModel.find({});
+    return await CategoryModel.find({
+      active: true,
+    });
   }
 
   @Authorized([ADMIN])
@@ -73,6 +77,8 @@ export class CategoryResolver {
       }
     );
 
-    return await CategoryModel.find({});
+    return await CategoryModel.find({
+      active: true,
+    });
   }
 }

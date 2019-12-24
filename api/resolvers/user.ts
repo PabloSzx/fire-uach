@@ -21,7 +21,7 @@ export class UserResolver {
   @Authorized([ADMIN])
   @Query(() => [User])
   async allUsers() {
-    return await UserModel.find({});
+    return await UserModel.find({ active: true });
   }
 
   @Authorized([ADMIN])
@@ -31,15 +31,21 @@ export class UserResolver {
       new: true,
       setDefaultsOnInsert: true,
     });
-    return await UserModel.find({});
+    return await UserModel.find({
+      active: true,
+    });
   }
 
   @Authorized([ADMIN])
   @Mutation(() => [User])
   async removeUser(@Arg("id", () => ObjectIdScalar) id: ObjectId) {
-    await UserModel.findByIdAndRemove(id);
+    await UserModel.findByIdAndUpdate(id, {
+      active: false,
+    });
 
-    return await UserModel.find({});
+    return await UserModel.find({
+      active: true,
+    });
   }
 
   @FieldResolver()

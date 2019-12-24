@@ -53,7 +53,7 @@ export const CategoryImageAssociationModel = getModelForClass(
 );
 
 @InputType()
-export class CategoryImageAssociationInput
+export class CategoryImageAssociationAnswer
   implements Partial<CategoryImageAssociation> {
   @Field(() => ObjectIdScalar, { nullable: true })
   category?: ObjectId;

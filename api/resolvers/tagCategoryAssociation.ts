@@ -1,4 +1,4 @@
-import { shuffle } from "lodash";
+import { compact, shuffle } from "lodash";
 import { ObjectId } from "mongodb";
 import {
   Arg,
@@ -11,12 +11,12 @@ import {
   Root,
 } from "type-graphql";
 
-import { isDocument, isDocumentArray } from "@typegoose/typegoose";
+import { isDocument, isDocumentArray, Ref } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
 import {
   TagCategoryAssociation,
-  TagCategoryAssociationInput,
+  TagCategoryAssociationAnswer,
   TagCategoryAssociationModel,
 } from "../entities/associations/tagCategoryAssociation";
 import { UserModel } from "../entities/auth/user";
@@ -27,24 +27,36 @@ import { assertIsDefined } from "../utils/assert";
 
 @Resolver(() => TagCategoryAssociation)
 export class TagCategoryAssociationResolver {
-  async notAnsweredTagsQuery(user: ObjectId) {
-    const answeredTags = (
-      await TagCategoryAssociationModel.find(
-        {
-          user,
+  async notAnsweredTagsQuery(user?: ObjectId) {
+    const filterTags: {
+      _id?: {
+        $not: {
+          $in: Ref<Tag>[];
+        };
+      };
+    } = {};
+
+    if (user) {
+      filterTags._id = {
+        $not: {
+          $in: compact(
+            (
+              await TagCategoryAssociationModel.find(
+                {
+                  user,
+                },
+                "tag"
+              )
+            ).map(({ tag }) => tag)
+          ),
         },
-        "tag"
-      )
-    ).map(({ tag }) => tag);
+      };
+    }
 
     return shuffle(
       await TagModel.find({
-        _id: {
-          $not: {
-            $in: answeredTags,
-          },
-        },
         active: true,
+        ...filterTags,
       })
     );
   }
@@ -57,30 +69,26 @@ export class TagCategoryAssociationResolver {
 
   @Query(() => [Tag])
   async notAnsweredTags(@Ctx() { user }: IContext) {
-    if (user) {
-      return await this.notAnsweredTagsQuery(user._id);
-    }
-    return [];
+    return await this.notAnsweredTagsQuery(user?._id);
   }
 
   @Authorized()
   @Mutation(() => [Tag])
   async answerTagAssociation(
     @Ctx() { user }: IContext,
-    @Arg("data", () => TagCategoryAssociationInput)
-    { tag, categoryChosen, rejectedCategories }: TagCategoryAssociationInput
+    @Arg("data", () => TagCategoryAssociationAnswer)
+    { tag, categoryChosen, rejectedCategories }: TagCategoryAssociationAnswer
   ) {
-    if (user) {
-      await TagCategoryAssociationModel.create({
-        user: user._id,
-        tag,
-        categoryChosen,
-        rejectedCategories,
-      });
+    assertIsDefined(user, "Auth context is not working properly!");
 
-      return await this.notAnsweredTagsQuery(user._id);
-    }
-    return [];
+    await TagCategoryAssociationModel.create({
+      user: user._id,
+      tag,
+      categoryChosen,
+      rejectedCategories,
+    });
+
+    return await this.notAnsweredTagsQuery(user._id);
   }
 
   @FieldResolver()
@@ -122,7 +130,7 @@ export class TagCategoryAssociationResolver {
   }
 
   @FieldResolver()
-  async rejectedTags(
+  async rejectedCategories(
     @Root() { rejectedCategories }: Partial<TagCategoryAssociation>
   ) {
     if (rejectedCategories) {
@@ -133,6 +141,7 @@ export class TagCategoryAssociationResolver {
           _id: {
             $in: rejectedCategories,
           },
+          active: true,
         });
       }
     }

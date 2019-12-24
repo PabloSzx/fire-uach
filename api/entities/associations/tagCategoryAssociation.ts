@@ -52,7 +52,7 @@ export const TagCategoryAssociationModel = getModelForClass(
 );
 
 @InputType()
-export class TagCategoryAssociationInput
+export class TagCategoryAssociationAnswer
   implements Partial<TagCategoryAssociation> {
   @Field(() => ObjectIdScalar)
   tag: ObjectId;

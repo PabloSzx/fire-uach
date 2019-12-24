@@ -59,7 +59,9 @@ export class TagResolver {
       }
     );
 
-    return await TagModel.find({});
+    return await TagModel.find({
+      active: true,
+    });
   }
 
   @Authorized([ADMIN])
@@ -75,7 +77,9 @@ export class TagResolver {
       }
     );
 
-    return await TagModel.find({});
+    return await TagModel.find({
+      active: true,
+    });
   }
 
   @FieldResolver()
@@ -88,6 +92,7 @@ export class TagResolver {
           _id: {
             $in: categories,
           },
+          active: true,
         });
       }
     }

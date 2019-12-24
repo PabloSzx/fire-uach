@@ -96,13 +96,6 @@ export class ImageResolver {
     }
   }
 
-  @Query(() => [Image])
-  async notAnsweredImages(@Ctx() { user }: IContext) {
-    return await ImageModel.find({
-      active: true,
-    });
-  }
-
   @Query(() => Image, { nullable: true })
   async image(@Arg("id", () => ObjectIdScalar) id: ObjectId) {
     return await ImageModel.findById(id);
@@ -144,7 +137,9 @@ export class ImageResolver {
       }
     );
 
-    return await ImageModel.find({});
+    return await ImageModel.find({
+      active: true,
+    });
   }
 
   @Authorized([ADMIN])
@@ -160,7 +155,9 @@ export class ImageResolver {
       }
     );
 
-    return await ImageModel.find({});
+    return await ImageModel.find({
+      active: true,
+    });
   }
 
   @FieldResolver()

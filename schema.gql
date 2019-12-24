@@ -6,7 +6,23 @@
 type Category {
   _id: ObjectId!
   name: String!
-  tags: [Tag!]!
+}
+
+type CategoryImageAssociation {
+  _id: ObjectId!
+  user: User
+  category: Category
+  rejectedCategories: [Tag!]!
+  image: Image
+  location: Location
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+input CategoryImageAssociationAnswer {
+  category: ObjectId
+  image: ObjectId!
+  rejectedCategories: [ObjectId!]!
 }
 
 input ChangePasswordInput {
@@ -30,24 +46,17 @@ scalar DateTime
 input EditCategory {
   _id: ObjectId!
   name: String!
-  tags: [ObjectId!]!
 }
 
 input EditImage {
   _id: ObjectId!
   validated: Boolean!
-  categories: [ObjectId!]!
-}
-
-input EditOwnImage {
-  _id: ObjectId!
-  categories: [ObjectId!]!
 }
 
 input EditTag {
   _id: ObjectId!
   name: String!
-  possibleTagAssociations: [ObjectId!]!
+  categories: [ObjectId!]!
 }
 
 input EditUser {
@@ -72,8 +81,6 @@ type Image {
   mimetype: String!
   extension: String!
   validated: Boolean!
-  categories: [Category!]!
-  categoriesNotAnswered: [Category!]!
   uploader: User
   updatedAt: DateTime!
   createdAt: DateTime!
@@ -99,14 +106,13 @@ type Mutation {
   editCategory(data: EditCategory!): [Category!]!
   removeCategory(data: RemoveCategory!): [Category!]!
   uploadImage(file: Upload!): Image!
-  editOwnImage(data: EditOwnImage!): Image
   editImage(data: EditImage!): [Image!]!
   removeImage(data: RemoveImage!): [Image!]!
   createTag(data: CreateTag!): [Tag!]!
   editTag(data: EditTag!): [Tag!]!
   removeTag(data: RemoveTag!): [Tag!]!
-  answerTagAssociation(data: TagAssociationInput!): [Tag!]!
-  answerTagImageAssociation(data: TagImageAssociationInput!): Image
+  answerTagAssociation(data: TagCategoryAssociationAnswer!): [Tag!]!
+  answerTagImageAssociation(onlyValidated: Boolean = true, data: CategoryImageAssociationAnswer!): [Image!]
   editUser(data: EditUser!): [User!]!
   removeUser(id: ObjectId!): [User!]!
 }
@@ -117,14 +123,16 @@ scalar ObjectId
 type Query {
   currentUser: User
   categories: [Category!]!
+  notAnsweredCategories: [Category!]!
   image(id: ObjectId!): Image
   images: [Image!]!
   validatedImages: [Image!]!
   ownImages: Image
   tags: [Tag!]!
+  resultsTagAssociations: [TagCategoryAssociation!]!
   notAnsweredTags: [Tag!]!
-  resultsTagAssociations: [TagAssociation!]!
-  resultsTagImageAssociations: [TagImageAssociation!]!
+  resultsTagImageAssociations: [CategoryImageAssociation!]!
+  notAnsweredImages(onlyValidated: Boolean = true): [Image!]!
   allUsers: [User!]!
 }
 
@@ -153,43 +161,23 @@ type Tag {
   _id: ObjectId!
   name: String!
   categories: [Category!]!
-  possibleTagAssociations: [Tag!]!
 }
 
-type TagAssociation {
+type TagCategoryAssociation {
   _id: ObjectId!
   user: User
-  tagMain: Tag
-  tagChosen: Tag
-  rejectedTags: [Tag!]!
-  location: Location
-  updatedAt: DateTime!
-  createdAt: DateTime!
-}
-
-input TagAssociationInput {
-  tagMain: ObjectId!
-  tagChosen: ObjectId!
-  rejectedTags: [ObjectId!]!
-}
-
-type TagImageAssociation {
-  _id: ObjectId!
-  user: User
-  category: Category
   tag: Tag
-  rejectedTags: [Tag!]!
-  image: Image
+  categoryChosen: Tag
+  rejectedCategories: [Tag!]!
   location: Location
   updatedAt: DateTime!
   createdAt: DateTime!
 }
 
-input TagImageAssociationInput {
-  category: ObjectId!
-  image: ObjectId!
+input TagCategoryAssociationAnswer {
   tag: ObjectId!
-  rejectedTags: [ObjectId!]!
+  categoryChosen: ObjectId
+  rejectedCategories: [ObjectId!]!
 }
 
 input UnlockInput {
@@ -212,8 +200,8 @@ type User {
   fireRelatedSpecify: String!
   locked: Boolean!
   imagesUploaded: [Image!]!
-  tagAssociations: [TagAssociation!]!
-  tagImageAssociations: [TagImageAssociation!]!
+  tagAssociations: [TagCategoryAssociation!]!
+  tagImageAssociations: [CategoryImageAssociation!]!
 }
 
 enum UserType {

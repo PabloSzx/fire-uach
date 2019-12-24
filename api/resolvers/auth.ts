@@ -67,6 +67,10 @@ export class AuthResolver {
     if (user?.locked) {
       throw new Error(LOCKED_USER);
     } else if (user?.password === password) {
+      if (!user.active) {
+        user.active = true;
+        user.save().then(() => {});
+      }
       AuthResolver.authenticate({
         req,
         res,
@@ -93,6 +97,16 @@ export class AuthResolver {
         email,
         password,
       });
+      AuthResolver.authenticate({
+        req,
+        res,
+        _id: user._id,
+      });
+      return user;
+    } else if (!user.active) {
+      user.active = true;
+      user.password = password;
+      await user.save();
       AuthResolver.authenticate({
         req,
         res,

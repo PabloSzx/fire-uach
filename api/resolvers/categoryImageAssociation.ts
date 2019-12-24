@@ -1,3 +1,5 @@
+import { shuffle } from "lodash";
+import { ObjectId } from "mongodb";
 import {
   Arg,
   Authorized,
@@ -14,7 +16,7 @@ import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 import { ADMIN } from "../../constants";
 import {
   CategoryImageAssociation,
-  CategoryImageAssociationInput,
+  CategoryImageAssociationAnswer,
   CategoryImageAssociationModel,
 } from "../entities/associations/categoryImageAssociation";
 import { UserModel } from "../entities/auth/user";
@@ -26,18 +28,67 @@ import { assertIsDefined } from "../utils/assert";
 
 @Resolver(() => CategoryImageAssociation)
 export class CategoryImageAssociationResolver {
+  async notAnsweredImagesQuery(onlyValidated: boolean, user?: ObjectId) {
+    const filterImages: {
+      validated?: boolean;
+      uploader?: ObjectId;
+      _id?: {
+        $not: {
+          $in: ObjectId[];
+        };
+      };
+    } = {};
+
+    if (user) {
+      filterImages._id = {
+        $not: {
+          $in: (
+            await CategoryImageAssociationModel.find(
+              {
+                user,
+              },
+              "image"
+            )
+          ).map(({ _id }) => _id),
+        },
+      };
+      if (!onlyValidated) {
+        filterImages.uploader = user;
+      }
+    }
+    if (onlyValidated) {
+      filterImages.validated = true;
+    }
+
+    return shuffle(
+      await ImageModel.find({
+        active: true,
+        ...filterImages,
+      })
+    );
+  }
+
   @Authorized([ADMIN])
   @Query(() => [CategoryImageAssociation])
   async resultsTagImageAssociations() {
     return await CategoryImageAssociationModel.find({});
   }
 
+  @Query(() => [Image])
+  async notAnsweredImages(
+    @Ctx() { user }: IContext,
+    @Arg("onlyValidated", { defaultValue: true }) onlyValidated: boolean
+  ) {
+    return await this.notAnsweredImagesQuery(onlyValidated, user?._id);
+  }
+
   @Authorized()
-  @Mutation(() => Image, { nullable: true })
+  @Mutation(() => [Image], { nullable: true })
   async answerTagImageAssociation(
     @Ctx() { user }: IContext,
     @Arg("data")
-    { image, category, rejectedCategories }: CategoryImageAssociationInput
+    { image, category, rejectedCategories }: CategoryImageAssociationAnswer,
+    @Arg("onlyValidated", { defaultValue: true }) onlyValidated: boolean
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
 
@@ -48,7 +99,7 @@ export class CategoryImageAssociationResolver {
       image,
     });
 
-    return await ImageModel.findById(image);
+    return await this.notAnsweredImagesQuery(onlyValidated, user._id);
   }
 
   @FieldResolver()
