@@ -168,7 +168,7 @@ const SignUpPage: NextPage = () => {
                     h="100%"
                     maxW="60vw"
                     maxH="20vh"
-                    src="/logo.png"
+                    src="/logo_fireses.png"
                     alt="fire-ses-logo"
                     objectFit="contain"
                   />
