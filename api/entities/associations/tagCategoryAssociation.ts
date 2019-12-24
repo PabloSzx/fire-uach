@@ -11,11 +11,12 @@ import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 
 import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
 import { User } from "../auth/user";
-import { Location } from "../location";
-import { Tag } from "./tag";
+import { Category } from "../category";
+import { Tag } from "../tag";
+import { Location } from "../utils/location";
 
 @ObjectType()
-export class TagAssociation extends TimeStamps {
+export class TagCategoryAssociation extends TimeStamps {
   @Field(() => ObjectIdScalar)
   readonly _id: ObjectId;
 
@@ -25,15 +26,15 @@ export class TagAssociation extends TimeStamps {
 
   @Field(() => Tag, { nullable: true })
   @Property({ ref: "Tag" })
-  tagMain?: Ref<Tag>;
+  tag?: Ref<Tag>;
 
   @Field(() => Tag, { nullable: true })
-  @Property({ ref: "Tag" })
-  tagChosen?: Ref<Tag>;
+  @Property({ ref: "Category" })
+  categoryChosen?: Ref<Category>;
 
   @Field(() => Tag)
-  @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
-  rejectedTags?: Ref<Tag>[];
+  @PropertyArray({ items: "Category", ref: "Category", default: [] })
+  rejectedCategories?: Ref<Category>[];
 
   @Field({ nullable: true })
   @Property({ _id: false })
@@ -46,16 +47,19 @@ export class TagAssociation extends TimeStamps {
   readonly createdAt: Date;
 }
 
-export const TagAssociationModel = getModelForClass(TagAssociation);
+export const TagCategoryAssociationModel = getModelForClass(
+  TagCategoryAssociation
+);
 
 @InputType()
-export class TagAssociationInput implements Partial<TagAssociation> {
+export class TagCategoryAssociationInput
+  implements Partial<TagCategoryAssociation> {
   @Field(() => ObjectIdScalar)
-  tagMain: ObjectId;
+  tag: ObjectId;
 
-  @Field(() => ObjectIdScalar)
-  tagChosen: ObjectId;
+  @Field(() => ObjectIdScalar, { nullable: true })
+  categoryChosen?: ObjectId;
 
   @Field(() => [ObjectIdScalar])
-  rejectedTags: ObjectId[];
+  rejectedCategories: ObjectId[];
 }

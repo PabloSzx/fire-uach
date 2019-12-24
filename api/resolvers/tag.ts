@@ -1,8 +1,6 @@
-import { shuffle } from "lodash";
 import {
   Arg,
   Authorized,
-  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -13,44 +11,16 @@ import {
 import { isDocumentArray } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
-import { CategoryModel } from "../entities/tags/category";
-import {
-  CreateTag,
-  EditTag,
-  RemoveTag,
-  Tag,
-  TagModel,
-} from "../entities/tags/tag";
-import { TagAssociationModel } from "../entities/tags/tagAssociation";
-import { IContext } from "../interfaces";
+import { CategoryModel } from "../entities/category";
+import { CreateTag, EditTag, RemoveTag, Tag, TagModel } from "../entities/tag";
 
 @Resolver(() => Tag)
 export class TagResolver {
   @Query(() => [Tag])
   async tags() {
-    return await TagModel.find({});
-  }
-
-  @Query(() => [Tag])
-  async notAnsweredTags(@Ctx() { user }: IContext) {
-    const answeredTags = (user
-      ? await TagAssociationModel.find(
-          {
-            user: user._id,
-          },
-          "tagMain"
-        )
-      : []
-    ).map(({ tagMain }) => tagMain);
-    return shuffle(
-      await TagModel.find({
-        _id: {
-          $not: {
-            $in: answeredTags,
-          },
-        },
-      })
-    );
+    return await TagModel.find({
+      active: true,
+    });
   }
 
   @Authorized([ADMIN])
@@ -58,22 +28,30 @@ export class TagResolver {
   async createTag(@Arg("data") { name }: CreateTag) {
     await TagModel.create({
       name,
+      categories: (
+        await CategoryModel.find({
+          active: true,
+          select: "_id",
+        })
+      ).map(({ _id }) => _id),
     });
 
-    return await TagModel.find({});
+    return await TagModel.find({
+      active: true,
+    });
   }
 
   @Authorized([ADMIN])
   @Mutation(() => [Tag])
   async editTag(
     @Arg("data")
-    { _id, name, possibleTagAssociations }: EditTag
+    { _id, name, categories }: EditTag
   ) {
     await TagModel.findByIdAndUpdate(
       _id,
       {
         name,
-        possibleTagAssociations,
+        categories,
       },
       {
         setDefaultsOnInsert: true,
@@ -87,38 +65,30 @@ export class TagResolver {
   @Authorized([ADMIN])
   @Mutation(() => [Tag])
   async removeTag(@Arg("data") { _id }: RemoveTag) {
-    await TagModel.findByIdAndRemove(_id, {
-      select: "_id",
-    });
+    await TagModel.findByIdAndUpdate(
+      _id,
+      {
+        active: false,
+      },
+      {
+        setDefaultsOnInsert: true,
+      }
+    );
 
     return await TagModel.find({});
   }
 
   @FieldResolver()
-  async categories(@Root() { _id }: Partial<Tag>) {
-    if (_id) {
-      return await CategoryModel.find({
-        tags: _id,
-      });
-    }
-    return [];
-  }
-
-  @FieldResolver()
-  async possibleTagAssociations(
-    @Root() { possibleTagAssociations }: Partial<Tag>
-  ) {
-    if (possibleTagAssociations) {
-      if (isDocumentArray(possibleTagAssociations)) {
-        return possibleTagAssociations;
+  async categories(@Root() { categories }: Partial<Tag>) {
+    if (categories) {
+      if (isDocumentArray(categories)) {
+        return categories;
       } else {
-        return shuffle(
-          await TagModel.find({
-            _id: {
-              $in: possibleTagAssociations,
-            },
-          })
-        );
+        return await CategoryModel.find({
+          _id: {
+            $in: categories,
+          },
+        });
       }
     }
     return [];

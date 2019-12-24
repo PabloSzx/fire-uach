@@ -10,10 +10,10 @@ import {
 } from "type-graphql";
 
 import { ADMIN } from "../../constants";
+import { CategoryImageAssociationModel } from "../entities/associations/categoryImageAssociation";
+import { TagCategoryAssociationModel } from "../entities/associations/tagCategoryAssociation";
 import { EditUser, User, UserModel } from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
-import { TagAssociationModel } from "../entities/tags/tagAssociation";
-import { TagImageAssociationModel } from "../entities/tags/tagImageAssociation";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => User)
@@ -51,14 +51,14 @@ export class UserResolver {
 
   @FieldResolver()
   async tagAssociations(@Root() { _id }: Pick<User, "_id">) {
-    return await TagAssociationModel.find({
+    return await TagCategoryAssociationModel.find({
       user: _id,
     });
   }
 
   @FieldResolver()
   async tagImageAssociations(@Root() { _id }: Pick<User, "_id">) {
-    return await TagImageAssociationModel.find({
+    return await CategoryImageAssociationModel.find({
       user: _id,
     });
   }

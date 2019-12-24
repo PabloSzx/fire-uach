@@ -85,9 +85,9 @@ export const TagImageAssociation: FC<{
                 fontSize="2em"
                 p={4}
                 m="0.5em"
-                onClick={() => {
+                onClick={async () => {
                   if (user) {
-                    answerImageTagAssociation({
+                    await answerImageTagAssociation({
                       variables: {
                         data: {
                           category: sampleCategory._id,
@@ -102,7 +102,7 @@ export const TagImageAssociation: FC<{
                       },
                     });
                   } else {
-                    push("/login");
+                    await push("/login");
                   }
                 }}
               >

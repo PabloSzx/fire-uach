@@ -7,9 +7,9 @@ import { getModelForClass, prop as Property } from "@typegoose/typegoose";
 
 import { UserType } from "../../../constants";
 import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
+import { CategoryImageAssociation } from "../associations/categoryImageAssociation";
+import { TagCategoryAssociation } from "../associations/tagCategoryAssociation";
 import { Image } from "../image";
-import { TagAssociation } from "../tags/tagAssociation";
-import { TagImageAssociation } from "../tags/tagImageAssociation";
 
 @ObjectType()
 export class User {
@@ -58,11 +58,11 @@ export class User {
   @Field(() => [Image])
   imagesUploaded: Image[];
 
-  @Field(() => [TagAssociation])
-  tagAssociations: TagAssociation[];
+  @Field(() => [TagCategoryAssociation])
+  tagAssociations: TagCategoryAssociation[];
 
-  @Field(() => [TagImageAssociation])
-  tagImageAssociations: TagImageAssociation[];
+  @Field(() => [CategoryImageAssociation])
+  tagImageAssociations: CategoryImageAssociation[];
 }
 
 export const UserModel = getModelForClass(User);

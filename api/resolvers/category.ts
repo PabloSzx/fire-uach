@@ -1,15 +1,5 @@
 import { shuffle } from "lodash";
-import {
-  Arg,
-  Authorized,
-  FieldResolver,
-  Mutation,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
-
-import { isDocumentArray } from "@typegoose/typegoose";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { ADMIN } from "../../constants";
 import {
@@ -18,14 +8,29 @@ import {
   CreateCategory,
   EditCategory,
   RemoveCategory,
-} from "../entities/tags/category";
-import { TagModel } from "../entities/tags/tag";
+} from "../entities/category";
+import { IContext } from "../interfaces";
 
 @Resolver(() => Category)
 export class CategoryResolver {
   @Query(() => [Category])
   async categories() {
-    return await CategoryModel.find({});
+    return await CategoryModel.find({
+      active: true,
+    });
+  }
+
+  @Authorized()
+  @Query(() => [Category])
+  async notAnsweredCategories(@Ctx() { user }: IContext) {
+    if (user) {
+      return shuffle(
+        await CategoryModel.find({
+          active: true,
+        })
+      );
+    }
+    return [];
   }
 
   @Authorized([ADMIN])
@@ -40,12 +45,11 @@ export class CategoryResolver {
 
   @Authorized([ADMIN])
   @Mutation(() => [Category])
-  async editCategory(@Arg("data") { _id, name, tags }: EditCategory) {
+  async editCategory(@Arg("data") { _id, name }: EditCategory) {
     await CategoryModel.findByIdAndUpdate(
       _id,
       {
         name,
-        tags,
       },
       {
         setDefaultsOnInsert: true,
@@ -59,26 +63,16 @@ export class CategoryResolver {
   @Authorized([ADMIN])
   @Mutation(() => [Category])
   async removeCategory(@Arg("data") { _id }: RemoveCategory) {
-    await CategoryModel.findByIdAndRemove(_id, { select: "_id" });
+    await CategoryModel.findByIdAndUpdate(
+      _id,
+      {
+        active: false,
+      },
+      {
+        setDefaultsOnInsert: true,
+      }
+    );
 
     return await CategoryModel.find({});
-  }
-
-  @FieldResolver()
-  async tags(@Root() { tags }: Partial<Category>) {
-    if (tags) {
-      if (isDocumentArray(tags)) {
-        return tags;
-      } else {
-        return shuffle(
-          await TagModel.find({
-            _id: {
-              $in: tags,
-            },
-          })
-        );
-      }
-    }
-    return [];
   }
 }

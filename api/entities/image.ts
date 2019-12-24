@@ -1,18 +1,11 @@
 import { ObjectId } from "mongodb";
 import { Field, InputType, ObjectType } from "type-graphql";
 
-import {
-  arrayProp as PropertyArray,
-  getModelForClass,
-  prop as Property,
-  Ref,
-} from "@typegoose/typegoose";
+import { getModelForClass, prop as Property, Ref } from "@typegoose/typegoose";
 import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 import { User } from "./auth/user";
-import { Category } from "./tags/category";
-import { Tag } from "./tags/tag";
 
 @ObjectType()
 export class Image extends TimeStamps {
@@ -35,16 +28,12 @@ export class Image extends TimeStamps {
   @Property({ default: false, index: true })
   validated: boolean;
 
-  @Field(() => [Category])
-  @PropertyArray({ items: "Category", ref: "Category", default: [] })
-  categories: Ref<Category>[];
-
-  @Field(() => [Category])
-  categoriesNotAnswered: Category[];
-
   @Field(() => User, { nullable: true })
   @Property({ ref: "User", index: true })
-  uploader: Ref<User>;
+  uploader?: Ref<User>;
+
+  @Property({ default: true, index: true })
+  active: boolean;
 
   @Field(() => Date)
   readonly updatedAt: Readonly<Date>;
@@ -62,18 +51,6 @@ export class EditImage implements Partial<Image> {
 
   @Field()
   validated: boolean;
-
-  @Field(() => [ObjectIdScalar])
-  categories: ObjectId[];
-}
-
-@InputType()
-export class EditOwnImage implements Partial<Image> {
-  @Field(() => ObjectIdScalar)
-  _id: ObjectId;
-
-  @Field(() => [ObjectIdScalar])
-  categories: ObjectId[];
 }
 
 @InputType()

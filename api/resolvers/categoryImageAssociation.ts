@@ -12,26 +12,24 @@ import {
 import { isDocument, isDocumentArray } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
-import { UserModel } from "../entities/auth/user";
-import { Image, ImageModel } from "../entities/image";
-import { CategoryModel } from "../entities/tags/category";
-import { TagModel } from "../entities/tags/tag";
 import {
-  TagImageAssociation,
-  TagImageAssociationInput,
-  TagImageAssociationModel,
-} from "../entities/tags/tagImageAssociation";
+  CategoryImageAssociation,
+  CategoryImageAssociationInput,
+  CategoryImageAssociationModel,
+} from "../entities/associations/categoryImageAssociation";
+import { UserModel } from "../entities/auth/user";
+import { CategoryModel } from "../entities/category";
+import { Image, ImageModel } from "../entities/image";
+import { TagModel } from "../entities/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 
-@Resolver(() => TagImageAssociation)
-export class TagImageAssociationResolver {
+@Resolver(() => CategoryImageAssociation)
+export class CategoryImageAssociationResolver {
   @Authorized([ADMIN])
-  @Query(() => [TagImageAssociation])
-  async resultsTagImageAssociations(@Ctx() { user }: IContext) {
-    assertIsDefined(user, "Auth context is not working properly!");
-
-    return await TagImageAssociationModel.find({});
+  @Query(() => [CategoryImageAssociation])
+  async resultsTagImageAssociations() {
+    return await CategoryImageAssociationModel.find({});
   }
 
   @Authorized()
@@ -39,15 +37,14 @@ export class TagImageAssociationResolver {
   async answerTagImageAssociation(
     @Ctx() { user }: IContext,
     @Arg("data")
-    { image, category, tag, rejectedTags }: TagImageAssociationInput
+    { image, category, rejectedCategories }: CategoryImageAssociationInput
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
 
-    await TagImageAssociationModel.create({
+    await CategoryImageAssociationModel.create({
       user: user._id,
       category,
-      tag,
-      rejectedTags,
+      rejectedCategories,
       image,
     });
 
@@ -55,7 +52,7 @@ export class TagImageAssociationResolver {
   }
 
   @FieldResolver()
-  async user(@Root() { user }: Partial<TagImageAssociation>) {
+  async user(@Root() { user }: Partial<CategoryImageAssociation>) {
     if (user) {
       if (isDocument(user)) {
         return user;
@@ -67,7 +64,7 @@ export class TagImageAssociationResolver {
   }
 
   @FieldResolver()
-  async category(@Root() { category }: Partial<TagImageAssociation>) {
+  async category(@Root() { category }: Partial<CategoryImageAssociation>) {
     if (category) {
       if (isDocument(category)) {
         return category;
@@ -79,27 +76,18 @@ export class TagImageAssociationResolver {
   }
 
   @FieldResolver()
-  async tag(@Root() { tag }: Partial<TagImageAssociation>) {
-    if (tag) {
-      if (isDocument(tag)) {
-        return tag;
-      } else {
-        return await TagModel.findById(tag);
-      }
-    }
-    return null;
-  }
-
-  @FieldResolver()
-  async rejectedTags(@Root() { rejectedTags }: Partial<TagImageAssociation>) {
-    if (rejectedTags) {
-      if (isDocumentArray(rejectedTags)) {
-        return rejectedTags;
+  async rejectedCategories(
+    @Root() { rejectedCategories }: Partial<CategoryImageAssociation>
+  ) {
+    if (rejectedCategories) {
+      if (isDocumentArray(rejectedCategories)) {
+        return rejectedCategories;
       } else {
         return await TagModel.find({
           _id: {
-            $in: rejectedTags,
+            $in: rejectedCategories,
           },
+          active: true,
         });
       }
     }
@@ -107,7 +95,7 @@ export class TagImageAssociationResolver {
   }
 
   @FieldResolver()
-  async image(@Root() { image }: Partial<TagImageAssociation>) {
+  async image(@Root() { image }: Partial<CategoryImageAssociation>) {
     if (image) {
       if (isDocument(image)) {
         return image;

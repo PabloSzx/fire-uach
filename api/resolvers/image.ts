@@ -15,20 +15,12 @@ import {
   Root,
 } from "type-graphql";
 
-import { isDocument, isDocumentArray } from "@typegoose/typegoose";
+import { isDocument } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
-import { removeFileGridFS, uploadFileGridFSStream } from "../db/gridFS";
+import { uploadFileGridFSStream } from "../db/gridFS";
 import { UserModel } from "../entities/auth/user";
-import {
-  EditImage,
-  EditOwnImage,
-  Image,
-  ImageModel,
-  RemoveImage,
-} from "../entities/image";
-import { CategoryModel } from "../entities/tags/category";
-import { TagImageAssociationModel } from "../entities/tags/tagImageAssociation";
+import { EditImage, Image, ImageModel, RemoveImage } from "../entities/image";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
@@ -79,6 +71,8 @@ export class ImageResolver {
           mimetype,
           extension,
           uploader: user._id,
+          active: true,
+          validated: false,
         },
         {
           new: true,
@@ -102,6 +96,13 @@ export class ImageResolver {
     }
   }
 
+  @Query(() => [Image])
+  async notAnsweredImages(@Ctx() { user }: IContext) {
+    return await ImageModel.find({
+      active: true,
+    });
+  }
+
   @Query(() => Image, { nullable: true })
   async image(@Arg("id", () => ObjectIdScalar) id: ObjectId) {
     return await ImageModel.findById(id);
@@ -110,12 +111,14 @@ export class ImageResolver {
   @Authorized([ADMIN])
   @Query(() => [Image])
   async images() {
-    return await ImageModel.find({});
+    return await ImageModel.find({
+      active: true,
+    });
   }
 
   @Query(() => [Image])
   async validatedImages() {
-    return await ImageModel.find({ validated: true });
+    return await ImageModel.find({ validated: true, active: true });
   }
 
   @Authorized()
@@ -123,37 +126,17 @@ export class ImageResolver {
   async ownImages(@Ctx() { user }: IContext) {
     return await ImageModel.find({
       uploader: user?._id,
+      active: true,
     });
-  }
-
-  @Authorized()
-  @Mutation(() => Image, { nullable: true })
-  async editOwnImage(
-    @Ctx() { user }: IContext,
-    @Arg("data") { _id, categories }: EditOwnImage
-  ) {
-    if (user) {
-      return await ImageModel.findOneAndUpdate(
-        { _id, uploader: user._id },
-        {
-          categories,
-        },
-        {
-          new: true,
-        }
-      );
-    }
-    return null;
   }
 
   @Authorized([ADMIN])
   @Mutation(() => [Image])
-  async editImage(@Arg("data") { _id, validated, categories }: EditImage) {
+  async editImage(@Arg("data") { _id, validated }: EditImage) {
     await ImageModel.findByIdAndUpdate(
       _id,
       {
         validated,
-        categories,
       },
       {
         select: "_id",
@@ -167,67 +150,17 @@ export class ImageResolver {
   @Authorized([ADMIN])
   @Mutation(() => [Image])
   async removeImage(@Arg("data") { _id }: RemoveImage) {
-    await Promise.all([
-      ImageModel.findByIdAndRemove(_id),
-      removeFileGridFS(_id),
-    ]);
+    await ImageModel.findByIdAndUpdate(
+      _id,
+      {
+        active: false,
+      },
+      {
+        setDefaultsOnInsert: true,
+      }
+    );
 
     return await ImageModel.find({});
-  }
-
-  @FieldResolver()
-  async categories(@Root() { categories }: Partial<Image>) {
-    if (categories) {
-      if (isDocumentArray(categories)) {
-        return categories;
-      } else {
-        return await CategoryModel.find({
-          _id: {
-            $in: categories,
-          },
-        });
-      }
-    }
-
-    return [];
-  }
-
-  @FieldResolver()
-  async categoriesNotAnswered(
-    @Ctx() { user }: IContext,
-    @Root() { _id, categories }: Partial<Image>
-  ) {
-    if (_id && categories) {
-      const answeredCategories = (user
-        ? await TagImageAssociationModel.find(
-            {
-              user: user._id,
-              image: _id,
-            },
-            "category"
-          )
-        : []
-      ).map(({ category }) => category);
-      return shuffle(
-        await CategoryModel.find({
-          $and: [
-            {
-              _id: {
-                $not: {
-                  $in: answeredCategories,
-                },
-              },
-            },
-            {
-              _id: {
-                $in: categories,
-              },
-            },
-          ],
-        })
-      );
-    }
-    return [];
   }
 
   @FieldResolver()

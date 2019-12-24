@@ -11,13 +11,13 @@ import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 
 import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
 import { User } from "../auth/user";
+import { Category } from "../category";
 import { Image } from "../image";
-import { Location } from "../location";
-import { Category } from "./category";
-import { Tag } from "./tag";
+import { Tag } from "../tag";
+import { Location } from "../utils/location";
 
 @ObjectType()
-export class TagImageAssociation extends TimeStamps {
+export class CategoryImageAssociation extends TimeStamps {
   @Field(() => ObjectIdScalar)
   readonly _id: ObjectId;
 
@@ -29,13 +29,9 @@ export class TagImageAssociation extends TimeStamps {
   @Property({ ref: "Category" })
   category?: Ref<Category>;
 
-  @Field(() => Tag, { nullable: true })
-  @Property({ ref: "Tag" })
-  tag?: Ref<Tag>;
-
   @Field(() => Tag)
-  @PropertyArray({ items: "Tag", ref: "Tag", default: [] })
-  rejectedTags?: Ref<Tag>[];
+  @PropertyArray({ items: "Category", ref: "Category", default: [] })
+  rejectedCategories?: Ref<Category>[];
 
   @Field(() => Image, { nullable: true })
   @Property({ ref: "Image" })
@@ -52,19 +48,19 @@ export class TagImageAssociation extends TimeStamps {
   readonly createdAt: Date;
 }
 
-export const TagImageAssociationModel = getModelForClass(TagImageAssociation);
+export const CategoryImageAssociationModel = getModelForClass(
+  CategoryImageAssociation
+);
 
 @InputType()
-export class TagImageAssociationInput implements Partial<TagImageAssociation> {
-  @Field(() => ObjectIdScalar)
-  category: ObjectId;
+export class CategoryImageAssociationInput
+  implements Partial<CategoryImageAssociation> {
+  @Field(() => ObjectIdScalar, { nullable: true })
+  category?: ObjectId;
 
   @Field(() => ObjectIdScalar)
   image: ObjectId;
 
-  @Field(() => ObjectIdScalar)
-  tag: ObjectId;
-
   @Field(() => [ObjectIdScalar])
-  rejectedTags: ObjectId[];
+  rejectedCategories: ObjectId[];
 }
