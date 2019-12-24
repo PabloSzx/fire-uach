@@ -56,14 +56,14 @@ export class UserResolver {
   }
 
   @FieldResolver()
-  async tagAssociations(@Root() { _id }: Pick<User, "_id">) {
+  async tagCategoryAssociations(@Root() { _id }: Pick<User, "_id">) {
     return await TagCategoryAssociationModel.find({
       user: _id,
     });
   }
 
   @FieldResolver()
-  async tagImageAssociations(@Root() { _id }: Pick<User, "_id">) {
+  async categoryImageAssociations(@Root() { _id }: Pick<User, "_id">) {
     return await CategoryImageAssociationModel.find({
       user: _id,
     });

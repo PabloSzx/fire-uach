@@ -63,7 +63,7 @@ export class TagCategoryAssociationResolver {
 
   @Authorized([ADMIN])
   @Query(() => [TagCategoryAssociation])
-  async resultsTagAssociations() {
+  async resultsTagCategoryAssociations() {
     return await TagCategoryAssociationModel.find({});
   }
 
@@ -74,7 +74,7 @@ export class TagCategoryAssociationResolver {
 
   @Authorized()
   @Mutation(() => [Tag])
-  async answerTagAssociation(
+  async answerTagCategoryAssociation(
     @Ctx() { user }: IContext,
     @Arg("data", () => TagCategoryAssociationAnswer)
     { tag, categoryChosen, rejectedCategories }: TagCategoryAssociationAnswer

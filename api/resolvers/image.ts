@@ -28,7 +28,7 @@ import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 @Resolver(() => Image)
 export class ImageResolver {
   @Authorized()
-  @Mutation(() => Image)
+  @Mutation(() => [Image])
   async uploadImage(
     @Ctx() { user }: IContext,
     @Arg("file", () => GraphQLUpload) { createReadStream, filename }: FileUpload
@@ -89,7 +89,12 @@ export class ImageResolver {
         uploadFileGridFSStream(createReadStream(), filename, imageDoc._id),
         user.save(),
       ]);
-      return imageDoc;
+      return await ImageModel.find({
+        uploader: user._id,
+        active: true,
+      }).sort({
+        updatedAt: -1,
+      });
     } catch (err) {
       console.error(40, err);
       throw err;
@@ -120,6 +125,8 @@ export class ImageResolver {
     return await ImageModel.find({
       uploader: user?._id,
       active: true,
+    }).sort({
+      updatedAt: -1,
     });
   }
 

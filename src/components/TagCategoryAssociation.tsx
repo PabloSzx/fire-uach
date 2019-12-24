@@ -5,42 +5,54 @@ import { FC, useMemo } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Badge, Box, Flex, Stack, Tag } from "@chakra-ui/core";
 
-import { ANSWER_TAG_ASSOCIATION, NOT_ANSWERED_TAGS } from "../graphql/queries";
+import {
+  ANSWER_TAG_CATEGORY_ASSOCIATION,
+  NOT_ANSWERED_TAGS,
+} from "../graphql/queries";
 import { useUser } from "./Auth";
 
-export const TagAssociation: FC = () => {
+export const TagCategoryAssociation: FC = () => {
   const { user } = useUser();
-  const { data: dataNotAnsweredTags } = useQuery(NOT_ANSWERED_TAGS, {
-    fetchPolicy: "cache-first",
-  });
+  const { data: dataNotAnsweredTags, error: errorNotAnsweredTags } = useQuery(
+    NOT_ANSWERED_TAGS,
+    {
+      fetchPolicy: "cache-first",
+    }
+  );
+  if (errorNotAnsweredTags) {
+    console.error(JSON.stringify(errorNotAnsweredTags, null, 2));
+  }
   const { push } = useRouter();
-  const [answerTagAssociation] = useMutation(ANSWER_TAG_ASSOCIATION, {
-    update: (cache, { data }) => {
-      if (data?.answerTagAssociation) {
-        cache.writeQuery({
-          query: NOT_ANSWERED_TAGS,
-          data: {
-            notAnsweredTags: data.answerTagAssociation,
-          },
-        });
-      }
-    },
-  });
+  const [answerTagCategoryAssociation] = useMutation(
+    ANSWER_TAG_CATEGORY_ASSOCIATION,
+    {
+      update: (cache, { data }) => {
+        if (data?.answerTagCategoryAssociation) {
+          cache.writeQuery({
+            query: NOT_ANSWERED_TAGS,
+            data: {
+              notAnsweredTags: data.answerTagCategoryAssociation,
+            },
+          });
+        }
+      },
+    }
+  );
 
-  const sampleTag = useMemo(() => {
-    return head(dataNotAnsweredTags?.notAnsweredTags);
+  const headTag = useMemo(() => {
+    return head(dataNotAnsweredTags?.notAnsweredTags ?? []);
   }, [dataNotAnsweredTags]);
 
-  if (sampleTag) {
+  if (headTag) {
     return (
       <Stack border="1px solid" align="center" p={5}>
         <Box>
           <Badge p={5} fontSize="3em" variant="solid" variantColor="green">
-            {sampleTag.name}
+            {headTag.name}
           </Badge>
         </Box>
         <Flex wrap="wrap" mt={5} justifyContent="center">
-          {sampleTag.possibleTagAssociations.map(({ _id, name }) => {
+          {headTag.categories.map(({ _id, name }) => {
             return (
               <Tag
                 variantColor="green"
@@ -51,14 +63,14 @@ export const TagAssociation: FC = () => {
                 cursor="pointer"
                 onClick={() => {
                   if (user) {
-                    answerTagAssociation({
+                    answerTagCategoryAssociation({
                       variables: {
                         data: {
-                          tagMain: sampleTag._id,
-                          tagChosen: _id,
-                          rejectedTags: sampleTag.possibleTagAssociations
-                            .filter(tag => {
-                              return tag._id !== _id;
+                          tag: headTag._id,
+                          categoryChosen: _id,
+                          rejectedCategories: headTag.categories
+                            .filter(category => {
+                              return category._id !== _id;
                             })
                             .map(({ _id }) => _id),
                         },

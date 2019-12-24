@@ -62,15 +62,11 @@ export class AuthResolver {
     @Ctx() { req, res }: IContext,
     @Arg("data") { email, password }: LoginInput
   ): Promise<User> {
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email, active: true });
 
     if (user?.locked) {
       throw new Error(LOCKED_USER);
     } else if (user?.password === password) {
-      if (!user.active) {
-        user.active = true;
-        user.save().then(() => {});
-      }
       AuthResolver.authenticate({
         req,
         res,
@@ -134,6 +130,7 @@ export class AuthResolver {
     const user = await UserModel.findOne({
       email,
       unlockKey,
+      active: true,
     });
 
     if (!user) {

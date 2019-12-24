@@ -31,6 +31,7 @@ export function useUser(
   });
 
   if (error) {
+    console.error(JSON.stringify(error, null, 2));
     throw error;
   }
 

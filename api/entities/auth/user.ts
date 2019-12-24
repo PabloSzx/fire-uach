@@ -35,7 +35,7 @@ export class User {
   @Property({
     enum: UserType,
     type: String,
-    default: UserType.other,
+    default: undefined,
   })
   type?: UserType;
 
@@ -59,10 +59,10 @@ export class User {
   imagesUploaded: Image[];
 
   @Field(() => [TagCategoryAssociation])
-  tagAssociations: TagCategoryAssociation[];
+  tagCategoryAssociations: TagCategoryAssociation[];
 
   @Field(() => [CategoryImageAssociation])
-  tagImageAssociations: CategoryImageAssociation[];
+  categoryImageAssociations: CategoryImageAssociation[];
 
   @Property({ default: true })
   active: boolean;

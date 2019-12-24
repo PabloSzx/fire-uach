@@ -6,11 +6,6 @@ import { Pagination, Table } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
-  Accordion,
-  AccordionHeader,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
   Checkbox,
@@ -77,8 +72,8 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   fireRelated,
   fireRelatedSpecify,
   imagesUploaded,
-  tagAssociations,
-  tagImageAssociations,
+  tagCategoryAssociations,
+  categoryImageAssociations,
   refetchAllUsers,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure(false);
@@ -424,10 +419,10 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                     </TabPanel>
                     <TabPanel>
                       <Stack spacing="2em" align="center">
-                        {tagAssociations.length === 0 && (
+                        {tagCategoryAssociations.length === 0 && (
                           <Text pt={3}>Sin asociaciones realizadas</Text>
                         )}
-                        {tagAssociations.map((tagAssoc, key) => {
+                        {tagCategoryAssociations.map((tagAssoc, key) => {
                           return (
                             <Fragment key={tagAssoc._id}>
                               {key !== 0 && (
@@ -436,34 +431,36 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                   borderBottom="1px solid"
                                 />
                               )}
-                              {tagAssoc.tagMain && tagAssoc.tagChosen && (
+                              {tagAssoc.tag && tagAssoc.categoryChosen && (
                                 <Stack align="center">
                                   <Flex mt={1} p={2} wrap="wrap">
-                                    <Tag>Principal:</Tag>
+                                    <Tag>Tag:</Tag>
                                     <Tag ml={1} variantColor="blue">
-                                      {tagAssoc.tagMain.name}
+                                      {tagAssoc.tag.name}
                                     </Tag>
                                   </Flex>
                                   <Flex mt={1} p={2} wrap="wrap">
-                                    <Tag>Eligió:</Tag>
+                                    <Tag>Eligió categoría:</Tag>
                                     <Tag ml={1} variantColor="green">
-                                      {tagAssoc.tagChosen.name}
+                                      {tagAssoc.categoryChosen.name}
                                     </Tag>
                                   </Flex>
 
                                   <Flex mt={1} p={2} wrap="wrap">
                                     <Tag>Rechazó:</Tag>
-                                    {tagAssoc.rejectedTags.map(tag => {
-                                      return (
-                                        <Tag
-                                          key={tag._id}
-                                          m={1}
-                                          variantColor="yellow"
-                                        >
-                                          {tag.name}
-                                        </Tag>
-                                      );
-                                    })}
+                                    {tagAssoc.rejectedCategories.map(
+                                      category => {
+                                        return (
+                                          <Tag
+                                            key={category._id}
+                                            m={1}
+                                            variantColor="yellow"
+                                          >
+                                            {category.name}
+                                          </Tag>
+                                        );
+                                      }
+                                    )}
                                   </Flex>
                                 </Stack>
                               )}
@@ -474,72 +471,66 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                     </TabPanel>
                     <TabPanel>
                       <Stack spacing="2em" align="center">
-                        {tagImageAssociations.length === 0 && (
+                        {categoryImageAssociations.length === 0 && (
                           <Text pt={3}>Sin asociaciones realizadas</Text>
                         )}
-                        {tagImageAssociations.map((tagImgAssoc, key) => {
+                        {categoryImageAssociations.map((catImgAssoc, key) => {
                           return (
-                            <Fragment key={tagImgAssoc._id}>
+                            <Fragment key={catImgAssoc._id}>
                               {key !== 0 && (
                                 <Divider
                                   borderBottom="1px solid"
                                   width="100%"
                                 />
                               )}
-                              {tagImgAssoc.category &&
-                                tagImgAssoc.image &&
-                                tagImgAssoc.tag && (
-                                  <Stack align="center" pt={3}>
-                                    <LazyImage
-                                      placeholder={imagePlaceholder}
-                                      src={`/api/images/${tagImgAssoc.image.filename}`}
-                                    >
-                                      {(src, loading) => {
-                                        return (
-                                          <Stack align="center">
-                                            {loading && <Spinner />}
-                                            <Image
-                                              src={src}
-                                              w="100%"
-                                              h="100%"
-                                              maxH="15vh"
-                                              maxW="50vw"
-                                              alt={tagImgAssoc.image?.filename}
-                                              objectFit="contain"
-                                            />
-                                          </Stack>
-                                        );
-                                      }}
-                                    </LazyImage>
-                                    <Flex mt={1} p={2} wrap="wrap">
-                                      <Tag>Categoría:</Tag>
-                                      <Tag ml={1} variantColor="blue">
-                                        {tagImgAssoc.category.name}
-                                      </Tag>
-                                    </Flex>
-                                    <Flex mt={1} p={2} wrap="wrap">
-                                      <Tag>Eligió:</Tag>
-                                      <Tag ml={1} variantColor="green">
-                                        {tagImgAssoc.tag.name}
-                                      </Tag>
-                                    </Flex>
+                              {catImgAssoc.category && catImgAssoc.image && (
+                                <Stack align="center" pt={3}>
+                                  <LazyImage
+                                    placeholder={imagePlaceholder}
+                                    src={`/api/images/${catImgAssoc.image.filename}`}
+                                  >
+                                    {(src, loading) => {
+                                      return (
+                                        <Stack align="center">
+                                          {loading && <Spinner />}
+                                          <Image
+                                            src={src}
+                                            w="100%"
+                                            h="100%"
+                                            maxH="15vh"
+                                            maxW="50vw"
+                                            alt={catImgAssoc.image?.filename}
+                                            objectFit="contain"
+                                          />
+                                        </Stack>
+                                      );
+                                    }}
+                                  </LazyImage>
+                                  <Flex mt={1} p={2} wrap="wrap">
+                                    <Tag>Eligió categoría:</Tag>
+                                    <Tag ml={1} variantColor="green">
+                                      {catImgAssoc.category.name}
+                                    </Tag>
+                                  </Flex>
 
-                                    <Flex mt={1} p={2} wrap="wrap">
-                                      <Tag>Rechazó:</Tag>
-                                      {tagImgAssoc.rejectedTags.map(tag => {
+                                  <Flex mt={1} p={2} wrap="wrap">
+                                    <Tag>Rechazó:</Tag>
+                                    {catImgAssoc.rejectedCategories.map(
+                                      category => {
                                         return (
                                           <Tag
-                                            key={tag._id}
+                                            key={category._id}
                                             m={1}
                                             variantColor="yellow"
                                           >
-                                            {tag.name}
+                                            {category.name}
                                           </Tag>
                                         );
-                                      })}
-                                    </Flex>
-                                  </Stack>
-                                )}
+                                      }
+                                    )}
+                                  </Flex>
+                                </Stack>
+                              )}
                             </Fragment>
                           );
                         })}

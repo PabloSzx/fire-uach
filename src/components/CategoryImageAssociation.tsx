@@ -8,60 +8,65 @@ import { Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../constants";
 import {
-  ANSWER_TAG_IMAGE_ASSOCIATION,
-  IMAGE_TAG_ASSOCIATIONS,
+  ANSWER_CATEGORY_IMAGE_ASSOCIATION,
+  CATEGORIES_OPTIONS,
+  NOT_ANSWERED_IMAGES,
 } from "../graphql/queries";
 import { useUser } from "./Auth";
 
-export const TagImageAssociation: FC<{
-  image_id: string;
-  image_filename: string;
-}> = ({ image_id, image_filename }) => {
+export const CategoryImageAssociation: FC<{
+  onlyValidated?: boolean;
+}> = ({ onlyValidated = false }) => {
   const { user } = useUser();
   const { push } = useRouter();
-  const { data: dataImageTagAssociations } = useQuery(IMAGE_TAG_ASSOCIATIONS, {
+  const {
+    data: dataNotAnsweredImages,
+    error: errorNotAnsweredImages,
+  } = useQuery(NOT_ANSWERED_IMAGES, {
     variables: {
-      image_id,
+      onlyValidated,
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
   });
-  const [answerImageTagAssociation, { loading: loadingAnswer }] = useMutation(
-    ANSWER_TAG_IMAGE_ASSOCIATION,
-    {
-      update: (cache, { data }) => {
-        if (data?.answerTagImageAssociation) {
-          cache.writeQuery({
-            query: IMAGE_TAG_ASSOCIATIONS,
-            variables: {
-              image_id,
-            },
-            data: {
-              image: data.answerTagImageAssociation,
-            },
-          });
-        }
-      },
-    }
-  );
 
-  const categoriesNotAnswered =
-    dataImageTagAssociations?.image?.categoriesNotAnswered ?? [];
+  if (errorNotAnsweredImages) {
+    console.error(JSON.stringify(errorNotAnsweredImages, null, 2));
+  }
+  const { data: dataCategories } = useQuery(CATEGORIES_OPTIONS);
+  const [
+    answerCategoryImageAssociation,
+    { loading: loadingAnswer },
+  ] = useMutation(ANSWER_CATEGORY_IMAGE_ASSOCIATION, {
+    update: (cache, { data }) => {
+      if (data?.answerCategoryImageAssociation) {
+        cache.writeQuery({
+          query: NOT_ANSWERED_IMAGES,
+          variables: {
+            onlyValidated,
+          },
+          data: {
+            notAnsweredImages: data.answerCategoryImageAssociation,
+          },
+        });
+      }
+    },
+  });
 
-  const sampleCategory = useMemo(() => {
-    return head(categoriesNotAnswered);
-  }, [categoriesNotAnswered]);
+  const imageHead = useMemo(() => {
+    return head(dataNotAnsweredImages?.notAnsweredImages ?? []);
+  }, [dataNotAnsweredImages]);
 
-  if (sampleCategory) {
+  if (imageHead) {
     return (
       <Stack border="1px solid" align="center" p={5} spacing="5em" mt={10}>
         <LazyImage
-          src={`/api/images/${image_filename}`}
+          src={`/api/images/${imageHead.filename}`}
           placeholder={imagePlaceholder}
         >
           {(src, loading) => {
             return (
               <Stack align="center">
-                {loading && <Spinner size="xl" />}
+                {(loading || loadingAnswer) && <Spinner size="xl" />}
                 <Image
                   width="100%"
                   height="100%"
@@ -76,7 +81,7 @@ export const TagImageAssociation: FC<{
         </LazyImage>
 
         <Flex wrap="wrap" mt={5} justifyContent="center">
-          {sampleCategory.tags.map(({ _id, name }) => {
+          {dataCategories?.categories.map(({ _id, name }) => {
             return (
               <Tag
                 variantColor="cyan"
@@ -87,15 +92,15 @@ export const TagImageAssociation: FC<{
                 m="0.5em"
                 onClick={async () => {
                   if (user) {
-                    await answerImageTagAssociation({
+                    await answerCategoryImageAssociation({
                       variables: {
+                        onlyValidated,
                         data: {
-                          category: sampleCategory._id,
-                          image: image_id,
-                          tag: _id,
-                          rejectedTags: sampleCategory.tags
-                            .filter(tag => {
-                              return tag._id !== _id;
+                          category: _id,
+                          image: imageHead._id,
+                          rejectedCategories: dataCategories.categories
+                            .filter(category => {
+                              return category._id !== _id;
                             })
                             .map(({ _id }) => _id),
                         },

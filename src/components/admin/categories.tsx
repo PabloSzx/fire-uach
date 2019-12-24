@@ -1,5 +1,5 @@
-import { intersectionBy, isEqual } from "lodash";
-import { ChangeEvent, FC, useCallback, useMemo } from "react";
+import { isEqual } from "lodash";
+import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
 import Select from "react-select";
 import { useSetState } from "react-use";
 import { useRememberState } from "use-remember-state";
@@ -89,11 +89,10 @@ const AdminCategories: FC = () => {
     FC<{
       _id: string;
       name: string;
-      tags: { _id: string; name: string }[];
     }>
   >(
-    ({ _id, ...categoryProp }) => {
-      const [data, setData] = useSetState(categoryProp);
+    ({ _id, name }) => {
+      const [dataName, setDataName] = useState(name);
 
       return (
         <Stack key={_id} align="center" spacing="2em" p={2}>
@@ -102,70 +101,25 @@ const AdminCategories: FC = () => {
               <Text>Nombre Categoría</Text>
             </InputLeftAddon>
             <Input
-              value={data.name}
+              value={dataName}
               onChange={({
                 target: { value },
               }: ChangeEvent<HTMLInputElement>) => {
-                setData({ name: value });
+                setDataName(value);
               }}
             />
           </InputGroup>
-          <Box
-            width="100%"
-            pl={10}
-            pr={10}
-            key={"0" + categoryProp.tags.map(({ name }) => name).join("")}
-          >
-            <Tag>
-              <Text>Etiquetas posibles</Text>
-            </Tag>
-            <Select<{ value: string; label: string }>
-              value={data.tags.map(({ _id, name }) => {
-                return {
-                  label: name,
-                  value: _id,
-                };
-              })}
-              options={dataAllTags?.tags.map(({ _id, name }) => {
-                return {
-                  label: name,
-                  value: _id,
-                };
-              })}
-              isMulti
-              onChange={(selected: any) => {
-                const selectedTags =
-                  (selected as {
-                    label: string;
-                    value: string;
-                  }[])?.map(({ value, label }) => {
-                    return {
-                      _id: value,
-                      name: label,
-                    };
-                  }) ?? [];
-                setData({
-                  tags: selectedTags,
-                });
-              }}
-              placeholder="Seleccionar posibles etiquetas"
-              noOptionsMessage={() => "No hay etiquetas disponibles"}
-            />
-          </Box>
 
           <Box>
             <Button
               isLoading={loadingEditCategory}
               onClick={() => {
-                if (data.name) {
+                if (dataName) {
                   editCategory({
                     variables: {
                       data: {
                         _id,
-                        name: data.name,
-                        tags: data.tags.map(({ _id }) => {
-                          return _id;
-                        }),
+                        name: dataName,
                       },
                     },
                   });
@@ -174,7 +128,7 @@ const AdminCategories: FC = () => {
                 }
               }}
               variantColor="blue"
-              isDisabled={loadingEditCategory || isEqual(categoryProp, data)}
+              isDisabled={loadingEditCategory || dataName === name}
             >
               Guardar cambios
             </Button>

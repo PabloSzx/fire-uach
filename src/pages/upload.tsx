@@ -19,16 +19,11 @@ import {
 
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
-import {
-  CATEGORIES_OPTIONS,
-  EDIT_OWN_IMAGE,
-  UPLOAD_IMAGE,
-} from "../graphql/queries";
+import { CATEGORIES_OPTIONS, UPLOAD_IMAGE } from "../graphql/queries";
 
 const UploadPage: NextPage = () => {
   const { loading: loadingUser, refetch, user } = useUser("/upload");
 
-  const { data: dataCategoriesOptions } = useQuery(CATEGORIES_OPTIONS);
   const [
     uploadImage,
     { data: uploadedImageData, loading: loadingUpload, error: errorUpload },
@@ -37,8 +32,6 @@ const UploadPage: NextPage = () => {
       await refetch();
     },
   });
-
-  const [editOwnImage] = useMutation(EDIT_OWN_IMAGE);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: ["image/png", "image/jpeg"],
@@ -53,14 +46,6 @@ const UploadPage: NextPage = () => {
     },
     multiple: user.admin ?? false,
   });
-
-  const [categoriesSelected, setCategoriesSelected] = useState<
-    { _id: string; name: string }[]
-  >([]);
-
-  useUpdateEffect(() => {
-    setCategoriesSelected(uploadedImageData?.uploadImage.categories ?? []);
-  }, [uploadedImageData]);
 
   if (loadingUser) {
     return <LoadingPage />;
@@ -85,7 +70,7 @@ const UploadPage: NextPage = () => {
         {loadingUpload ? (
           <Spinner />
         ) : (
-          uploadedImageData?.uploadImage.filename && (
+          uploadedImageData?.uploadImage[0]?.filename && (
             <>
               <Image
                 objectFit="contain"
@@ -93,57 +78,8 @@ const UploadPage: NextPage = () => {
                 height="100%"
                 maxH="60vh"
                 maxW="90vw"
-                src={`/api/images/${uploadedImageData.uploadImage.filename}`}
+                src={`/api/images/${uploadedImageData.uploadImage[0].filename}`}
               />
-              <Stack align="center">
-                <Badge>Categorías</Badge>
-                <Box width="100%" minW="50vw">
-                  <Select
-                    value={categoriesSelected.map(({ _id, name }) => {
-                      return {
-                        label: name,
-                        value: _id,
-                      };
-                    })}
-                    options={
-                      dataCategoriesOptions?.categories.map(({ _id, name }) => {
-                        return {
-                          label: name,
-                          value: _id,
-                        };
-                      }) ?? []
-                    }
-                    isMulti
-                    onChange={(selected: any) => {
-                      const selectedCategories =
-                        (selected as {
-                          label: string;
-                          value: string;
-                        }[])?.map(({ value, label }) => {
-                          return {
-                            _id: value,
-                            name: label,
-                          };
-                        }) ?? [];
-                      setCategoriesSelected(selectedCategories);
-                      editOwnImage({
-                        variables: {
-                          data: {
-                            _id: uploadedImageData.uploadImage._id,
-                            categories: selectedCategories.map(
-                              ({ _id }) => _id
-                            ),
-                          },
-                        },
-                      });
-                    }}
-                    placeholder="Específicar categoría"
-                    noOptionsMessage={() =>
-                      "Cargando categorías disponibles..."
-                    }
-                  />
-                </Box>
-              </Stack>
             </>
           )
         )}

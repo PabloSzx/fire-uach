@@ -1,8 +1,6 @@
-import { chunk, isEqual, toInteger } from "lodash";
-import { FC, useMemo } from "react";
+import { chunk, toInteger } from "lodash";
+import { FC, useMemo, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
-import Select from "react-select";
-import { useSetState } from "react-use";
 import { Checkbox, Icon, Pagination } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
@@ -19,16 +17,7 @@ import {
 } from "../../graphql/adminQueries";
 import { Confirm } from "../Confirm";
 
-const ImageEdit: FC<IImage> = ({
-  _id,
-  filename,
-  uploader,
-  validated,
-  categories: categoriesProp,
-}) => {
-  const categories = categoriesProp.map(({ _id, name }) => ({ _id, name }));
-  const { data: dataAllCategories } = useQuery(CATEGORIES);
-
+const ImageEdit: FC<IImage> = ({ _id, filename, uploader, validated }) => {
   const [editImage, { loading: loadingEditImage }] = useMutation(EDIT_IMAGE);
   const [removeImage, { loading: loadingRemoveImage }] = useMutation(
     REMOVE_IMAGE,
@@ -46,10 +35,7 @@ const ImageEdit: FC<IImage> = ({
     }
   );
 
-  const [data, setData] = useSetState({
-    validated,
-    categories,
-  });
+  const [isValidated, setIsValidated] = useState(validated);
 
   return (
     <Stack
@@ -96,52 +82,15 @@ const ImageEdit: FC<IImage> = ({
         <Tag>Vista pública</Tag>
         <Checkbox
           toggle
-          checked={data.validated}
+          checked={isValidated}
           onChange={(_e, { checked }) => {
             if (checked !== undefined) {
-              setData({
-                validated: checked,
-              });
+              setIsValidated(checked);
             }
           }}
         />
       </Flex>
-      <Box width="100%" key={categoriesProp.map(({ name }) => name).join("")}>
-        <Select<{ value: string; label: string }>
-          value={data.categories.map(({ _id, name }) => {
-            return {
-              value: _id,
-              label: name,
-            };
-          })}
-          options={
-            dataAllCategories?.categories.map(({ _id, name }) => {
-              return {
-                label: name,
-                value: _id,
-              };
-            }) ?? []
-          }
-          isMulti
-          onChange={(selected: any) => {
-            const selectedCategories =
-              (selected as {
-                label: string;
-                value: string;
-              }[])?.map(({ value, label }) => {
-                return {
-                  _id: value,
-                  name: label,
-                };
-              }) ?? [];
-            setData({
-              categories: selectedCategories,
-            });
-          }}
-          placeholder="Seleccionar categorías"
-          noOptionsMessage={() => "No hay categorías disponibles"}
-        />
-      </Box>
+
       <Box>
         <Button
           isLoading={loadingEditImage}
@@ -150,20 +99,13 @@ const ImageEdit: FC<IImage> = ({
               variables: {
                 data: {
                   _id,
-                  validated: data.validated,
-                  categories: data.categories.map(({ _id }) => _id),
+                  validated: isValidated,
                 },
               },
             });
           }}
           variantColor="blue"
-          isDisabled={
-            loadingEditImage ||
-            isEqual(data, {
-              validated,
-              categories,
-            })
-          }
+          isDisabled={loadingEditImage || validated === isValidated}
         >
           Guardar cambios
         </Button>

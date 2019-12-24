@@ -20,19 +20,6 @@ export class CategoryResolver {
     });
   }
 
-  @Authorized()
-  @Query(() => [Category])
-  async notAnsweredCategories(@Ctx() { user }: IContext) {
-    if (user) {
-      return shuffle(
-        await CategoryModel.find({
-          active: true,
-        })
-      );
-    }
-    return [];
-  }
-
   @Authorized([ADMIN])
   @Mutation(() => [Category])
   async createCategory(@Arg("data") { name }: CreateCategory) {

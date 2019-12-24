@@ -105,14 +105,14 @@ type Mutation {
   createCategory(data: CreateCategory!): [Category!]!
   editCategory(data: EditCategory!): [Category!]!
   removeCategory(data: RemoveCategory!): [Category!]!
-  uploadImage(file: Upload!): Image!
+  uploadImage(file: Upload!): [Image!]!
   editImage(data: EditImage!): [Image!]!
   removeImage(data: RemoveImage!): [Image!]!
   createTag(data: CreateTag!): [Tag!]!
   editTag(data: EditTag!): [Tag!]!
   removeTag(data: RemoveTag!): [Tag!]!
-  answerTagAssociation(data: TagCategoryAssociationAnswer!): [Tag!]!
-  answerTagImageAssociation(onlyValidated: Boolean = true, data: CategoryImageAssociationAnswer!): [Image!]
+  answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): [Tag!]!
+  answerCategoryImageAssociation(onlyValidated: Boolean = true, data: CategoryImageAssociationAnswer!): [Image!]
   editUser(data: EditUser!): [User!]!
   removeUser(id: ObjectId!): [User!]!
 }
@@ -123,15 +123,14 @@ scalar ObjectId
 type Query {
   currentUser: User
   categories: [Category!]!
-  notAnsweredCategories: [Category!]!
   image(id: ObjectId!): Image
   images: [Image!]!
   validatedImages: [Image!]!
   ownImages: Image
   tags: [Tag!]!
-  resultsTagAssociations: [TagCategoryAssociation!]!
+  resultsTagCategoryAssociations: [TagCategoryAssociation!]!
   notAnsweredTags: [Tag!]!
-  resultsTagImageAssociations: [CategoryImageAssociation!]!
+  resultsCategoryImageAssociations: [CategoryImageAssociation!]!
   notAnsweredImages(onlyValidated: Boolean = true): [Image!]!
   allUsers: [User!]!
 }
@@ -200,8 +199,8 @@ type User {
   fireRelatedSpecify: String!
   locked: Boolean!
   imagesUploaded: [Image!]!
-  tagAssociations: [TagCategoryAssociation!]!
-  tagImageAssociations: [CategoryImageAssociation!]!
+  tagCategoryAssociations: [TagCategoryAssociation!]!
+  categoryImageAssociations: [CategoryImageAssociation!]!
 }
 
 enum UserType {

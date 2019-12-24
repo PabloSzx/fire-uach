@@ -21,11 +21,7 @@ export const buildContext = async ({
     if (authorizationToken) {
       const userJWT = verify(authorizationToken, SECRET) as { _id: string };
       const foundUser = await UserModel.findById(userJWT._id);
-      if (foundUser && !foundUser.locked) {
-        if (!foundUser.active) {
-          foundUser.active = true;
-          foundUser.save().then(() => {});
-        }
+      if (foundUser && !foundUser.locked && foundUser.active) {
         user = foundUser;
         token = AuthResolver.authenticate({
           req,

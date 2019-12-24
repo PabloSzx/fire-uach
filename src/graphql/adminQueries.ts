@@ -5,17 +5,12 @@ import { UserType } from "../../constants";
 export type ICategories = {
   _id: string;
   name: string;
-  tags: { _id: string; name: string }[];
 }[];
 
-const CategoryFragment = gql`
+export const CategoryFragment = gql`
   fragment CategoryFragment on Category {
     _id
     name
-    tags {
-      _id
-      name
-    }
   }
 `;
 export const CATEGORIES: DocumentNode<{
@@ -66,7 +61,7 @@ export const EDIT_CATEGORY: DocumentNode<
     editCategory: ICategories;
   },
   {
-    data: { _id: string; name: string; tags: string[] };
+    data: { _id: string; name: string };
   }
 > = gql`
   mutation($data: EditCategory!) {
@@ -77,17 +72,17 @@ export const EDIT_CATEGORY: DocumentNode<
   ${CategoryFragment}
 `;
 
-export type ITags = {
+export type ITag = {
   _id: string;
   name: string;
-  possibleTagAssociations: { _id: string; name: string }[];
-}[];
+  categories: { _id: string; name: string }[];
+};
 
 const TagFragment = gql`
   fragment TagFragment on Tag {
     _id
     name
-    possibleTagAssociations {
+    categories {
       _id
       name
     }
@@ -95,7 +90,7 @@ const TagFragment = gql`
 `;
 
 export const TAGS: DocumentNode<{
-  tags: ITags;
+  tags: ITag[];
 }> = gql`
   query {
     tags {
@@ -107,7 +102,7 @@ export const TAGS: DocumentNode<{
 
 export const CREATE_TAG: DocumentNode<
   {
-    createTag: ITags;
+    createTag: ITag[];
   },
   {
     data: {
@@ -125,7 +120,7 @@ export const CREATE_TAG: DocumentNode<
 
 export const REMOVE_TAG: DocumentNode<
   {
-    removeTag: ITags;
+    removeTag: ITag[];
   },
   {
     data: {
@@ -143,13 +138,13 @@ export const REMOVE_TAG: DocumentNode<
 
 export const EDIT_TAG: DocumentNode<
   {
-    editTag: ITags;
+    editTag: ITag[];
   },
   {
     data: {
       _id: string;
       name: string;
-      possibleTagAssociations: string[];
+      categories: string[];
     };
   }
 > = gql`
@@ -165,7 +160,6 @@ export type IImage = {
   _id: string;
   filename: string;
   validated: boolean;
-  categories: { _id: string; name: string }[];
   uploader?: { _id: string; email: string };
 };
 
@@ -174,10 +168,6 @@ const ImageFragment = gql`
     _id
     filename
     validated
-    categories {
-      _id
-      name
-    }
     uploader {
       _id
       email
@@ -204,7 +194,6 @@ export const EDIT_IMAGE: DocumentNode<
     data: {
       _id: string;
       validated: boolean;
-      categories: string[];
     };
   }
 > = gql`
@@ -247,39 +236,35 @@ export type IUser = {
     _id: string;
     filename: string;
   }[];
-  tagAssociations: {
+  tagCategoryAssociations: {
     _id: string;
-    tagMain?: {
-      _id: string;
-      name: string;
-    };
-    tagChosen?: {
-      _id: string;
-      name: string;
-    };
-    rejectedTags: {
-      _id: string;
-      name: string;
-    }[];
-  }[];
-  tagImageAssociations: {
-    _id: string;
-    category?: {
-      _id: string;
-      name: string;
-    };
     tag?: {
       _id: string;
       name: string;
     };
-    rejectedTags: {
+    categoryChosen?: {
+      _id: string;
+      name: string;
+    };
+    rejectedCategories: {
       _id: string;
       name: string;
     }[];
+  }[];
+  categoryImageAssociations: {
+    _id: string;
     image?: {
       _id: string;
       filename: string;
     };
+    category?: {
+      _id: string;
+      name: string;
+    };
+    rejectedCategories: {
+      _id: string;
+      name: string;
+    }[];
   }[];
 };
 
@@ -297,38 +282,34 @@ const UserFragment = gql`
       _id
       filename
     }
-    tagAssociations {
+    tagCategoryAssociations {
       _id
-      tagMain {
-        _id
-        name
-      }
-      tagChosen {
-        _id
-        name
-      }
-      rejectedTags {
-        _id
-        name
-      }
-    }
-    tagImageAssociations {
-      _id
-      category {
-        _id
-        name
-      }
       tag {
         _id
         name
       }
-      rejectedTags {
+      categoryChosen {
         _id
         name
       }
+      rejectedCategories {
+        _id
+        name
+      }
+    }
+    categoryImageAssociations {
+      _id
       image {
         _id
         filename
+      }
+      category {
+        _id
+        name
+      }
+      rejectedCategories {
+        _id
+        name
       }
     }
   }

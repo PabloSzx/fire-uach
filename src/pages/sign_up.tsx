@@ -348,7 +348,7 @@ const SignUpPage: NextPage = () => {
                     size="lg"
                     isLoading={isSubmitting}
                     variantColor="blue"
-                    isDisabled={!dirty || !isValid}
+                    isDisabled={!values.password || !isValid}
                   >
                     Registrarse
                   </Button>

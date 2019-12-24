@@ -70,7 +70,7 @@ export class CategoryImageAssociationResolver {
 
   @Authorized([ADMIN])
   @Query(() => [CategoryImageAssociation])
-  async resultsTagImageAssociations() {
+  async resultsCategoryImageAssociations() {
     return await CategoryImageAssociationModel.find({});
   }
 
@@ -84,7 +84,7 @@ export class CategoryImageAssociationResolver {
 
   @Authorized()
   @Mutation(() => [Image], { nullable: true })
-  async answerTagImageAssociation(
+  async answerCategoryImageAssociation(
     @Ctx() { user }: IContext,
     @Arg("data")
     { image, category, rejectedCategories }: CategoryImageAssociationAnswer,
