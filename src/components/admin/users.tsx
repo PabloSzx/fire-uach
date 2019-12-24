@@ -55,14 +55,15 @@ import {
 import { userTypeToText } from "../../utils/enums";
 import { Confirm } from "../Confirm";
 
-function defaultUserType(type: string): UserType {
+function defaultUserType(type?: string): UserType | undefined {
   switch (type) {
     case UserType.scientificOrAcademic:
     case UserType.professional:
     case UserType.student:
+    case UserType.other:
       return type;
     default:
-      return UserType.other;
+      return undefined;
   }
 }
 

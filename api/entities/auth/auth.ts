@@ -23,8 +23,8 @@ export class SignUpInput {
   @IsHash("sha256", { message: "password must be a hash" })
   password: string;
 
-  @Field(() => UserType)
-  type: UserType;
+  @Field(() => UserType, { nullable: true })
+  type?: UserType;
 
   @Field()
   typeSpecify: string;

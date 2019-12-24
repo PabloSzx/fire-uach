@@ -101,7 +101,7 @@ const SignUpPage: NextPage = () => {
               return "";
             }
           })(),
-          type: UserType.other,
+          type: undefined as UserType | undefined,
           typeSpecify: "",
           fireRelated: false,
           fireRelatedSpecify: "",
@@ -348,7 +348,7 @@ const SignUpPage: NextPage = () => {
                     size="lg"
                     isLoading={isSubmitting}
                     variantColor="blue"
-                    isDisabled={!isValid}
+                    isDisabled={!dirty || !isValid}
                   >
                     Registrarse
                   </Button>

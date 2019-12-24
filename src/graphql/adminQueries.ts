@@ -238,7 +238,7 @@ export type IUser = {
   _id: string;
   email: string;
   admin: boolean;
-  type: UserType;
+  type?: UserType;
   typeSpecify: string;
   fireRelated: boolean;
   fireRelatedSpecify: string;
@@ -353,7 +353,7 @@ export const EDIT_USER: DocumentNode<
     data: {
       _id: string;
       admin: boolean;
-      type: UserType;
+      type?: UserType;
       typeSpecify: string;
       fireRelated: boolean;
       fireRelatedSpecify: string;

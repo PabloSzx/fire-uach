@@ -1,6 +1,6 @@
 import { UserType } from "../../constants";
 
-export function userTypeToText(type: UserType): string {
+export function userTypeToText(type?: UserType | null): string {
   switch (type) {
     case UserType.student:
       return "Estudiante";
@@ -9,7 +9,8 @@ export function userTypeToText(type: UserType): string {
     case UserType.professional:
       return "Profesional";
     case UserType.other:
-    default:
       return "Otros";
+    default:
+      return "Indefinido";
   }
 }
