@@ -117,7 +117,7 @@ const AdminCategories: FC = () => {
             key={"0" + categoryProp.tags.map(({ name }) => name).join("")}
           >
             <Tag>
-              <Text>Tags posibles</Text>
+              <Text>Etiquetas posibles</Text>
             </Tag>
             <Select<{ value: string; label: string }>
               value={data.tags.map(({ _id, name }) => {
@@ -148,8 +148,8 @@ const AdminCategories: FC = () => {
                   tags: selectedTags,
                 });
               }}
-              placeholder="Seleccionar posibles tags"
-              noOptionsMessage={() => "No hay tags disponibles"}
+              placeholder="Seleccionar posibles etiquetas"
+              noOptionsMessage={() => "No hay etiquetas disponibles"}
             />
           </Box>
 

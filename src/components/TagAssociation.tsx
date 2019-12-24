@@ -1,6 +1,6 @@
 import { head } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useMemo, useState } from "react";
+import { FC, useMemo } from "react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Badge, Box, Flex, Stack, Tag } from "@chakra-ui/core";

@@ -36,7 +36,7 @@ const AdminDashboard: FC = () => {
           <Tab>Usuarios</Tab>
           <Tab>Imágenes</Tab>
           <Tab>Categorías</Tab>
-          <Tab>Tags</Tab>
+          <Tab>Etiquetas</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>

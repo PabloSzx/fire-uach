@@ -99,7 +99,7 @@ const AdminTags: FC = () => {
         <Stack align="center" spacing="2em" p={2}>
           <InputGroup>
             <InputLeftAddon>
-              <Text>Nombre tag</Text>
+              <Text>Nombre etiqueta</Text>
             </InputLeftAddon>
             <Input
               value={data.name}
@@ -120,7 +120,7 @@ const AdminTags: FC = () => {
           >
             <Tag textAlign="center">
               <Text justifyContent="center" textAlign="center">
-                Asociaciones de Tags posibles
+                Asociaciones de Etiquetas posibles
               </Text>
             </Tag>
             <Select<{ value: string; label: string }>
@@ -156,8 +156,8 @@ const AdminTags: FC = () => {
                   possibleTagAssociations: selectedPossibleTags,
                 });
               }}
-              placeholder="Seleccionar posibles asociaciones de tag"
-              noOptionsMessage={() => "No hay tags disponibles"}
+              placeholder="Seleccionar posibles asociaciones de etiqueta"
+              noOptionsMessage={() => "No hay etiquetas disponibles"}
             />
           </Box>
 
@@ -180,7 +180,7 @@ const AdminTags: FC = () => {
                     },
                   });
                 } else {
-                  alert("Favor especificar nombre para editar un tag");
+                  alert("Favor especificar nombre para editar una etiqueta");
                 }
               }}
               variantColor="blue"
@@ -191,7 +191,7 @@ const AdminTags: FC = () => {
           </Box>
           <Box>
             <Confirm
-              content={`¿Está seguro que desea eliminar el tag ${name}?`}
+              content={`¿Está seguro que desea eliminar la etiqueta ${name}?`}
               confirmButton="Estoy seguro"
               cancelButton="Cancelar"
             >
@@ -209,7 +209,7 @@ const AdminTags: FC = () => {
                 isLoading={loadingRemoveTag}
                 isDisabled={loadingRemoveTag}
               >
-                Eliminar tag
+                Eliminar etiqueta
               </Button>
             </Confirm>
           </Box>
@@ -230,7 +230,7 @@ const AdminTags: FC = () => {
       <Stack align="center">
         <InputGroup>
           <InputLeftAddon>
-            <Text>Tag nuevo</Text>
+            <Text>Etiqueta nueva</Text>
           </InputLeftAddon>
           <Input
             value={newTag}
@@ -256,7 +256,7 @@ const AdminTags: FC = () => {
           }}
           variantColor="green"
         >
-          Crear tag nuevo
+          Crear etiqueta nueva
         </Button>
       </Stack>
     </Stack>

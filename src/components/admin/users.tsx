@@ -344,8 +344,8 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                 >
                   <TabList>
                     <Tab>Imágenes subidas</Tab>
-                    <Tab>Asociaciones de Tags</Tab>
-                    <Tab>Asociaciones de Imagenes - Tags</Tab>
+                    <Tab>Asociaciones de Etiquetas</Tab>
+                    <Tab>Asociaciones de Imagenes - Etiquetas</Tab>
                   </TabList>
                   <TabPanels>
                     <TabPanel>
