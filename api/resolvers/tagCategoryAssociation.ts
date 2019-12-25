@@ -1,6 +1,5 @@
 import { compact, shuffle } from "lodash";
 import { ObjectId } from "mongodb";
-import ms from "ms";
 import {
   Arg,
   Authorized,
@@ -110,14 +109,6 @@ export class TagCategoryAssociationResolver {
         new: true,
       }
     );
-
-    if (process.env.NODE_ENV === "developmentzxc") {
-      setTimeout(async () => {
-        const result = await TagCategoryAssociationModel.deleteMany({});
-        if ((result?.deletedCount ?? 0) > 0)
-          console.log("TagCategoryAssociation Reset");
-      }, ms("5 seconds"));
-    }
 
     return await this.notAnsweredTagsQuery(user._id);
   }

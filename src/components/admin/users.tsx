@@ -442,28 +442,35 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                         {tagCategoryAssociations.length === 0 ? (
                           <Text pt={3}>Sin asociaciones realizadas</Text>
                         ) : (
-                          <Stack
-                            align="center"
-                            cursor="pointer"
-                            border="1px solid"
-                            mt={3}
-                            p={2}
-                            onClick={async () => {
-                              await resetTagCategoryAssociations({
-                                variables: {
-                                  user: _id,
-                                },
-                              });
-                            }}
+                          <Confirm
+                            content={`Todos las asociaciones de etiqueta del usuario ${email} serán eliminadas`}
+                            header="¿Estás seguro que deseas eliminar todas las asociaciones de etiqueta de este usuario?"
+                            confirmButton="Estoy seguro"
+                            cancelButton="Cancelar"
                           >
-                            <IconButton
-                              icon="delete"
-                              aria-label="Reset tag category associations"
-                            />
-                            <Text>
-                              Resetear asociaciones de etiqueta - categoría
-                            </Text>
-                          </Stack>
+                            <Stack
+                              align="center"
+                              cursor="pointer"
+                              border="1px solid"
+                              mt={3}
+                              p={2}
+                              onClick={async () => {
+                                await resetTagCategoryAssociations({
+                                  variables: {
+                                    user: _id,
+                                  },
+                                });
+                              }}
+                            >
+                              <IconButton
+                                icon="delete"
+                                aria-label="Reset tag category associations"
+                              />
+                              <Text>
+                                Resetear asociaciones de etiqueta - categoría
+                              </Text>
+                            </Stack>
+                          </Confirm>
                         )}
                         {tagCategoryAssociations.map((tagAssoc, key) => {
                           return (
@@ -531,28 +538,35 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                         {categoryImageAssociations.length === 0 ? (
                           <Text pt={3}>Sin asociaciones realizadas</Text>
                         ) : (
-                          <Stack
-                            align="center"
-                            cursor="pointer"
-                            border="1px solid"
-                            mt={3}
-                            p={2}
-                            onClick={async () => {
-                              await resetCategoryImageAssociations({
-                                variables: {
-                                  user: _id,
-                                },
-                              });
-                            }}
+                          <Confirm
+                            content={`Todos las asociaciones de imagen del usuario ${email} serán eliminadas`}
+                            header="¿Estás seguro que deseas eliminar todas las asociaciones de imagen de este usuario?"
+                            confirmButton="Estoy seguro"
+                            cancelButton="Cancelar"
                           >
-                            <IconButton
-                              icon="delete"
-                              aria-label="Reset category image associations"
-                            />
-                            <Text>
-                              Resetear asociaciones de imagen - categoría
-                            </Text>
-                          </Stack>
+                            <Stack
+                              align="center"
+                              cursor="pointer"
+                              border="1px solid"
+                              mt={3}
+                              p={2}
+                              onClick={async () => {
+                                await resetCategoryImageAssociations({
+                                  variables: {
+                                    user: _id,
+                                  },
+                                });
+                              }}
+                            >
+                              <IconButton
+                                icon="delete"
+                                aria-label="Reset category image associations"
+                              />
+                              <Text>
+                                Resetear asociaciones de imagen - categoría
+                              </Text>
+                            </Stack>
+                          </Confirm>
                         )}
                         {categoryImageAssociations.map((catImgAssoc, key) => {
                           return (

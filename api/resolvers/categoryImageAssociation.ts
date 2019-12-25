@@ -1,6 +1,5 @@
 import { compact, shuffle } from "lodash";
 import { ObjectId } from "mongodb";
-import ms from "ms";
 import {
   Arg,
   Authorized,
@@ -125,14 +124,6 @@ export class CategoryImageAssociationResolver {
         new: true,
       }
     );
-
-    if (process.env.NODE_ENV === "developmentzxc") {
-      setTimeout(async () => {
-        const result = await CategoryImageAssociationModel.deleteMany({});
-        if ((result?.deletedCount ?? 0) > 0)
-          console.log("CategoryImageAssociation Reset");
-      }, ms("5 seconds"));
-    }
 
     return await this.notAnsweredImagesQuery(onlyValidated, user._id);
   }
