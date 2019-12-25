@@ -120,7 +120,7 @@ export class ImageResolver {
   }
 
   @Authorized()
-  @Query(() => Image, { nullable: true })
+  @Query(() => [Image])
   async ownImages(@Ctx() { user }: IContext) {
     return await ImageModel.find({
       uploader: user?._id,

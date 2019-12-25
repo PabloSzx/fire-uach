@@ -1,7 +1,8 @@
 import { head, shuffle } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
+import { useLogger } from "react-use";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
@@ -36,7 +37,7 @@ export const CategoryImageAssociation: FC<{
   const { data: dataCategories } = useQuery(CATEGORIES_OPTIONS);
   const [
     answerCategoryImageAssociation,
-    { loading: loadingAnswer },
+    { loading: loadingAnswer, data: dataAnswer },
   ] = useMutation(ANSWER_CATEGORY_IMAGE_ASSOCIATION, {
     update: (cache, { data }) => {
       if (data?.answerCategoryImageAssociation) {

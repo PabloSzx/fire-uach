@@ -77,6 +77,17 @@ export const SIGN_UP: DocumentNode<
   ${CurrentUserFragment}
 `;
 
+export const OWN_IMAGES: DocumentNode<{
+  ownImages: { _id: string; filename: string }[];
+}> = gql`
+  query {
+    ownImages {
+      _id
+      filename
+    }
+  }
+`;
+
 export const UPLOAD_IMAGE: DocumentNode<
   {
     uploadImage: {
@@ -151,8 +162,8 @@ export const ANSWER_CATEGORY_IMAGE_ASSOCIATION: DocumentNode<
     };
   }
 > = gql`
-  mutation($data: CategoryImageAssociationAnswer!) {
-    answerCategoryImageAssociation(data: $data) {
+  mutation($onlyValidated: Boolean!, $data: CategoryImageAssociationAnswer!) {
+    answerCategoryImageAssociation(data: $data, onlyValidated: $onlyValidated) {
       _id
       filename
     }

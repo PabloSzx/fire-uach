@@ -104,10 +104,9 @@ export class CategoryImageAssociationResolver {
     @Ctx() { user }: IContext,
     @Arg("data")
     { image, category, rejectedCategories }: CategoryImageAssociationAnswer,
-    @Arg("onlyValidated", { defaultValue: true }) onlyValidated: boolean
+    @Arg("onlyValidated") onlyValidated: boolean
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
-
     await CategoryImageAssociationModel.create({
       user: user._id,
       category,
