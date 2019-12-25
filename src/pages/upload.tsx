@@ -92,7 +92,7 @@ const UploadPage: NextPage = () => {
     if (loadingUploadImage.loading || loadingUploadImage.value) {
       return (
         <Stack align="center">
-          <Text>Subiendo imágen...</Text>
+          <Text>Cargando...</Text>
           <Spinner
             thickness="4px"
             speed="0.65s"
