@@ -461,7 +461,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                               aria-label="Reset tag category associations"
                             />
                             <Text>
-                              Resetear asociaciones de tag - categoría
+                              Resetear asociaciones de etiqueta - categoría
                             </Text>
                           </Stack>
                         )}
