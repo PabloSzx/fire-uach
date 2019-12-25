@@ -1,5 +1,6 @@
 import { compact, shuffle } from "lodash";
 import { ObjectId } from "mongodb";
+import ms from "ms";
 import {
   Arg,
   Authorized,
@@ -25,8 +26,6 @@ import { Tag, TagModel } from "../entities/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
-
-import ms = require("ms");
 
 @Resolver(() => TagCategoryAssociation)
 export class TagCategoryAssociationResolver {
@@ -97,12 +96,20 @@ export class TagCategoryAssociationResolver {
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
 
-    await TagCategoryAssociationModel.create({
-      user: user._id,
-      tag,
-      categoryChosen,
-      rejectedCategories,
-    });
+    await TagCategoryAssociationModel.findOneAndUpdate(
+      {
+        user: user._id,
+        tag,
+      },
+      {
+        categoryChosen,
+        rejectedCategories,
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
     setTimeout(async () => {
       const result = await TagCategoryAssociationModel.deleteMany({});

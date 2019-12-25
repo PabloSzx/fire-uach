@@ -21,9 +21,19 @@ export class CategoryResolver {
   @Authorized([ADMIN])
   @Mutation(() => [Category])
   async createCategory(@Arg("data") { name }: CreateCategory) {
-    await CategoryModel.create({
-      name,
-    });
+    await CategoryModel.findOneAndUpdate(
+      {
+        name,
+      },
+      {
+        name,
+        active: true,
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
     return await CategoryModel.find({
       active: true,

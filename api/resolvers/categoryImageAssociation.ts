@@ -1,5 +1,6 @@
 import { compact, shuffle } from "lodash";
 import { ObjectId } from "mongodb";
+import ms from "ms";
 import {
   Arg,
   Authorized,
@@ -22,7 +23,6 @@ import {
 import { UserModel } from "../entities/auth/user";
 import { CategoryModel } from "../entities/category";
 import { Image, ImageModel } from "../entities/image";
-import { TagModel } from "../entities/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
@@ -107,12 +107,20 @@ export class CategoryImageAssociationResolver {
     @Arg("onlyValidated") onlyValidated: boolean
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
-    await CategoryImageAssociationModel.create({
-      user: user._id,
-      category,
-      rejectedCategories,
-      image,
-    });
+    await CategoryImageAssociationModel.findOneAndUpdate(
+      {
+        user: user._id,
+        image,
+      },
+      {
+        category,
+        rejectedCategories,
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
     setTimeout(async () => {
       const result = await CategoryImageAssociationModel.deleteMany({});

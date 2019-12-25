@@ -27,15 +27,28 @@ export class TagResolver {
   @Authorized([ADMIN])
   @Mutation(() => [Tag])
   async createTag(@Arg("data") { name }: CreateTag) {
-    await TagModel.create({
-      name,
-      categories: (
-        await CategoryModel.find({
+    const categories = (
+      await CategoryModel.find(
+        {
           active: true,
-          select: "_id",
-        })
-      ).map(({ _id }) => _id),
-    });
+        },
+        "_id"
+      )
+    ).map(({ _id }) => _id);
+    await TagModel.findOneAndUpdate(
+      {
+        name,
+      },
+      {
+        name,
+        categories,
+        active: true,
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
     return await TagModel.find({
       active: true,
