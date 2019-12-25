@@ -1,7 +1,8 @@
-import { isEqual, isEqualWith } from "lodash";
-import { ChangeEvent, FC, useMemo, useState } from "react";
+import { chunk, isEqual, toInteger } from "lodash";
+import { ChangeEvent, FC, memo, useMemo } from "react";
 import Select from "react-select";
-import { useDebounce, useSetState } from "react-use";
+import { useSetState } from "react-use";
+import { Pagination } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -183,7 +184,7 @@ const TagEdit: FC<ITag> = ({ _id, name, categories }) => {
   );
 };
 
-const NewTag: FC = () => {
+const NewTag: FC = memo(() => {
   const [newTag, setNewTag] = useRememberState("new_tag_input", "");
 
   const [createTag, { loading: loadingCreateTag }] = useMutation(CREATE_TAG, {
@@ -231,19 +232,36 @@ const NewTag: FC = () => {
       </Button>
     </Stack>
   );
-};
+});
 
 const AdminTags: FC = () => {
   const { data: dataAllTags, loading: loadingAllTags } = useQuery(TAGS, {
     fetchPolicy: "cache-and-network",
   });
 
+  const [activePage, setActivePage] = useRememberState(
+    "active_page_admin_tags",
+    1
+  );
+  const paginatedTags = useMemo(() => {
+    return chunk(dataAllTags?.tags ?? [], 10);
+  }, [dataAllTags]);
+
   return (
-    <Stack align="center" pt={5}>
+    <Stack align="center" pt={5} spacing={5}>
       <Divider borderBottom="1px solid" width="100%" />
       {loadingAllTags && <Spinner />}
 
-      {dataAllTags?.tags.map(({ _id, name, categories }) => {
+      <Box m={3}>
+        <Pagination
+          activePage={activePage}
+          onPageChange={(_e, { activePage }) => {
+            setActivePage(toInteger(activePage));
+          }}
+          totalPages={paginatedTags.length}
+        />
+      </Box>
+      {paginatedTags[activePage - 1]?.map(({ _id, name, categories }) => {
         return (
           <TagEdit
             key={_id}
