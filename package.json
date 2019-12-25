@@ -39,6 +39,7 @@
     "encodeurl": "^1.0.2",
     "express": "^4.17.1",
     "formik": "^2.0.8",
+    "framer-motion": "^1.7.0",
     "graphql": "^14.5.8",
     "graphql-scalars": "^1.0.4",
     "graphql-tag-ts": "^0.1.12",

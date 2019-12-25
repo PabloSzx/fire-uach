@@ -25,6 +25,8 @@ import { Tag, TagModel } from "../entities/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 
+import ms = require("ms");
+
 @Resolver(() => TagCategoryAssociation)
 export class TagCategoryAssociationResolver {
   async notAnsweredTagsQuery(user?: ObjectId) {
@@ -87,6 +89,12 @@ export class TagCategoryAssociationResolver {
       categoryChosen,
       rejectedCategories,
     });
+
+    setTimeout(async () => {
+      const result = await TagCategoryAssociationModel.deleteMany({});
+      if ((result?.deletedCount ?? 0) > 0)
+        console.log("TagCategoryAssociation Reset");
+    }, ms("5 seconds"));
 
     return await this.notAnsweredTagsQuery(user._id);
   }
