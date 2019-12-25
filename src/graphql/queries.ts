@@ -157,7 +157,7 @@ export const ANSWER_CATEGORY_IMAGE_ASSOCIATION: DocumentNode<
     onlyValidated: boolean;
     data: {
       image: string;
-      category?: string;
+      categoriesChosen?: string[];
       rejectedCategories: string[];
     };
   }

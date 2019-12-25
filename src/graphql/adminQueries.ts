@@ -257,10 +257,10 @@ export type IUser = {
       _id: string;
       filename: string;
     };
-    category?: {
+    categoriesChosen?: {
       _id: string;
       name: string;
-    };
+    }[];
     rejectedCategories: {
       _id: string;
       name: string;
@@ -303,7 +303,7 @@ const UserFragment = gql`
         _id
         filename
       }
-      category {
+      categoriesChosen {
         _id
         name
       }
@@ -415,10 +415,10 @@ export const RESET_CATEGORY_IMAGE_ASSOCIATIONS: DocumentNode<
         _id: string;
         filename: string;
       };
-      category?: {
+      categoriesChosen?: {
         _id: string;
         name: string;
-      };
+      }[];
       rejectedCategories: {
         _id: string;
         name: string;
@@ -436,7 +436,7 @@ export const RESET_CATEGORY_IMAGE_ASSOCIATIONS: DocumentNode<
         _id
         filename
       }
-      category {
+      categoriesChosen {
         _id
         name
       }

@@ -563,7 +563,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                   width="100%"
                                 />
                               )}
-                              {catImgAssoc.category && catImgAssoc.image && (
+                              {catImgAssoc.image && (
                                 <Stack align="center" pt={3}>
                                   <LazyImage
                                     placeholder={imagePlaceholder}
@@ -587,10 +587,26 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                     }}
                                   </LazyImage>
                                   <Flex mt={1} p={2} wrap="wrap">
-                                    <Tag>Eligió categoría:</Tag>
-                                    <Tag ml={1} variantColor="green">
-                                      {catImgAssoc.category.name}
-                                    </Tag>
+                                    <Tag>Eligió categorías:</Tag>
+                                    {!catImgAssoc.categoriesChosen ? (
+                                      <Tag ml={1} variantColor="gray">
+                                        Ninguno
+                                      </Tag>
+                                    ) : (
+                                      catImgAssoc.categoriesChosen.map(
+                                        category => {
+                                          return (
+                                            <Tag
+                                              key={category._id}
+                                              ml={1}
+                                              variantColor="green"
+                                            >
+                                              {category.name}
+                                            </Tag>
+                                          );
+                                        }
+                                      )
+                                    )}
                                   </Flex>
 
                                   <Flex mt={1} p={2} wrap="wrap">

@@ -3,18 +3,9 @@ import { head } from "lodash";
 import { useRouter } from "next/router";
 import { FC, useMemo, useState } from "react";
 import { FiPlay } from "react-icons/fi";
-import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import {
-  Badge,
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  Stack,
-  Tag,
-} from "@chakra-ui/core";
+import { Badge, Box, Button, Flex, Stack, Tag } from "@chakra-ui/core";
 
 import {
   ANSWER_TAG_CATEGORY_ASSOCIATION,
@@ -39,22 +30,22 @@ export const TagCategoryAssociation: FC = () => {
   >();
 
   const { push } = useRouter();
-  const [answerTagCategoryAssociation] = useMutation(
-    ANSWER_TAG_CATEGORY_ASSOCIATION,
-    {
-      update: (cache, { data }) => {
-        setSelectedCategories(undefined);
-        if (data?.answerTagCategoryAssociation) {
-          cache.writeQuery({
-            query: NOT_ANSWERED_TAGS,
-            data: {
-              notAnsweredTags: data.answerTagCategoryAssociation,
-            },
-          });
-        }
-      },
-    }
-  );
+  const [
+    answerTagCategoryAssociation,
+    { loading: loadingAnswer },
+  ] = useMutation(ANSWER_TAG_CATEGORY_ASSOCIATION, {
+    update: (cache, { data }) => {
+      setSelectedCategories(undefined);
+      if (data?.answerTagCategoryAssociation) {
+        cache.writeQuery({
+          query: NOT_ANSWERED_TAGS,
+          data: {
+            notAnsweredTags: data.answerTagCategoryAssociation,
+          },
+        });
+      }
+    },
+  });
 
   const headTag = useMemo(() => {
     return head(dataNotAnsweredTags?.notAnsweredTags ?? []);
@@ -103,8 +94,6 @@ export const TagCategoryAssociation: FC = () => {
                             ];
                           });
                         }
-
-                        await wait(300);
                       } else {
                         push("/login");
                       }
@@ -135,7 +124,6 @@ export const TagCategoryAssociation: FC = () => {
                     } else {
                       setSelectedCategories(["none"]);
                     }
-                    await wait(300);
                   } else {
                     push("/login");
                   }
@@ -151,6 +139,7 @@ export const TagCategoryAssociation: FC = () => {
                   }
                   variant="ghost"
                   size="lg"
+                  isLoading={loadingAnswer}
                   cursor="pointer"
                   isDisabled={(selectedCategories?.length ?? 0) < 1}
                   onClick={async () => {

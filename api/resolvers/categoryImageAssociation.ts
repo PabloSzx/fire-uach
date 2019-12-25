@@ -103,7 +103,11 @@ export class CategoryImageAssociationResolver {
   async answerCategoryImageAssociation(
     @Ctx() { user }: IContext,
     @Arg("data")
-    { image, category, rejectedCategories }: CategoryImageAssociationAnswer,
+    {
+      image,
+      categoriesChosen,
+      rejectedCategories,
+    }: CategoryImageAssociationAnswer,
     @Arg("onlyValidated") onlyValidated: boolean
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
@@ -113,7 +117,7 @@ export class CategoryImageAssociationResolver {
         image,
       },
       {
-        category,
+        categoriesChosen,
         rejectedCategories,
       },
       {
@@ -146,12 +150,18 @@ export class CategoryImageAssociationResolver {
   }
 
   @FieldResolver()
-  async category(@Root() { category }: Partial<CategoryImageAssociation>) {
-    if (category) {
-      if (isDocument(category)) {
-        return category;
+  async categoriesChosen(
+    @Root() { categoriesChosen }: Partial<CategoryImageAssociation>
+  ) {
+    if (categoriesChosen) {
+      if (isDocumentArray(categoriesChosen)) {
+        return categoriesChosen;
       } else {
-        return await CategoryModel.findById(category);
+        return await CategoryModel.find({
+          _id: {
+            $in: categoriesChosen,
+          },
+        });
       }
     }
     return null;

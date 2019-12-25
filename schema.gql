@@ -11,7 +11,7 @@ type Category {
 type CategoryImageAssociation {
   _id: ObjectId!
   user: User
-  category: Category
+  categoriesChosen: [Category!]
   rejectedCategories: [Tag!]!
   image: Image
   location: Location
@@ -20,7 +20,7 @@ type CategoryImageAssociation {
 }
 
 input CategoryImageAssociationAnswer {
-  category: ObjectId
+  categoriesChosen: [ObjectId!]
   image: ObjectId!
   rejectedCategories: [ObjectId!]!
 }
