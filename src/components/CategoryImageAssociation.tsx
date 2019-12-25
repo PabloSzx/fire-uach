@@ -6,7 +6,7 @@ import LazyImage from "react-lazy-progressive-image";
 import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
+import { Box, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../constants";
 import {
@@ -89,14 +89,21 @@ export const CategoryImageAssociation: FC<{
             >
               {src => {
                 return (
-                  <Image
+                  <Box
                     width="100%"
-                    height="100%"
-                    maxH="40vh"
-                    maxW="90vw"
-                    objectFit="contain"
-                    src={src}
-                  />
+                    className="image_box"
+                    alignSelf="center"
+                    textAlign="center"
+                  >
+                    <Image
+                      width="100%"
+                      height="100%"
+                      maxH="40vh"
+                      maxW="90vw"
+                      objectFit="contain"
+                      src={src}
+                    />
+                  </Box>
                 );
               }}
             </LazyImage>
