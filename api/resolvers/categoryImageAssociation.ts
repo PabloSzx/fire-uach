@@ -1,4 +1,4 @@
-import { shuffle } from "lodash";
+import { compact, shuffle } from "lodash";
 import { ObjectId } from "mongodb";
 import {
   Arg,
@@ -11,7 +11,7 @@ import {
   Root,
 } from "type-graphql";
 
-import { isDocument, isDocumentArray } from "@typegoose/typegoose";
+import { isDocument, isDocumentArray, Ref } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
 import {
@@ -34,7 +34,7 @@ export class CategoryImageAssociationResolver {
       uploader?: ObjectId;
       _id?: {
         $not: {
-          $in: ObjectId[];
+          $in: Ref<Image>[];
         };
       };
     } = {};
@@ -42,14 +42,16 @@ export class CategoryImageAssociationResolver {
     if (user) {
       filterImages._id = {
         $not: {
-          $in: (
-            await CategoryImageAssociationModel.find(
-              {
-                user,
-              },
-              "image"
-            )
-          ).map(({ _id }) => _id),
+          $in: compact(
+            (
+              await CategoryImageAssociationModel.find(
+                {
+                  user,
+                },
+                "image"
+              )
+            ).map(({ image }) => image)
+          ),
         },
       };
       if (!onlyValidated) {

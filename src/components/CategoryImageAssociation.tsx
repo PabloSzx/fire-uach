@@ -1,6 +1,6 @@
-import { head } from "lodash";
+import { head, shuffle } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -26,7 +26,8 @@ export const CategoryImageAssociation: FC<{
     variables: {
       onlyValidated,
     },
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
+    ssr: false,
   });
 
   if (errorNotAnsweredImages) {
@@ -51,6 +52,12 @@ export const CategoryImageAssociation: FC<{
       }
     },
   });
+
+  const [n, setN] = useState(0);
+
+  const shuffledCategories = useMemo(() => {
+    return shuffle(dataCategories?.categories);
+  }, [dataCategories, n]);
 
   const imageHead = useMemo(() => {
     return head(dataNotAnsweredImages?.notAnsweredImages ?? []);
@@ -81,7 +88,7 @@ export const CategoryImageAssociation: FC<{
         </LazyImage>
 
         <Flex wrap="wrap" mt={5} justifyContent="center">
-          {dataCategories?.categories.map(({ _id, name }) => {
+          {shuffledCategories.map(({ _id, name }) => {
             return (
               <Tag
                 variantColor="cyan"
@@ -92,13 +99,14 @@ export const CategoryImageAssociation: FC<{
                 m="0.5em"
                 onClick={async () => {
                   if (user) {
+                    setN(n => n + 1);
                     await answerCategoryImageAssociation({
                       variables: {
                         onlyValidated,
                         data: {
                           category: _id,
                           image: imageHead._id,
-                          rejectedCategories: dataCategories.categories
+                          rejectedCategories: shuffledCategories
                             .filter(category => {
                               return category._id !== _id;
                             })
