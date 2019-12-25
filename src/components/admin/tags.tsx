@@ -1,7 +1,7 @@
 import { isEqual, isEqualWith } from "lodash";
-import { ChangeEvent, FC, useMemo } from "react";
+import { ChangeEvent, FC, useMemo, useState } from "react";
 import Select from "react-select";
-import { useSetState } from "react-use";
+import { useDebounce, useSetState } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -183,20 +183,8 @@ const TagEdit: FC<ITag> = ({ _id, name, categories }) => {
   );
 };
 
-const AdminTags: FC = () => {
-  const { data: dataAllTags, loading: loadingAllTags } = useQuery(TAGS, {
-    fetchPolicy: "cache-and-network",
-  });
-
+const NewTag: FC = () => {
   const [newTag, setNewTag] = useRememberState("new_tag_input", "");
-
-  const disabledNewTag = useMemo(() => {
-    return (
-      (dataAllTags?.tags.findIndex(tag => {
-        return tag.name === newTag;
-      }) ?? -1) !== -1
-    );
-  }, [newTag, dataAllTags]);
 
   const [createTag, { loading: loadingCreateTag }] = useMutation(CREATE_TAG, {
     update: (cache, { data }) => {
@@ -209,6 +197,45 @@ const AdminTags: FC = () => {
         });
       }
     },
+  });
+
+  return (
+    <Stack align="center">
+      <InputGroup>
+        <InputLeftAddon>
+          <Text>Etiqueta nueva</Text>
+        </InputLeftAddon>
+        <Input
+          value={newTag}
+          onChange={({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+            setNewTag(value);
+          }}
+        />
+      </InputGroup>
+      <Button
+        onClick={() => {
+          if (newTag)
+            createTag({
+              variables: {
+                data: {
+                  name: newTag,
+                },
+              },
+            });
+        }}
+        isLoading={loadingCreateTag}
+        isDisabled={loadingCreateTag}
+        variantColor="green"
+      >
+        Crear etiqueta nueva
+      </Button>
+    </Stack>
+  );
+};
+
+const AdminTags: FC = () => {
+  const { data: dataAllTags, loading: loadingAllTags } = useQuery(TAGS, {
+    fetchPolicy: "cache-and-network",
   });
 
   return (
@@ -226,38 +253,8 @@ const AdminTags: FC = () => {
           />
         );
       })}
-      <Stack align="center">
-        <InputGroup>
-          <InputLeftAddon>
-            <Text>Etiqueta nueva</Text>
-          </InputLeftAddon>
-          <Input
-            value={newTag}
-            onChange={({
-              target: { value },
-            }: ChangeEvent<HTMLInputElement>) => {
-              setNewTag(value);
-            }}
-          />
-        </InputGroup>
-        <Button
-          isLoading={loadingCreateTag}
-          isDisabled={!newTag || disabledNewTag}
-          onClick={() => {
-            if (newTag)
-              createTag({
-                variables: {
-                  data: {
-                    name: newTag,
-                  },
-                },
-              });
-          }}
-          variantColor="green"
-        >
-          Crear etiqueta nueva
-        </Button>
-      </Stack>
+
+      <NewTag />
     </Stack>
   );
 };
