@@ -15,6 +15,7 @@ import {
   FormLabel,
   Heading,
   Icon,
+  IconButton,
   Image,
   Input,
   Modal,
@@ -46,6 +47,8 @@ import {
   IUser,
   REMOVE_IMAGE,
   REMOVE_USER,
+  RESET_CATEGORY_IMAGE_ASSOCIATIONS,
+  RESET_TAG_CATEGORY_ASSOCIATIONS,
 } from "../../graphql/adminQueries";
 import { userTypeToText } from "../../utils/enums";
 import { Confirm } from "../Confirm";
@@ -116,6 +119,23 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
           });
           refetchAllUsers();
         }
+      },
+    }
+  );
+
+  const [resetCategoryImageAssociations] = useMutation(
+    RESET_CATEGORY_IMAGE_ASSOCIATIONS,
+    {
+      onCompleted: () => {
+        refetchAllUsers();
+      },
+    }
+  );
+  const [resetTagCategoryAssociations] = useMutation(
+    RESET_TAG_CATEGORY_ASSOCIATIONS,
+    {
+      onCompleted: () => {
+        refetchAllUsers();
       },
     }
   );
@@ -339,8 +359,8 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                 >
                   <TabList>
                     <Tab>Imágenes subidas</Tab>
-                    <Tab>Asociaciones de Etiquetas</Tab>
-                    <Tab>Asociaciones de Imagenes - Etiquetas</Tab>
+                    <Tab>Asociaciones de Etiquetas - Categorías</Tab>
+                    <Tab>Asociaciones de Imagenes - Categorías</Tab>
                   </TabList>
                   <TabPanels>
                     <TabPanel>
@@ -419,8 +439,31 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                     </TabPanel>
                     <TabPanel>
                       <Stack spacing="2em" align="center">
-                        {tagCategoryAssociations.length === 0 && (
+                        {tagCategoryAssociations.length === 0 ? (
                           <Text pt={3}>Sin asociaciones realizadas</Text>
+                        ) : (
+                          <Stack
+                            align="center"
+                            cursor="pointer"
+                            border="1px solid"
+                            mt={3}
+                            p={2}
+                            onClick={async () => {
+                              await resetTagCategoryAssociations({
+                                variables: {
+                                  user: _id,
+                                },
+                              });
+                            }}
+                          >
+                            <IconButton
+                              icon="delete"
+                              aria-label="Reset tag category associations"
+                            />
+                            <Text>
+                              Resetear asociaciones de tag - categoría
+                            </Text>
+                          </Stack>
                         )}
                         {tagCategoryAssociations.map((tagAssoc, key) => {
                           return (
@@ -471,8 +514,31 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                     </TabPanel>
                     <TabPanel>
                       <Stack spacing="2em" align="center">
-                        {categoryImageAssociations.length === 0 && (
+                        {categoryImageAssociations.length === 0 ? (
                           <Text pt={3}>Sin asociaciones realizadas</Text>
+                        ) : (
+                          <Stack
+                            align="center"
+                            cursor="pointer"
+                            border="1px solid"
+                            mt={3}
+                            p={2}
+                            onClick={async () => {
+                              await resetCategoryImageAssociations({
+                                variables: {
+                                  user: _id,
+                                },
+                              });
+                            }}
+                          >
+                            <IconButton
+                              icon="delete"
+                              aria-label="Reset category image associations"
+                            />
+                            <Text>
+                              Resetear asociaciones de imagen - categoría
+                            </Text>
+                          </Stack>
                         )}
                         {categoryImageAssociations.map((catImgAssoc, key) => {
                           return (

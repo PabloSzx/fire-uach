@@ -111,7 +111,9 @@ type Mutation {
   createTag(data: CreateTag!): [Tag!]!
   editTag(data: EditTag!): [Tag!]!
   removeTag(data: RemoveTag!): [Tag!]!
+  resetTagCategoryAssociations(user: ObjectId!): [TagCategoryAssociation!]!
   answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): [Tag!]!
+  resetCategoryImageAssociations(user: ObjectId!): [CategoryImageAssociation!]!
   answerCategoryImageAssociation(onlyValidated: Boolean = true, data: CategoryImageAssociationAnswer!): [Image!]
   editUser(data: EditUser!): [User!]!
   removeUser(id: ObjectId!): [User!]!

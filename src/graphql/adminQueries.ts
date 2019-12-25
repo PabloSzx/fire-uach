@@ -365,3 +365,85 @@ export const REMOVE_USER: DocumentNode<
   }
   ${UserFragment}
 `;
+
+export const RESET_TAG_CATEGORY_ASSOCIATIONS: DocumentNode<
+  {
+    resetTagCategoryAssociations: {
+      _id: string;
+      tag?: {
+        _id: string;
+        name: string;
+      };
+      categoryChosen?: {
+        _id: string;
+        name: string;
+      };
+      rejectedCategories: {
+        _id: string;
+        name: string;
+      }[];
+    }[];
+  },
+  {
+    user: string;
+  }
+> = gql`
+  mutation($user: ObjectId!) {
+    resetTagCategoryAssociations(user: $user) {
+      _id
+      tag {
+        _id
+        name
+      }
+      categoryChosen {
+        _id
+        name
+      }
+      rejectedCategories {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export const RESET_CATEGORY_IMAGE_ASSOCIATIONS: DocumentNode<
+  {
+    resetCategoryImageAssociations: {
+      _id: string;
+      image?: {
+        _id: string;
+        filename: string;
+      };
+      category?: {
+        _id: string;
+        name: string;
+      };
+      rejectedCategories: {
+        _id: string;
+        name: string;
+      }[];
+    }[];
+  },
+  {
+    user: string;
+  }
+> = gql`
+  mutation($user: ObjectId!) {
+    resetCategoryImageAssociations(user: $user) {
+      _id
+      image {
+        _id
+        filename
+      }
+      category {
+        _id
+        name
+      }
+      rejectedCategories {
+        _id
+        name
+      }
+    }
+  }
+`;

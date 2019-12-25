@@ -25,6 +25,7 @@ import { Image, ImageModel } from "../entities/image";
 import { TagModel } from "../entities/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
+import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => CategoryImageAssociation)
 export class CategoryImageAssociationResolver {
@@ -68,6 +69,19 @@ export class CategoryImageAssociationResolver {
         ...filterImages,
       })
     );
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [CategoryImageAssociation])
+  async resetCategoryImageAssociations(
+    @Arg("user", () => ObjectIdScalar) user: ObjectId
+  ) {
+    await CategoryImageAssociationModel.deleteMany({
+      user,
+    });
+    return await CategoryImageAssociationModel.find({
+      user,
+    });
   }
 
   @Authorized([ADMIN])
@@ -136,7 +150,7 @@ export class CategoryImageAssociationResolver {
       if (isDocumentArray(rejectedCategories)) {
         return rejectedCategories;
       } else {
-        return await TagModel.find({
+        return await CategoryModel.find({
           _id: {
             $in: rejectedCategories,
           },

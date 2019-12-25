@@ -24,6 +24,7 @@ import { CategoryModel } from "../entities/category";
 import { Tag, TagModel } from "../entities/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
+import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => TagCategoryAssociation)
 export class TagCategoryAssociationResolver {
@@ -59,6 +60,19 @@ export class TagCategoryAssociationResolver {
         ...filterTags,
       })
     );
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [TagCategoryAssociation])
+  async resetTagCategoryAssociations(
+    @Arg("user", () => ObjectIdScalar) user: ObjectId
+  ) {
+    await TagCategoryAssociationModel.deleteMany({
+      user,
+    });
+    return await TagCategoryAssociationModel.find({
+      user,
+    });
   }
 
   @Authorized([ADMIN])
@@ -137,7 +151,7 @@ export class TagCategoryAssociationResolver {
       if (isDocumentArray(rejectedCategories)) {
         return rejectedCategories;
       } else {
-        return await TagModel.find({
+        return await CategoryModel.find({
           _id: {
             $in: rejectedCategories,
           },
