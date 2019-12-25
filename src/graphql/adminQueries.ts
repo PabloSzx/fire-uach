@@ -242,10 +242,10 @@ export type IUser = {
       _id: string;
       name: string;
     };
-    categoryChosen?: {
+    categoriesChosen?: {
       _id: string;
       name: string;
-    };
+    }[];
     rejectedCategories: {
       _id: string;
       name: string;
@@ -288,7 +288,7 @@ const UserFragment = gql`
         _id
         name
       }
-      categoryChosen {
+      categoriesChosen {
         _id
         name
       }
@@ -374,10 +374,10 @@ export const RESET_TAG_CATEGORY_ASSOCIATIONS: DocumentNode<
         _id: string;
         name: string;
       };
-      categoryChosen?: {
+      categoriesChosen?: {
         _id: string;
         name: string;
-      };
+      }[];
       rejectedCategories: {
         _id: string;
         name: string;
@@ -395,7 +395,7 @@ export const RESET_TAG_CATEGORY_ASSOCIATIONS: DocumentNode<
         _id
         name
       }
-      categoryChosen {
+      categoriesChosen {
         _id
         name
       }

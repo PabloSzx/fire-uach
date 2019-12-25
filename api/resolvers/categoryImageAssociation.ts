@@ -122,7 +122,7 @@ export class CategoryImageAssociationResolver {
       }
     );
 
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === "developmentzxc") {
       setTimeout(async () => {
         const result = await CategoryImageAssociationModel.deleteMany({});
         if ((result?.deletedCount ?? 0) > 0)

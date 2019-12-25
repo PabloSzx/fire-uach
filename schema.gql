@@ -168,7 +168,7 @@ type TagCategoryAssociation {
   _id: ObjectId!
   user: User
   tag: Tag
-  categoryChosen: Tag
+  categoriesChosen: [Tag!]
   rejectedCategories: [Tag!]!
   location: Location
   updatedAt: DateTime!
@@ -177,7 +177,7 @@ type TagCategoryAssociation {
 
 input TagCategoryAssociationAnswer {
   tag: ObjectId!
-  categoryChosen: ObjectId
+  categoriesChosen: [ObjectId!]
   rejectedCategories: [ObjectId!]!
 }
 

@@ -206,7 +206,7 @@ export const ANSWER_TAG_CATEGORY_ASSOCIATION: DocumentNode<
   {
     data: {
       tag: string;
-      categoryChosen?: string;
+      categoriesChosen?: string[];
       rejectedCategories: string[];
     };
   }

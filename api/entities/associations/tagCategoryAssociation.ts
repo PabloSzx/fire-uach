@@ -28,9 +28,9 @@ export class TagCategoryAssociation extends TimeStamps {
   @Property({ ref: "Tag" })
   tag?: Ref<Tag>;
 
-  @Field(() => Tag, { nullable: true })
-  @Property({ ref: "Category" })
-  categoryChosen?: Ref<Category>;
+  @Field(() => [Tag], { nullable: true })
+  @PropertyArray({ items: "Category", ref: "Category" })
+  categoriesChosen?: Ref<Category>[];
 
   @Field(() => Tag)
   @PropertyArray({ items: "Category", ref: "Category", default: [] })
@@ -57,8 +57,8 @@ export class TagCategoryAssociationAnswer
   @Field(() => ObjectIdScalar)
   tag: ObjectId;
 
-  @Field(() => ObjectIdScalar, { nullable: true })
-  categoryChosen?: ObjectId;
+  @Field(() => [ObjectIdScalar], { nullable: true })
+  categoriesChosen?: ObjectId[];
 
   @Field(() => [ObjectIdScalar])
   rejectedCategories: ObjectId[];

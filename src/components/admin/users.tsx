@@ -474,7 +474,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                   borderBottom="1px solid"
                                 />
                               )}
-                              {tagAssoc.tag && tagAssoc.categoryChosen && (
+                              {tagAssoc.tag && (
                                 <Stack align="center">
                                   <Flex mt={1} p={2} wrap="wrap">
                                     <Tag>Tag:</Tag>
@@ -483,10 +483,24 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                     </Tag>
                                   </Flex>
                                   <Flex mt={1} p={2} wrap="wrap">
-                                    <Tag>Eligió categoría:</Tag>
-                                    <Tag ml={1} variantColor="green">
-                                      {tagAssoc.categoryChosen.name}
-                                    </Tag>
+                                    <Tag>Eligió categorías:</Tag>
+                                    {!tagAssoc.categoriesChosen ? (
+                                      <Tag ml={1} variantColor="gray">
+                                        Ninguno
+                                      </Tag>
+                                    ) : (
+                                      tagAssoc.categoriesChosen.map(tag => {
+                                        return (
+                                          <Tag
+                                            key={tag._id}
+                                            ml={1}
+                                            variantColor="green"
+                                          >
+                                            {tag.name}
+                                          </Tag>
+                                        );
+                                      })
+                                    )}
                                   </Flex>
 
                                   <Flex mt={1} p={2} wrap="wrap">
@@ -628,9 +642,14 @@ const AdminUsers: FC = () => {
     data: dataAllUsers,
     loading: loadingAllUsers,
     refetch: refetchAllUsers,
+    error: errorAllUsers,
   } = useQuery(ALL_USERS, {
     fetchPolicy: "cache-and-network",
   });
+
+  if (errorAllUsers) {
+    console.error(JSON.stringify(errorAllUsers, null, 2));
+  }
 
   return (
     <Stack pt={5} align="center">
