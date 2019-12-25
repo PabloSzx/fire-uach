@@ -16,7 +16,8 @@ export const TagCategoryAssociation: FC = () => {
   const { data: dataNotAnsweredTags, error: errorNotAnsweredTags } = useQuery(
     NOT_ANSWERED_TAGS,
     {
-      fetchPolicy: "cache-first",
+      fetchPolicy: "cache-and-network",
+      ssr: false,
     }
   );
   if (errorNotAnsweredTags) {

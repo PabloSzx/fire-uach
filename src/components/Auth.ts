@@ -47,7 +47,7 @@ export function useUser(
       }
     }
     return {
-      user: { email: "", _id: "", admin: false, imagesUploaded: [] },
+      user: undefined,
       loading: true,
       refetch,
     };

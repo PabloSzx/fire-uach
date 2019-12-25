@@ -1,4 +1,4 @@
-import { shuffle } from "lodash";
+import { compact, shuffle } from "lodash";
 import { ObjectId } from "mongodb";
 import {
   Arg,
@@ -11,7 +11,7 @@ import {
   Root,
 } from "type-graphql";
 
-import { isDocument, isDocumentArray } from "@typegoose/typegoose";
+import { isDocument, isDocumentArray, Ref } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
 import {
@@ -25,6 +25,7 @@ import { Image, ImageModel } from "../entities/image";
 import { TagModel } from "../entities/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
+import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => CategoryImageAssociation)
 export class CategoryImageAssociationResolver {
@@ -34,7 +35,7 @@ export class CategoryImageAssociationResolver {
       uploader?: ObjectId;
       _id?: {
         $not: {
-          $in: ObjectId[];
+          $in: Ref<Image>[];
         };
       };
     } = {};
@@ -42,14 +43,16 @@ export class CategoryImageAssociationResolver {
     if (user) {
       filterImages._id = {
         $not: {
-          $in: (
-            await CategoryImageAssociationModel.find(
-              {
-                user,
-              },
-              "image"
-            )
-          ).map(({ _id }) => _id),
+          $in: compact(
+            (
+              await CategoryImageAssociationModel.find(
+                {
+                  user,
+                },
+                "image"
+              )
+            ).map(({ image }) => image)
+          ),
         },
       };
       if (!onlyValidated) {
@@ -66,6 +69,19 @@ export class CategoryImageAssociationResolver {
         ...filterImages,
       })
     );
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [CategoryImageAssociation])
+  async resetCategoryImageAssociations(
+    @Arg("user", () => ObjectIdScalar) user: ObjectId
+  ) {
+    await CategoryImageAssociationModel.deleteMany({
+      user,
+    });
+    return await CategoryImageAssociationModel.find({
+      user,
+    });
   }
 
   @Authorized([ADMIN])
@@ -88,10 +104,9 @@ export class CategoryImageAssociationResolver {
     @Ctx() { user }: IContext,
     @Arg("data")
     { image, category, rejectedCategories }: CategoryImageAssociationAnswer,
-    @Arg("onlyValidated", { defaultValue: true }) onlyValidated: boolean
+    @Arg("onlyValidated") onlyValidated: boolean
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
-
     await CategoryImageAssociationModel.create({
       user: user._id,
       category,
@@ -140,7 +155,7 @@ export class CategoryImageAssociationResolver {
       if (isDocumentArray(rejectedCategories)) {
         return rejectedCategories;
       } else {
-        return await TagModel.find({
+        return await CategoryModel.find({
           _id: {
             $in: rejectedCategories,
           },

@@ -1,5 +1,4 @@
-import { shuffle } from "lodash";
-import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 
 import { ADMIN } from "../../constants";
 import {
@@ -9,7 +8,6 @@ import {
   EditCategory,
   RemoveCategory,
 } from "../entities/category";
-import { IContext } from "../interfaces";
 
 @Resolver(() => Category)
 export class CategoryResolver {

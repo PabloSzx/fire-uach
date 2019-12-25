@@ -34,6 +34,7 @@ const ProfilePage: NextPage = ({}) => {
   return (
     <Stack align="center">
       <Button
+        alignSelf="flex-end"
         cursor="pointer"
         variantColor="red"
         onClick={async () => {
@@ -42,6 +43,7 @@ const ProfilePage: NextPage = ({}) => {
         size="lg"
         fontSize="3xl"
         isLoading={loadingLogout}
+        mr={3}
       >
         Salir
       </Button>
@@ -53,7 +55,7 @@ const ProfilePage: NextPage = ({}) => {
 
       <TagCategoryAssociation />
 
-      <CategoryImageAssociation />
+      <CategoryImageAssociation onlyValidated={false} />
     </Stack>
   );
 };
