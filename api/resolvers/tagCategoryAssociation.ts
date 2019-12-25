@@ -111,11 +111,13 @@ export class TagCategoryAssociationResolver {
       }
     );
 
-    setTimeout(async () => {
-      const result = await TagCategoryAssociationModel.deleteMany({});
-      if ((result?.deletedCount ?? 0) > 0)
-        console.log("TagCategoryAssociation Reset");
-    }, ms("5 seconds"));
+    if (process.env.NODE_ENV === "development") {
+      setTimeout(async () => {
+        const result = await TagCategoryAssociationModel.deleteMany({});
+        if ((result?.deletedCount ?? 0) > 0)
+          console.log("TagCategoryAssociation Reset");
+      }, ms("5 seconds"));
+    }
 
     return await this.notAnsweredTagsQuery(user._id);
   }

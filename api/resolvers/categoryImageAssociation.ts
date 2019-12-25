@@ -122,11 +122,13 @@ export class CategoryImageAssociationResolver {
       }
     );
 
-    setTimeout(async () => {
-      const result = await CategoryImageAssociationModel.deleteMany({});
-      if ((result?.deletedCount ?? 0) > 0)
-        console.log("CategoryImageAssociation Reset");
-    }, ms("5 seconds"));
+    if (process.env.NODE_ENV === "development") {
+      setTimeout(async () => {
+        const result = await CategoryImageAssociationModel.deleteMany({});
+        if ((result?.deletedCount ?? 0) > 0)
+          console.log("CategoryImageAssociation Reset");
+      }, ms("5 seconds"));
+    }
 
     return await this.notAnsweredImagesQuery(onlyValidated, user._id);
   }
