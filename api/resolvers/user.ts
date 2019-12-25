@@ -52,6 +52,7 @@ export class UserResolver {
   async imagesUploaded(@Root() { _id }: Pick<User, "_id">) {
     return await ImageModel.find({
       uploader: _id,
+      active: true,
     });
   }
 

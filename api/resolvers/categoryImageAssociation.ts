@@ -170,7 +170,6 @@ export class CategoryImageAssociationResolver {
           _id: {
             $in: rejectedCategories,
           },
-          active: true,
         });
       }
     }

@@ -106,23 +106,18 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
     fireRelatedSpecify,
   });
 
-  const [removeImage, { loading: loadingRemoveImage }] = useMutation(
-    REMOVE_IMAGE,
-    {
-      update: (cache, { data }) => {
-        if (data?.removeImage) {
-          cache.writeQuery({
-            query: IMAGES,
-            data: {
-              images: data.removeImage,
-            },
-          });
-          refetchAllUsers();
-        }
-      },
-    }
-  );
+  const [
+    removeImage,
+    { loading: loadingRemoveImage, error: errorRemoveImage },
+  ] = useMutation(REMOVE_IMAGE, {
+    onCompleted: () => {
+      refetchAllUsers();
+    },
+  });
 
+  if (errorRemoveImage) {
+    console.error(JSON.stringify(errorRemoveImage, null, 2));
+  }
   const [resetCategoryImageAssociations] = useMutation(
     RESET_CATEGORY_IMAGE_ASSOCIATIONS,
     {
