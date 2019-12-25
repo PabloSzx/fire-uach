@@ -1,9 +1,11 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { head } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
+import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Flex, Stack, Tag } from "@chakra-ui/core";
+import { Badge, Flex, Stack, Tag } from "@chakra-ui/core";
 
 import {
   ANSWER_TAG_CATEGORY_ASSOCIATION,
@@ -23,11 +25,16 @@ export const TagCategoryAssociation: FC = () => {
   if (errorNotAnsweredTags) {
     console.error(JSON.stringify(errorNotAnsweredTags, null, 2));
   }
+  const [selectedCategory, setSelectedCategory] = useState<
+    string | undefined
+  >();
+
   const { push } = useRouter();
   const [answerTagCategoryAssociation] = useMutation(
     ANSWER_TAG_CATEGORY_ASSOCIATION,
     {
       update: (cache, { data }) => {
+        setSelectedCategory(undefined);
         if (data?.answerTagCategoryAssociation) {
           cache.writeQuery({
             query: NOT_ANSWERED_TAGS,
@@ -40,56 +47,75 @@ export const TagCategoryAssociation: FC = () => {
     }
   );
 
+  const [isVisible, setIsVisible] = useState(false);
+
   const headTag = useMemo(() => {
+    setIsVisible(true);
     return head(dataNotAnsweredTags?.notAnsweredTags ?? []);
-  }, [dataNotAnsweredTags]);
+  }, [dataNotAnsweredTags, setIsVisible]);
 
-  if (headTag) {
-    return (
-      <Stack border="1px solid" align="center" p={5}>
-        <Box>
-          <Badge p={5} fontSize="3em" variant="solid" variantColor="green">
-            {headTag.name}
-          </Badge>
-        </Box>
-        <Flex wrap="wrap" mt={5} justifyContent="center">
-          {headTag.categories.map(({ _id, name }) => {
-            return (
-              <Tag
-                variantColor="green"
-                key={_id}
-                fontSize="2em"
-                p={4}
-                m="0.5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (user) {
-                    answerTagCategoryAssociation({
-                      variables: {
-                        data: {
-                          tag: headTag._id,
-                          categoryChosen: _id,
-                          rejectedCategories: headTag.categories
-                            .filter(category => {
-                              return category._id !== _id;
-                            })
-                            .map(({ _id }) => _id),
-                        },
-                      },
-                    });
-                  } else {
-                    push("/login");
-                  }
-                }}
-              >
-                {name}
-              </Tag>
-            );
-          })}
-        </Flex>
-      </Stack>
-    );
-  }
+  return (
+    <Stack align="center" p={5}>
+      <AnimatePresence>
+        {headTag && (
+          <motion.div
+            key={headTag._id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, display: "none" }}
+          >
+            <Stack align="center">
+              <Badge p={5} fontSize="3em" variant="solid" variantColor="green">
+                {headTag.name}
+              </Badge>
+            </Stack>
+            <Flex wrap="wrap" mt={5} justifyContent="center">
+              {headTag.categories.map(({ _id, name }) => {
+                const selected = selectedCategory === _id;
+                return (
+                  <Tag
+                    className="unselectable"
+                    transition="0.2s all ease-in-out"
+                    variantColor={selected ? "cyan" : "green"}
+                    key={_id}
+                    fontSize={selected ? "2.5em" : "2em"}
+                    p={4}
+                    m="0.5em"
+                    cursor="pointer"
+                    onClick={async () => {
+                      if (user) {
+                        if (selectedCategory === undefined && isVisible) {
+                          setSelectedCategory(_id);
+                          setIsVisible(false);
+                          await wait(300);
 
-  return null;
+                          await answerTagCategoryAssociation({
+                            variables: {
+                              data: {
+                                tag: headTag._id,
+                                categoryChosen: _id,
+                                rejectedCategories: headTag.categories
+                                  .filter(category => {
+                                    return category._id !== _id;
+                                  })
+                                  .map(({ _id }) => _id),
+                              },
+                            },
+                          });
+                        }
+                      } else {
+                        push("/login");
+                      }
+                    }}
+                  >
+                    {name}
+                  </Tag>
+                );
+              })}
+            </Flex>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Stack>
+  );
 };

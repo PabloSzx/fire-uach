@@ -68,7 +68,8 @@
     "semantic-ui-react": "^0.88.2",
     "type-graphql": "^0.17.5",
     "use-remember-state": "^1.1.2",
-    "validator": "^12.1.0"
+    "validator": "^12.1.0",
+    "waait": "^1.0.5"
   },
   "devDependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",

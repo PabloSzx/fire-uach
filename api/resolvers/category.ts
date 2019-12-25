@@ -26,7 +26,6 @@ export class CategoryResolver {
         name,
       },
       {
-        name,
         active: true,
       },
       {

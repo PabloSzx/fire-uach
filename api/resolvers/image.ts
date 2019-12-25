@@ -67,7 +67,6 @@ export class ImageResolver {
           filename,
         },
         {
-          filename,
           mimetype,
           extension,
           uploader: user._id,

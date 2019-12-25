@@ -53,8 +53,6 @@ const ProfilePage: NextPage = ({}) => {
         </Text>
       </Box>
 
-      <TagCategoryAssociation />
-
       <CategoryImageAssociation onlyValidated={false} />
     </Stack>
   );

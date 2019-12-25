@@ -40,7 +40,6 @@ export class TagResolver {
         name,
       },
       {
-        name,
         categories,
         active: true,
       },
