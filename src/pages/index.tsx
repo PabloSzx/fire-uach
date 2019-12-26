@@ -7,7 +7,7 @@ export default () => {
   return (
     <Stack align="center" spacing="2em">
       <TagCategoryAssociation />
-      <CategoryImageAssociation onlyValidated />
+      <CategoryImageAssociation />
     </Stack>
   );
 };

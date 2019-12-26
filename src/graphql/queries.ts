@@ -127,19 +127,14 @@ export const LOGOUT: DocumentNode = gql`
   }
 `;
 
-export const NOT_ANSWERED_IMAGES: DocumentNode<
-  {
-    notAnsweredImages: {
-      _id: string;
-      filename: string;
-    }[];
-  },
-  {
-    onlyValidated: boolean;
-  }
-> = gql`
-  query($onlyValidated: Boolean!) {
-    notAnsweredImages(onlyValidated: $onlyValidated) {
+export const NOT_ANSWERED_IMAGE: DocumentNode<{
+  notAnsweredImage?: {
+    _id: string;
+    filename: string;
+  };
+}> = gql`
+  query {
+    notAnsweredImage {
       _id
       filename
     }
@@ -148,13 +143,12 @@ export const NOT_ANSWERED_IMAGES: DocumentNode<
 
 export const ANSWER_CATEGORY_IMAGE_ASSOCIATION: DocumentNode<
   {
-    answerCategoryImageAssociation: {
+    answerCategoryImageAssociation?: {
       _id: string;
       filename: string;
-    }[];
+    };
   },
   {
-    onlyValidated: boolean;
     data: {
       image: string;
       categoriesChosen?: string[];
@@ -162,26 +156,26 @@ export const ANSWER_CATEGORY_IMAGE_ASSOCIATION: DocumentNode<
     };
   }
 > = gql`
-  mutation($onlyValidated: Boolean!, $data: CategoryImageAssociationAnswer!) {
-    answerCategoryImageAssociation(data: $data, onlyValidated: $onlyValidated) {
+  mutation($data: CategoryImageAssociationAnswer!) {
+    answerCategoryImageAssociation(data: $data) {
       _id
       filename
     }
   }
 `;
 
-export const NOT_ANSWERED_TAGS: DocumentNode<{
-  notAnsweredTags: {
+export const NOT_ANSWERED_TAG: DocumentNode<{
+  notAnsweredTag?: {
     _id: string;
     name: string;
     categories: {
       _id: string;
       name: string;
     }[];
-  }[];
+  };
 }> = gql`
   query {
-    notAnsweredTags {
+    notAnsweredTag {
       _id
       name
       categories {
@@ -194,14 +188,14 @@ export const NOT_ANSWERED_TAGS: DocumentNode<{
 
 export const ANSWER_TAG_CATEGORY_ASSOCIATION: DocumentNode<
   {
-    answerTagCategoryAssociation: {
+    answerTagCategoryAssociation?: {
       _id: string;
       name: string;
       categories: {
         _id: string;
         name: string;
       }[];
-    }[];
+    };
   },
   {
     data: {

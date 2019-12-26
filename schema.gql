@@ -112,9 +112,9 @@ type Mutation {
   editTag(data: EditTag!): [Tag!]!
   removeTag(data: RemoveTag!): [Tag!]!
   resetTagCategoryAssociations(user: ObjectId!): [TagCategoryAssociation!]!
-  answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): [Tag!]!
+  answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): Tag
   resetCategoryImageAssociations(user: ObjectId!): [CategoryImageAssociation!]!
-  answerCategoryImageAssociation(onlyValidated: Boolean!, data: CategoryImageAssociationAnswer!): [Image!]
+  answerCategoryImageAssociation(data: CategoryImageAssociationAnswer!): Image
   editUser(data: EditUser!): [User!]!
   removeUser(id: ObjectId!): [User!]!
 }
@@ -131,9 +131,9 @@ type Query {
   ownImages: [Image!]!
   tags: [Tag!]!
   resultsTagCategoryAssociations: [TagCategoryAssociation!]!
-  notAnsweredTags: [Tag!]!
+  notAnsweredTag: Tag
   resultsCategoryImageAssociations: [CategoryImageAssociation!]!
-  notAnsweredImages(onlyValidated: Boolean = true): [Image!]!
+  notAnsweredImage: Image
   allUsers: [User!]!
 }
 

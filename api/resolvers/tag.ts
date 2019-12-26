@@ -1,4 +1,3 @@
-import { shuffle } from "lodash";
 import {
   Arg,
   Authorized,
@@ -33,7 +32,9 @@ export class TagResolver {
           active: true,
         },
         "_id"
-      )
+      ).sort({
+        name: "asc",
+      })
     ).map(({ _id }) => _id);
     await TagModel.findOneAndUpdate(
       {
@@ -99,16 +100,16 @@ export class TagResolver {
   async categories(@Root() { categories }: Partial<Tag>) {
     if (categories) {
       if (isDocumentArray(categories)) {
-        return shuffle(categories);
+        return categories;
       } else {
-        return shuffle(
-          await CategoryModel.find({
-            _id: {
-              $in: categories,
-            },
-            active: true,
-          })
-        );
+        return await CategoryModel.find({
+          _id: {
+            $in: categories,
+          },
+          active: true,
+        }).sort({
+          name: "asc",
+        });
       }
     }
     return [];

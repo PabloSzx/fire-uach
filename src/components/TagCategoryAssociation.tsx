@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { head } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useMemo, useState } from "react";
+import { FC, useState } from "react";
 import { FiPlay } from "react-icons/fi";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -9,21 +8,23 @@ import { Badge, Box, Button, Flex, Stack, Tag } from "@chakra-ui/core";
 
 import {
   ANSWER_TAG_CATEGORY_ASSOCIATION,
-  NOT_ANSWERED_TAGS,
+  NOT_ANSWERED_TAG,
 } from "../graphql/queries";
 import { useUser } from "./Auth";
+import { LoadingPage } from "./LoadingPage";
 
 export const TagCategoryAssociation: FC = () => {
   const { user } = useUser();
-  const { data: dataNotAnsweredTags, error: errorNotAnsweredTags } = useQuery(
-    NOT_ANSWERED_TAGS,
-    {
-      fetchPolicy: "cache-and-network",
-      ssr: false,
-    }
-  );
-  if (errorNotAnsweredTags) {
-    console.error(JSON.stringify(errorNotAnsweredTags, null, 2));
+  const {
+    data: dataNotAnsweredTag,
+    error: errorNotAnsweredTag,
+    loading: loadingNotAnsweredTag,
+  } = useQuery(NOT_ANSWERED_TAG, {
+    fetchPolicy: "cache-and-network",
+    ssr: false,
+  });
+  if (errorNotAnsweredTag) {
+    console.error(JSON.stringify(errorNotAnsweredTag, null, 2));
   }
   const [selectedCategories, setSelectedCategories] = useState<
     string[] | undefined
@@ -38,36 +39,38 @@ export const TagCategoryAssociation: FC = () => {
       setSelectedCategories(undefined);
       if (data?.answerTagCategoryAssociation) {
         cache.writeQuery({
-          query: NOT_ANSWERED_TAGS,
+          query: NOT_ANSWERED_TAG,
           data: {
-            notAnsweredTags: data.answerTagCategoryAssociation,
+            notAnsweredTag: data.answerTagCategoryAssociation,
           },
         });
       }
     },
   });
 
-  const headTag = useMemo(() => {
-    return head(dataNotAnsweredTags?.notAnsweredTags ?? []);
-  }, [dataNotAnsweredTags]);
+  if (loadingNotAnsweredTag) {
+    return <LoadingPage />;
+  }
+
+  const notAnsweredTag = dataNotAnsweredTag?.notAnsweredTag;
 
   return (
     <Stack align="center" p={5}>
       <AnimatePresence>
-        {headTag && (
+        {notAnsweredTag && (
           <motion.div
-            key={headTag._id}
+            key={notAnsweredTag._id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, display: "none" }}
           >
             <Stack align="center">
               <Badge p={5} fontSize="3em" variant="solid" variantColor="green">
-                {headTag.name}
+                {notAnsweredTag.name}
               </Badge>
             </Stack>
             <Flex wrap="wrap" mt={5} justifyContent="center">
-              {headTag.categories.map(({ _id, name }) => {
+              {notAnsweredTag.categories.map(({ _id, name }) => {
                 const selected = selectedCategories?.includes(_id) ?? false;
                 return (
                   <Tag
@@ -147,13 +150,13 @@ export const TagCategoryAssociation: FC = () => {
                       await answerTagCategoryAssociation({
                         variables: {
                           data: {
-                            tag: headTag._id,
+                            tag: notAnsweredTag._id,
                             categoriesChosen: selectedCategories?.includes(
                               "none"
                             )
                               ? undefined
                               : selectedCategories,
-                            rejectedCategories: headTag.categories
+                            rejectedCategories: notAnsweredTag.categories
                               .filter(cat => {
                                 return !selectedCategories?.includes(cat._id);
                               })

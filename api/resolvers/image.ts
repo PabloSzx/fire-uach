@@ -1,7 +1,6 @@
 import assert, { AssertionError } from "assert";
 import encodeUrl from "encodeurl";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
-import { shuffle } from "lodash";
 import mime from "mime";
 import { ObjectId } from "mongodb";
 import {

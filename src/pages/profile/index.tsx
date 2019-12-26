@@ -53,7 +53,7 @@ const ProfilePage: NextPage = ({}) => {
         </Text>
       </Box>
 
-      <CategoryImageAssociation onlyValidated={false} />
+      <CategoryImageAssociation />
     </Stack>
   );
 };

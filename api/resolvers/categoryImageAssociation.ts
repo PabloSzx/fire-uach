@@ -1,4 +1,4 @@
-import { compact, shuffle } from "lodash";
+import { compact } from "lodash";
 import { ObjectId } from "mongodb";
 import {
   Arg,
@@ -28,15 +28,22 @@ import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => CategoryImageAssociation)
 export class CategoryImageAssociationResolver {
-  async notAnsweredImagesQuery(onlyValidated: boolean, user?: ObjectId) {
+  async notAnsweredImageQuery(user?: ObjectId) {
     const filterImages: {
-      validated?: boolean;
-      uploader?: ObjectId;
+      validated?: true;
       _id?: {
         $not: {
           $in: Ref<Image>[];
         };
       };
+      $or?: [
+        {
+          uploader: ObjectId;
+        },
+        {
+          validated: true;
+        }
+      ];
     } = {};
 
     if (user) {
@@ -54,22 +61,27 @@ export class CategoryImageAssociationResolver {
           ),
         },
       };
-      if (!onlyValidated) {
-        filterImages.uploader = user;
-      }
-    }
-    if (onlyValidated) {
+
+      filterImages.$or = [
+        {
+          uploader: user,
+        },
+        {
+          validated: true,
+        },
+      ];
+    } else {
       filterImages.validated = true;
     }
 
-    return await ImageModel.aggregate([
+    return ((await ImageModel.aggregate([
       {
         $match: {
           active: true,
           ...filterImages,
         },
       },
-    ]).sample(1);
+    ]).sample(1)) as Image[])[0];
   }
 
   @Authorized([ADMIN])
@@ -91,16 +103,13 @@ export class CategoryImageAssociationResolver {
     return await CategoryImageAssociationModel.find({});
   }
 
-  @Query(() => [Image])
-  async notAnsweredImages(
-    @Ctx() { user }: IContext,
-    @Arg("onlyValidated", { defaultValue: true }) onlyValidated: boolean
-  ) {
-    return await this.notAnsweredImagesQuery(onlyValidated, user?._id);
+  @Query(() => Image, { nullable: true })
+  async notAnsweredImage(@Ctx() { user }: IContext) {
+    return await this.notAnsweredImageQuery(user?._id);
   }
 
   @Authorized()
-  @Mutation(() => [Image], { nullable: true })
+  @Mutation(() => Image, { nullable: true })
   async answerCategoryImageAssociation(
     @Ctx() { user }: IContext,
     @Arg("data")
@@ -108,8 +117,7 @@ export class CategoryImageAssociationResolver {
       image,
       categoriesChosen,
       rejectedCategories,
-    }: CategoryImageAssociationAnswer,
-    @Arg("onlyValidated") onlyValidated: boolean
+    }: CategoryImageAssociationAnswer
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
     await CategoryImageAssociationModel.findOneAndUpdate(
@@ -127,7 +135,7 @@ export class CategoryImageAssociationResolver {
       }
     );
 
-    return await this.notAnsweredImagesQuery(onlyValidated, user._id);
+    return await this.notAnsweredImageQuery(user._id);
   }
 
   @FieldResolver()
@@ -154,6 +162,8 @@ export class CategoryImageAssociationResolver {
           _id: {
             $in: categoriesChosen,
           },
+        }).sort({
+          name: "asc",
         });
       }
     }
@@ -172,6 +182,8 @@ export class CategoryImageAssociationResolver {
           _id: {
             $in: rejectedCategories,
           },
+        }).sort({
+          name: "asc",
         });
       }
     }

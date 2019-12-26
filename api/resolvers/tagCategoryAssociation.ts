@@ -1,4 +1,4 @@
-import { compact, shuffle } from "lodash";
+import { compact } from "lodash";
 import { ObjectId } from "mongodb";
 import {
   Arg,
@@ -28,7 +28,7 @@ import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => TagCategoryAssociation)
 export class TagCategoryAssociationResolver {
-  async notAnsweredTagsQuery(user?: ObjectId) {
+  async notAnsweredTagQuery(user?: ObjectId) {
     const filterTags: {
       _id?: {
         $not: {
@@ -54,14 +54,14 @@ export class TagCategoryAssociationResolver {
       };
     }
 
-    return await TagModel.aggregate([
+    return ((await TagModel.aggregate([
       {
         $match: {
           active: true,
           ...filterTags,
         },
       },
-    ]).sample(1);
+    ]).sample(1)) as Tag[])[0];
   }
 
   @Authorized([ADMIN])
@@ -83,13 +83,13 @@ export class TagCategoryAssociationResolver {
     return await TagCategoryAssociationModel.find({});
   }
 
-  @Query(() => [Tag])
-  async notAnsweredTags(@Ctx() { user }: IContext) {
-    return await this.notAnsweredTagsQuery(user?._id);
+  @Query(() => Tag, { nullable: true })
+  async notAnsweredTag(@Ctx() { user }: IContext) {
+    return await this.notAnsweredTagQuery(user?._id);
   }
 
   @Authorized()
-  @Mutation(() => [Tag])
+  @Mutation(() => Tag, { nullable: true })
   async answerTagCategoryAssociation(
     @Ctx() { user }: IContext,
     @Arg("data", () => TagCategoryAssociationAnswer)
@@ -112,7 +112,7 @@ export class TagCategoryAssociationResolver {
       }
     );
 
-    return await this.notAnsweredTagsQuery(user._id);
+    return await this.notAnsweredTagQuery(user._id);
   }
 
   @FieldResolver()
@@ -151,6 +151,8 @@ export class TagCategoryAssociationResolver {
           _id: {
             $in: categoriesChosen,
           },
+        }).sort({
+          name: "asc",
         });
       }
     }
@@ -169,6 +171,8 @@ export class TagCategoryAssociationResolver {
           _id: {
             $in: rejectedCategories,
           },
+        }).sort({
+          name: "asc",
         });
       }
     }

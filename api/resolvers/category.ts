@@ -15,6 +15,8 @@ export class CategoryResolver {
   async categories() {
     return await CategoryModel.find({
       active: true,
+    }).sort({
+      name: "asc",
     });
   }
 
@@ -36,6 +38,8 @@ export class CategoryResolver {
 
     return await CategoryModel.find({
       active: true,
+    }).sort({
+      name: "asc",
     });
   }
 
@@ -55,6 +59,8 @@ export class CategoryResolver {
 
     return await CategoryModel.find({
       active: true,
+    }).sort({
+      name: "asc",
     });
   }
 
@@ -73,6 +79,8 @@ export class CategoryResolver {
 
     return await CategoryModel.find({
       active: true,
+    }).sort({
+      name: "asc",
     });
   }
 }

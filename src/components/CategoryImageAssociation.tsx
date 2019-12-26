@@ -12,13 +12,12 @@ import { imagePlaceholder } from "../../constants";
 import {
   ANSWER_CATEGORY_IMAGE_ASSOCIATION,
   CATEGORIES_OPTIONS,
-  NOT_ANSWERED_IMAGES,
+  NOT_ANSWERED_IMAGE,
 } from "../graphql/queries";
 import { useUser } from "./Auth";
+import { LoadingPage } from "./LoadingPage";
 
-export const CategoryImageAssociation: FC<{
-  onlyValidated?: boolean;
-}> = ({ onlyValidated = false }) => {
+export const CategoryImageAssociation: FC = () => {
   const { user } = useUser();
   const { push } = useRouter();
   const [selectedCategories, setSelectedCategories] = useState<
@@ -26,18 +25,16 @@ export const CategoryImageAssociation: FC<{
   >();
 
   const {
-    data: dataNotAnsweredImages,
-    error: errorNotAnsweredImages,
-  } = useQuery(NOT_ANSWERED_IMAGES, {
-    variables: {
-      onlyValidated,
-    },
+    data: dataNotAnsweredImage,
+    error: errorNotAnsweredImage,
+    loading: loadingNotAnsweredImage,
+  } = useQuery(NOT_ANSWERED_IMAGE, {
     fetchPolicy: "cache-and-network",
     ssr: false,
   });
 
-  if (errorNotAnsweredImages) {
-    console.error(JSON.stringify(errorNotAnsweredImages, null, 2));
+  if (errorNotAnsweredImage) {
+    console.error(JSON.stringify(errorNotAnsweredImage, null, 2));
   }
   const { data: dataCategories } = useQuery(CATEGORIES_OPTIONS);
   const [
@@ -48,41 +45,37 @@ export const CategoryImageAssociation: FC<{
       setSelectedCategories(undefined);
       if (data?.answerCategoryImageAssociation) {
         cache.writeQuery({
-          query: NOT_ANSWERED_IMAGES,
-          variables: {
-            onlyValidated,
-          },
+          query: NOT_ANSWERED_IMAGE,
           data: {
-            notAnsweredImages: data.answerCategoryImageAssociation,
+            notAnsweredImage: data.answerCategoryImageAssociation,
           },
         });
       }
     },
   });
 
-  const [n, setN] = useState(0);
-
   const shuffledCategories = useMemo(() => {
-    return shuffle(dataCategories?.categories);
-  }, [dataCategories, n]);
+    return dataCategories?.categories ?? [];
+  }, [dataCategories]);
 
-  const headImage = useMemo(() => {
-    setN(n => n + 1);
-    return head(dataNotAnsweredImages?.notAnsweredImages ?? []);
-  }, [dataNotAnsweredImages, setN]);
+  if (loadingNotAnsweredImage) {
+    return <LoadingPage />;
+  }
+
+  const notAnsweredImage = dataNotAnsweredImage?.notAnsweredImage;
 
   return (
     <Stack align="center" p={5} spacing="5em" mt={10}>
       <AnimatePresence>
-        {headImage && (
+        {notAnsweredImage && (
           <motion.div
-            key={headImage._id}
+            key={notAnsweredImage._id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, display: "none" }}
           >
             <LazyImage
-              src={`/api/images/${headImage.filename}`}
+              src={`/api/images/${notAnsweredImage.filename}`}
               placeholder={imagePlaceholder}
             >
               {src => {
@@ -186,9 +179,8 @@ export const CategoryImageAssociation: FC<{
                     if (user) {
                       await answerCategoryImageAssociation({
                         variables: {
-                          onlyValidated,
                           data: {
-                            image: headImage._id,
+                            image: notAnsweredImage._id,
                             categoriesChosen: selectedCategories?.includes(
                               "none"
                             )
