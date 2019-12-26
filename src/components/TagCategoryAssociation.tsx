@@ -4,7 +4,7 @@ import { FC, useState } from "react";
 import { FiPlay } from "react-icons/fi";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Button, Flex, Stack, Tag } from "@chakra-ui/core";
+import { Badge, Box, Button, Flex, Stack, Tag, Text } from "@chakra-ui/core";
 
 import {
   ANSWER_TAG_CATEGORY_ASSOCIATION,
@@ -37,14 +37,12 @@ export const TagCategoryAssociation: FC = () => {
   ] = useMutation(ANSWER_TAG_CATEGORY_ASSOCIATION, {
     update: (cache, { data }) => {
       setSelectedCategories(undefined);
-      if (data?.answerTagCategoryAssociation) {
-        cache.writeQuery({
-          query: NOT_ANSWERED_TAG,
-          data: {
-            notAnsweredTag: data.answerTagCategoryAssociation,
-          },
-        });
-      }
+      cache.writeQuery({
+        query: NOT_ANSWERED_TAG,
+        data: {
+          notAnsweredTag: data?.answerTagCategoryAssociation,
+        },
+      });
     },
   });
 
@@ -57,7 +55,7 @@ export const TagCategoryAssociation: FC = () => {
   return (
     <Stack align="center" p={5}>
       <AnimatePresence>
-        {notAnsweredTag && (
+        {notAnsweredTag ? (
           <motion.div
             key={notAnsweredTag._id}
             initial={{ opacity: 0 }}
@@ -173,6 +171,15 @@ export const TagCategoryAssociation: FC = () => {
                 </Button>
               </Box>
             </Flex>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, display: "none" }}
+          >
+            <Text>Muchas gracias por jugar</Text>
           </motion.div>
         )}
       </AnimatePresence>

@@ -5,7 +5,16 @@ import { FiPlay } from "react-icons/fi";
 import LazyImage from "react-lazy-progressive-image";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Box, Button, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
+import {
+  Box,
+  Button,
+  Flex,
+  Image,
+  Spinner,
+  Stack,
+  Tag,
+  Text,
+} from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../constants";
 import {
@@ -42,14 +51,12 @@ export const CategoryImageAssociation: FC = () => {
   ] = useMutation(ANSWER_CATEGORY_IMAGE_ASSOCIATION, {
     update: (cache, { data }) => {
       setSelectedCategories(undefined);
-      if (data?.answerCategoryImageAssociation) {
-        cache.writeQuery({
-          query: NOT_ANSWERED_IMAGE,
-          data: {
-            notAnsweredImage: data.answerCategoryImageAssociation,
-          },
-        });
-      }
+      cache.writeQuery({
+        query: NOT_ANSWERED_IMAGE,
+        data: {
+          notAnsweredImage: data?.answerCategoryImageAssociation,
+        },
+      });
     },
   });
 
@@ -66,7 +73,7 @@ export const CategoryImageAssociation: FC = () => {
   return (
     <Stack align="center" p={5} spacing="5em" mt={10}>
       <AnimatePresence>
-        {notAnsweredImage && (
+        {notAnsweredImage ? (
           <motion.div
             key={notAnsweredImage._id}
             initial={{ opacity: 0 }}
@@ -204,6 +211,15 @@ export const CategoryImageAssociation: FC = () => {
                 </Button>
               </Box>
             </Flex>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, display: "none" }}
+          >
+            <Text>Puede subir más imágenes para seguir jugando</Text>
           </motion.div>
         )}
       </AnimatePresence>
