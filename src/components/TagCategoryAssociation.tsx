@@ -63,7 +63,16 @@ export const TagCategoryAssociation: FC = () => {
             exit={{ opacity: 0, display: "none" }}
           >
             <Stack align="center">
-              <Badge p={5} fontSize="3em" variant="solid" variantColor="green">
+              <Badge
+                overflowWrap="break-word"
+                p={5}
+                fontSize="3em"
+                variant="solid"
+                variantColor="green"
+                whiteSpace="break-spaces"
+                textAlign="center"
+                lineHeight="1em"
+              >
                 {notAnsweredTag.name}
               </Badge>
             </Stack>
@@ -80,6 +89,7 @@ export const TagCategoryAssociation: FC = () => {
                     p={[2, 4]}
                     m={["0.2em", "0.5em"]}
                     cursor="pointer"
+                    overflowWrap="break-word"
                     onClick={async () => {
                       if (user) {
                         if (selectedCategories?.includes(_id)) {
@@ -129,6 +139,7 @@ export const TagCategoryAssociation: FC = () => {
                     push("/login");
                   }
                 }}
+                overflowWrap="break-word"
               >
                 Ninguno de los anteriores
               </Tag>

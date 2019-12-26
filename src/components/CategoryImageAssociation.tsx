@@ -120,6 +120,7 @@ export const CategoryImageAssociation: FC = () => {
                     fontSize={selected ? ["1.5em", "2em"] : ["1em", "1.7em"]}
                     p={[2, 4]}
                     m={["0.2em", "0.5em"]}
+                    overflowWrap="break-word"
                     onClick={async () => {
                       if (user) {
                         if (selectedCategories?.includes(_id)) {
@@ -169,6 +170,7 @@ export const CategoryImageAssociation: FC = () => {
                     push("/login");
                   }
                 }}
+                overflowWrap="break-word"
               >
                 Ninguno de los anteriores
               </Tag>
