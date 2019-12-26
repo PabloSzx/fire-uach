@@ -62,12 +62,14 @@ export class CategoryImageAssociationResolver {
       filterImages.validated = true;
     }
 
-    return shuffle(
-      await ImageModel.find({
-        active: true,
-        ...filterImages,
-      })
-    );
+    return await ImageModel.aggregate([
+      {
+        $match: {
+          active: true,
+          ...filterImages,
+        },
+      },
+    ]).sample(1);
   }
 
   @Authorized([ADMIN])

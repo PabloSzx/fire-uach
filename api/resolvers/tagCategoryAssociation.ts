@@ -54,12 +54,14 @@ export class TagCategoryAssociationResolver {
       };
     }
 
-    return shuffle(
-      await TagModel.find({
-        active: true,
-        ...filterTags,
-      })
-    );
+    return await TagModel.aggregate([
+      {
+        $match: {
+          active: true,
+          ...filterTags,
+        },
+      },
+    ]).sample(1);
   }
 
   @Authorized([ADMIN])
