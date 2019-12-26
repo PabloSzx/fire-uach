@@ -1,12 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { head, shuffle } from "lodash";
 import { useRouter } from "next/router";
 import { FC, useMemo, useState } from "react";
 import { FiPlay } from "react-icons/fi";
 import LazyImage from "react-lazy-progressive-image";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Box, Button, Flex, Image, Stack, Tag } from "@chakra-ui/core";
+import { Box, Button, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../constants";
 import {
@@ -80,12 +79,14 @@ export const CategoryImageAssociation: FC = () => {
             >
               {src => {
                 return (
-                  <Box
+                  <Stack
+                    align="center"
                     width="100%"
                     className="image_box"
                     alignSelf="center"
                     textAlign="center"
                   >
+                    {src === imagePlaceholder && <Spinner />}
                     <Image
                       width="100%"
                       height="100%"
@@ -94,7 +95,7 @@ export const CategoryImageAssociation: FC = () => {
                       objectFit="contain"
                       src={src}
                     />
-                  </Box>
+                  </Stack>
                 );
               }}
             </LazyImage>
