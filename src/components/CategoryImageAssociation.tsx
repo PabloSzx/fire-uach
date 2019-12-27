@@ -175,7 +175,7 @@ export const CategoryImageAssociation: FC = () => {
                 }}
                 overflowWrap="break-word"
               >
-                Ninguno de los anteriores
+                Ninguna
               </Tag>
               <Box alignSelf="center">
                 <Button
