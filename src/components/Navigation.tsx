@@ -9,6 +9,7 @@ import {
   AiOutlineCamera,
   AiOutlineFileImage,
   AiOutlineHome,
+  AiOutlinePoweroff,
   AiOutlineSetting,
   AiOutlineTags,
 } from "react-icons/ai";
@@ -46,30 +47,6 @@ export const Navigation: FC = () => {
           onClick={() => {
             refetch();
             push("/");
-          }}
-        />
-      </FakeHref>
-
-      <FakeHref href="/tag">
-        <Box
-          as={pathname === "/tag" ? AiFillTags : AiOutlineTags}
-          color="black"
-          fontSize="2em"
-          onClick={() => {
-            refetch();
-            push("/tag");
-          }}
-        />
-      </FakeHref>
-
-      <FakeHref href="/image">
-        <Box
-          as={pathname === "/image" ? AiFillFileImage : AiOutlineFileImage}
-          color="black"
-          fontSize="2em"
-          onClick={() => {
-            refetch();
-            push("/image");
           }}
         />
       </FakeHref>
@@ -115,6 +92,19 @@ export const Navigation: FC = () => {
             onClick={() => {
               refetch();
               push("/admin");
+            }}
+          />
+        </FakeHref>
+      )}
+
+      {user && (
+        <FakeHref href="/logout">
+          <Box
+            as={AiOutlinePoweroff}
+            color={pathname === "/logout" ? "rgb(255,0,0)" : "black"}
+            fontSize="2em"
+            onClick={() => {
+              push("/logout");
             }}
           />
         </FakeHref>

@@ -23,7 +23,6 @@ import {
 import { imagePlaceholder } from "../../constants";
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
-import { Logout } from "../components/Logout";
 import { OWN_IMAGES, UPLOAD_IMAGE } from "../graphql/queries";
 
 const UploadPage: NextPage = () => {
@@ -169,7 +168,6 @@ const UploadPage: NextPage = () => {
           })
         )}
       </Stack>
-      <Logout />
     </Stack>
   );
 };

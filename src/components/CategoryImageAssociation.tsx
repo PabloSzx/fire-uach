@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { FC, useMemo, useState } from "react";
 import { FiPlay } from "react-icons/fi";
 import LazyImage from "react-lazy-progressive-image";
+import { useOrientation } from "react-use";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
@@ -64,6 +65,8 @@ export const CategoryImageAssociation: FC = () => {
     return dataCategories?.categories ?? [];
   }, [dataCategories]);
 
+  const { type: orientation } = useOrientation();
+
   if (loadingNotAnsweredImage) {
     return <LoadingPage />;
   }
@@ -71,7 +74,7 @@ export const CategoryImageAssociation: FC = () => {
   const notAnsweredImage = dataNotAnsweredImage?.notAnsweredImage;
 
   return (
-    <Stack align="center" p={5} spacing="5em" mt={10}>
+    <Stack align="center" spacing="5em">
       <AnimatePresence>
         {notAnsweredImage ? (
           <motion.div
@@ -97,7 +100,7 @@ export const CategoryImageAssociation: FC = () => {
                     <Image
                       width="100%"
                       height="100%"
-                      maxH="40vh"
+                      maxH={["40vh", "40vh", "65vh"]}
                       maxW="90vw"
                       objectFit="contain"
                       src={src}
@@ -119,7 +122,7 @@ export const CategoryImageAssociation: FC = () => {
                     key={_id}
                     fontSize={selected ? ["1.5em", "2em"] : ["1em", "1.7em"]}
                     p={[2, 4]}
-                    m={["0.2em", "0.5em"]}
+                    m={["0.2em"]}
                     overflowWrap="break-word"
                     onClick={async () => {
                       if (user) {
@@ -157,7 +160,7 @@ export const CategoryImageAssociation: FC = () => {
                     : ["1em", "1.7em"]
                 }
                 p={[2, 4]}
-                m={["0.2em", "0.5em"]}
+                m={["0.2em"]}
                 cursor="pointer"
                 onClick={async () => {
                   if (user) {

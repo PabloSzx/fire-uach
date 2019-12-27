@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import { map } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import LazyImage from "react-lazy-progressive-image";
 import { isEmail } from "validator";
 
 import { useMutation } from "@apollo/react-hooks";
@@ -35,7 +36,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/core";
 
-import { USER_ALREADY_EXISTS, UserType } from "../../constants";
+import {
+  imagePlaceholder,
+  USER_ALREADY_EXISTS,
+  UserType,
+} from "../../constants";
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
 import { CURRENT_USER, SIGN_UP } from "../graphql/queries";
@@ -163,15 +168,24 @@ const SignUpPage: NextPage = () => {
             <form onSubmit={handleSubmit}>
               <Stack align="center">
                 <Flex justifyContent="center" w="80%">
-                  <Image
-                    w="100%"
-                    h="100%"
-                    maxW="60vw"
-                    maxH="20vh"
+                  <LazyImage
                     src="/logo_fireses.png"
-                    alt="fire-ses-logo"
-                    objectFit="contain"
-                  />
+                    placeholder={imagePlaceholder}
+                  >
+                    {src => {
+                      return (
+                        <Image
+                          w="100%"
+                          h="100%"
+                          maxW="60vw"
+                          maxH="20vh"
+                          src={src}
+                          alt="fire-ses-logo"
+                          objectFit="contain"
+                        />
+                      );
+                    }}
+                  </LazyImage>
                 </Flex>
                 {loginError && (
                   <Box width={["80%", "60%", "40%"]}>

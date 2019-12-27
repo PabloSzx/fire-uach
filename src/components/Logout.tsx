@@ -30,7 +30,6 @@ export const Logout: FC = () => {
       fontSize="3xl"
       isLoading={loadingLogout}
       leftIcon={FiLogOut}
-      mt="5em"
     >
       Cerrar sesión
     </Button>

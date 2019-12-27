@@ -8,7 +8,7 @@ import { LoadingPage } from "../../components/LoadingPage";
 import { Logout } from "../../components/Logout";
 
 const ProfilePage: NextPage = ({}) => {
-  const { user, loading: loadingUser, refetch: refetchUser } = useUser(
+  const { user, loading: loadingUser } = useUser(
     "/profile",
     false,
     "cache-and-network"
@@ -25,7 +25,6 @@ const ProfilePage: NextPage = ({}) => {
           Bienvenido <b>{truncate(user.email, { length: 45 })}</b>
         </Text>
       </Box>
-
       <Logout />
     </Stack>
   );

@@ -14,7 +14,6 @@ import {
 
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
-import { Logout } from "../components/Logout";
 
 const Users = dynamic(() => import("../components/admin/users"));
 const Images = dynamic(() => import("../components/admin/images"));
@@ -54,7 +53,6 @@ const AdminDashboard: FC = () => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-      <Logout />
     </Stack>
   );
 };

@@ -86,30 +86,19 @@ const ImageEdit: FC<IImage> = ({ _id, filename, uploader, validated }) => {
           onChange={(_e, { checked }) => {
             if (checked !== undefined) {
               setIsValidated(checked);
+              editImage({
+                variables: {
+                  data: {
+                    _id,
+                    validated: checked,
+                  },
+                },
+              });
             }
           }}
         />
       </Flex>
 
-      <Box>
-        <Button
-          isLoading={loadingEditImage}
-          onClick={() => {
-            editImage({
-              variables: {
-                data: {
-                  _id,
-                  validated: isValidated,
-                },
-              },
-            });
-          }}
-          variantColor="blue"
-          isDisabled={loadingEditImage || validated === isValidated}
-        >
-          Guardar cambios
-        </Button>
-      </Box>
       <Box>
         <Confirm
           content={`¿Está seguro que desea eliminar la imagen ${filename}?`}

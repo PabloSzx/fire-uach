@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import { map } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import LazyImage from "react-lazy-progressive-image";
 import { isEmail } from "validator";
 
 import { useMutation } from "@apollo/react-hooks";
@@ -22,7 +23,7 @@ import {
   Text,
 } from "@chakra-ui/core";
 
-import { LOCKED_USER, WRONG_INFO } from "../../constants";
+import { imagePlaceholder, LOCKED_USER, WRONG_INFO } from "../../constants";
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
 import { CURRENT_USER, LOGIN } from "../graphql/queries";
@@ -112,15 +113,24 @@ const LoginPage: NextPage = () => {
           <form onSubmit={handleSubmit}>
             <Stack align="center">
               <Flex justifyContent="center" w="80%">
-                <Image
-                  w="100%"
-                  h="100%"
-                  maxW="60vw"
-                  maxH="20vh"
+                <LazyImage
                   src="/logo_fireses.png"
-                  alt="fire-ses-logo"
-                  objectFit="contain"
-                />
+                  placeholder={imagePlaceholder}
+                >
+                  {src => {
+                    return (
+                      <Image
+                        w="100%"
+                        h="100%"
+                        maxW="60vw"
+                        maxH="20vh"
+                        src={src}
+                        alt="fire-ses-logo"
+                        objectFit="contain"
+                      />
+                    );
+                  }}
+                </LazyImage>
               </Flex>
               {loginError && (
                 <Box width={["80%", "60%", "40%"]}>

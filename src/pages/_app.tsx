@@ -21,7 +21,7 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
     return (
       <ApolloProvider client={apollo}>
         <Head>
-          <title>Fire SES</title>
+          <title>FireSES</title>
         </Head>
 
         <ThemeProvider theme={theme}>
