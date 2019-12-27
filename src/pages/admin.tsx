@@ -14,6 +14,7 @@ import {
 
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
+import { Logout } from "../components/Logout";
 
 const Users = dynamic(() => import("../components/admin/users"));
 const Images = dynamic(() => import("../components/admin/images"));
@@ -24,7 +25,7 @@ const AdminDashboard: FC = () => {
   const [index, setIndex] = useRememberState("admin_menu_index", 0);
 
   return (
-    <Stack justify="center" align="center" mb="70px">
+    <Stack pt="2em" pl={1} pr={1} justify="center" align="center" mb="70px">
       <Tabs
         variant="soft-rounded"
         index={index}
@@ -32,11 +33,11 @@ const AdminDashboard: FC = () => {
           setIndex(index);
         }}
       >
-        <TabList justifyContent="center">
-          <Tab>Usuarios</Tab>
-          <Tab>Imágenes</Tab>
-          <Tab>Categorías</Tab>
-          <Tab>Etiquetas</Tab>
+        <TabList justifyContent="center" wrap="wrap">
+          <Tab m={1}>Usuarios</Tab>
+          <Tab m={1}>Imágenes</Tab>
+          <Tab m={1}>Categorías</Tab>
+          <Tab m={1}>Etiquetas</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -53,6 +54,7 @@ const AdminDashboard: FC = () => {
           </TabPanel>
         </TabPanels>
       </Tabs>
+      <Logout />
     </Stack>
   );
 };

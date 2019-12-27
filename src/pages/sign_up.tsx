@@ -358,7 +358,11 @@ const SignUpPage: NextPage = () => {
           );
         }}
       </Formik>
-      <Modal isOpen={isOpenTermsAndConditions} onClose={onClose}>
+      <Modal
+        blockScrollOnMount={false}
+        isOpen={isOpenTermsAndConditions}
+        onClose={onClose}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Términos y condiciones</ModalHeader>

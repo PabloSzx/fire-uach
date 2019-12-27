@@ -2,11 +2,15 @@ import { useRouter } from "next/router";
 import { FC } from "react";
 import {
   AiFillCamera,
+  AiFillFileImage,
   AiFillHome,
   AiFillSetting,
+  AiFillTags,
   AiOutlineCamera,
+  AiOutlineFileImage,
   AiOutlineHome,
   AiOutlineSetting,
+  AiOutlineTags,
 } from "react-icons/ai";
 import { MdPerson, MdPersonOutline } from "react-icons/md";
 
@@ -45,6 +49,31 @@ export const Navigation: FC = () => {
           }}
         />
       </FakeHref>
+
+      <FakeHref href="/tag">
+        <Box
+          as={pathname === "/tag" ? AiFillTags : AiOutlineTags}
+          color="black"
+          fontSize="2em"
+          onClick={() => {
+            refetch();
+            push("/tag");
+          }}
+        />
+      </FakeHref>
+
+      <FakeHref href="/image">
+        <Box
+          as={pathname === "/image" ? AiFillFileImage : AiOutlineFileImage}
+          color="black"
+          fontSize="2em"
+          onClick={() => {
+            refetch();
+            push("/image");
+          }}
+        />
+      </FakeHref>
+
       <FakeHref href="/upload">
         <Box
           as={pathname === "/upload" ? AiFillCamera : AiOutlineCamera}
@@ -55,7 +84,7 @@ export const Navigation: FC = () => {
             if (user) {
               push("/upload");
             } else {
-              push("/login?route=upload");
+              push("/login?route=/upload");
             }
           }}
         />
@@ -71,11 +100,12 @@ export const Navigation: FC = () => {
             if (user) {
               push("/profile");
             } else {
-              push("/login?route=profile");
+              push("/login?route=/profile");
             }
           }}
         />
       </FakeHref>
+
       {user?.admin && (
         <FakeHref href="/admin">
           <Box

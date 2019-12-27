@@ -23,6 +23,7 @@ import {
 import { imagePlaceholder } from "../../constants";
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
+import { Logout } from "../components/Logout";
 import { OWN_IMAGES, UPLOAD_IMAGE } from "../graphql/queries";
 
 const UploadPage: NextPage = () => {
@@ -111,7 +112,7 @@ const UploadPage: NextPage = () => {
   }
 
   return (
-    <Stack align="center" justify="space-around" spacing="2em">
+    <Stack pt="2em" align="center" justify="space-around" spacing="2em">
       {errorUpload && <Text>{JSON.stringify(errorUpload, null, 2)}</Text>}
       <Flex
         {...getRootProps()}
@@ -168,6 +169,7 @@ const UploadPage: NextPage = () => {
           })
         )}
       </Stack>
+      <Logout />
     </Stack>
   );
 };

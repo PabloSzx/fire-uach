@@ -1,14 +1,11 @@
 import { truncate } from "lodash";
 import { NextPage } from "next";
 
-import { useMutation } from "@apollo/react-hooks";
-import { Box, Button, Stack, Text } from "@chakra-ui/core";
+import { Box, Stack, Text } from "@chakra-ui/core";
 
 import { useUser } from "../../components/Auth";
-import { CategoryImageAssociation } from "../../components/CategoryImageAssociation";
 import { LoadingPage } from "../../components/LoadingPage";
-import { TagCategoryAssociation } from "../../components/TagCategoryAssociation";
-import { CURRENT_USER, LOGOUT } from "../../graphql/queries";
+import { Logout } from "../../components/Logout";
 
 const ProfilePage: NextPage = ({}) => {
   const { user, loading: loadingUser, refetch: refetchUser } = useUser(
@@ -16,16 +13,6 @@ const ProfilePage: NextPage = ({}) => {
     false,
     "cache-and-network"
   );
-  const [logout, { loading: loadingLogout }] = useMutation(LOGOUT, {
-    update: cache => {
-      cache.writeQuery({
-        query: CURRENT_USER,
-        data: {
-          currentUser: null,
-        },
-      });
-    },
-  });
 
   if (loadingUser) {
     return <LoadingPage />;
@@ -33,27 +20,13 @@ const ProfilePage: NextPage = ({}) => {
 
   return (
     <Stack align="center">
-      <Button
-        alignSelf="flex-end"
-        cursor="pointer"
-        variantColor="red"
-        onClick={async () => {
-          await logout();
-        }}
-        size="lg"
-        fontSize="3xl"
-        isLoading={loadingLogout}
-        mr={3}
-      >
-        Salir
-      </Button>
       <Box p={10}>
         <Text fontSize={["1em", "1em", "2em"]} textAlign="center">
           Bienvenido <b>{truncate(user.email, { length: 45 })}</b>
         </Text>
       </Box>
 
-      <CategoryImageAssociation />
+      <Logout />
     </Stack>
   );
 };

@@ -161,6 +161,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
         onClose={onClose}
         size="80vw"
         scrollBehavior="inside"
+        blockScrollOnMount={false}
       >
         <ModalOverlay />
         <ModalContent>

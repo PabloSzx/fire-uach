@@ -158,7 +158,7 @@ const AdminCategories: FC = () => {
             </Confirm>
           </Box>
 
-          <Divider width="100vw" />
+          <Divider width="100%" />
         </Stack>
       );
     },
@@ -173,7 +173,7 @@ const AdminCategories: FC = () => {
 
   return (
     <Stack align="center" pt={5}>
-      <Divider border="1px solid" width="100vw" />
+      <Divider border="1px solid" width="100%" />
 
       {loadingAllCategories && <Spinner />}
       {dataAllCategories?.categories.map(category => {
