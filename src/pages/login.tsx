@@ -223,6 +223,8 @@ const LoginPage: NextPage = () => {
                             values.email ? "?email=" + values.email : ""
                           }`
                         );
+                      } else {
+                        push("/sign_up");
                       }
                     }
                   }}
