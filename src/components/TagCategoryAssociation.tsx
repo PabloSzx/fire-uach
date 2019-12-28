@@ -1,16 +1,18 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { intersectionBy } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Box, Button, Flex, Stack, Tag, Text } from "@chakra-ui/core";
+import { Badge, Flex, Stack, Tag, Text } from "@chakra-ui/core";
 
 import {
   ANSWER_TAG_CATEGORY_ASSOCIATION,
   NOT_ANSWERED_TAG,
 } from "../graphql/queries";
 import { useUser } from "./Auth";
+import { CategoriesContext } from "./Categories";
 import { LoadingPage } from "./LoadingPage";
 
 export const TagCategoryAssociation: FC = () => {
@@ -31,20 +33,22 @@ export const TagCategoryAssociation: FC = () => {
   >();
 
   const { push } = useRouter();
-  const [
-    answerTagCategoryAssociation,
-    { loading: loadingAnswer },
-  ] = useMutation(ANSWER_TAG_CATEGORY_ASSOCIATION, {
-    update: (cache, { data }) => {
-      setSelectedCategory(undefined);
-      cache.writeQuery({
-        query: NOT_ANSWERED_TAG,
-        data: {
-          notAnsweredTag: data?.answerTagCategoryAssociation,
-        },
-      });
-    },
-  });
+  const [answerTagCategoryAssociation] = useMutation(
+    ANSWER_TAG_CATEGORY_ASSOCIATION,
+    {
+      update: (cache, { data }) => {
+        setSelectedCategory(undefined);
+        cache.writeQuery({
+          query: NOT_ANSWERED_TAG,
+          data: {
+            notAnsweredTag: data?.answerTagCategoryAssociation,
+          },
+        });
+      },
+    }
+  );
+
+  const shuffledCategories = useContext(CategoriesContext);
 
   if (loadingNotAnsweredTag) {
     return <LoadingPage />;
@@ -78,7 +82,11 @@ export const TagCategoryAssociation: FC = () => {
               </Badge>
             </Stack>
             <Flex wrap="wrap" mt={5} justifyContent="center">
-              {notAnsweredTag.categories.map(({ _id, name }) => {
+              {intersectionBy(
+                shuffledCategories,
+                notAnsweredTag.categories,
+                ({ _id }) => _id
+              ).map(({ _id, name }) => {
                 const selected = selectedCategory?.includes(_id) ?? false;
                 return (
                   <Tag

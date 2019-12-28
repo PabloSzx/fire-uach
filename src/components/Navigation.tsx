@@ -2,16 +2,12 @@ import { useRouter } from "next/router";
 import { FC } from "react";
 import {
   AiFillCamera,
-  AiFillFileImage,
   AiFillHome,
   AiFillSetting,
-  AiFillTags,
   AiOutlineCamera,
-  AiOutlineFileImage,
   AiOutlineHome,
   AiOutlinePoweroff,
   AiOutlineSetting,
-  AiOutlineTags,
 } from "react-icons/ai";
 import { MdPerson, MdPersonOutline } from "react-icons/md";
 

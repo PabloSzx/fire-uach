@@ -1,7 +1,4 @@
-import { isEqual } from "lodash";
 import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
-import Select from "react-select";
-import { useSetState } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -14,7 +11,6 @@ import {
   InputLeftAddon,
   Spinner,
   Stack,
-  Tag,
   Text,
 } from "@chakra-ui/core";
 

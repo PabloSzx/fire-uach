@@ -43,7 +43,6 @@ import { imagePlaceholder, UserType } from "../../../constants";
 import {
   ALL_USERS,
   EDIT_USER,
-  IMAGES,
   IUser,
   REMOVE_IMAGE,
   REMOVE_USER,
@@ -419,6 +418,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                                 },
                                               });
                                             }}
+                                            isLoading={loadingRemoveImage}
                                           >
                                             Eliminar imagen
                                           </Button>

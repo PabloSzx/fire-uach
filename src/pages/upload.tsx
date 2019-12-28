@@ -9,16 +9,7 @@ import { Pagination } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import {
-  Badge,
-  Box,
-  Flex,
-  Icon,
-  Image,
-  Spinner,
-  Stack,
-  Text,
-} from "@chakra-ui/core";
+import { Box, Flex, Icon, Image, Spinner, Stack, Text } from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../constants";
 import { useUser } from "../components/Auth";
@@ -28,14 +19,13 @@ import { OWN_IMAGES, UPLOAD_IMAGE } from "../graphql/queries";
 const UploadPage: NextPage = () => {
   const { loading: loadingUser, refetch, user } = useUser("/upload");
 
-  const {
-    data: dataOwnImages,
-    loading: loadingOwnImages,
-    error: errorOwnImages,
-  } = useQuery(OWN_IMAGES, {
-    ssr: false,
-    skip: !user,
-  });
+  const { data: dataOwnImages, loading: loadingOwnImages } = useQuery(
+    OWN_IMAGES,
+    {
+      ssr: false,
+      skip: !user,
+    }
+  );
   const [
     uploadImage,
     { loading: loadingUpload, error: errorUpload },
@@ -55,7 +45,7 @@ const UploadPage: NextPage = () => {
     },
   });
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     accept: ["image/png", "image/jpeg"],
     onDrop: async files => {
       for (const file of files) {

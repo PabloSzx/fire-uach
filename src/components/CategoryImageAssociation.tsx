@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { FC, useMemo, useState } from "react";
+import { FC, useContext, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import wait from "waait";
 
@@ -10,10 +10,10 @@ import { Flex, Image, Spinner, Stack, Tag, Text } from "@chakra-ui/core";
 import { imagePlaceholder } from "../../constants";
 import {
   ANSWER_CATEGORY_IMAGE_ASSOCIATION,
-  CATEGORIES_OPTIONS,
   NOT_ANSWERED_IMAGE,
 } from "../graphql/queries";
 import { useUser } from "./Auth";
+import { CategoriesContext } from "./Categories";
 import { LoadingPage } from "./LoadingPage";
 
 export const CategoryImageAssociation: FC = () => {
@@ -35,25 +35,22 @@ export const CategoryImageAssociation: FC = () => {
   if (errorNotAnsweredImage) {
     console.error(JSON.stringify(errorNotAnsweredImage, null, 2));
   }
-  const { data: dataCategories } = useQuery(CATEGORIES_OPTIONS);
-  const [
-    answerCategoryImageAssociation,
-    { loading: loadingAnswer },
-  ] = useMutation(ANSWER_CATEGORY_IMAGE_ASSOCIATION, {
-    update: (cache, { data }) => {
-      setSelectedCategory(undefined);
-      cache.writeQuery({
-        query: NOT_ANSWERED_IMAGE,
-        data: {
-          notAnsweredImage: data?.answerCategoryImageAssociation,
-        },
-      });
-    },
-  });
+  const [answerCategoryImageAssociation] = useMutation(
+    ANSWER_CATEGORY_IMAGE_ASSOCIATION,
+    {
+      update: (cache, { data }) => {
+        setSelectedCategory(undefined);
+        cache.writeQuery({
+          query: NOT_ANSWERED_IMAGE,
+          data: {
+            notAnsweredImage: data?.answerCategoryImageAssociation,
+          },
+        });
+      },
+    }
+  );
 
-  const shuffledCategories = useMemo(() => {
-    return dataCategories?.categories ?? [];
-  }, [dataCategories]);
+  const shuffledCategories = useContext(CategoriesContext);
 
   if (loadingNotAnsweredImage) {
     return <LoadingPage />;

@@ -67,6 +67,7 @@ const TagEdit: FC<ITag> = ({ _id, name, categories }) => {
 
   return (
     <Stack align="center" spacing="2em" p={2}>
+      {loadingAllCategories && <Spinner />}
       <InputGroup>
         <InputLeftAddon>
           <Text>Nombre etiqueta</Text>

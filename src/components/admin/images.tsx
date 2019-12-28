@@ -18,7 +18,7 @@ import {
 import { Confirm } from "../Confirm";
 
 const ImageEdit: FC<IImage> = ({ _id, filename, uploader, validated }) => {
-  const [editImage, { loading: loadingEditImage }] = useMutation(EDIT_IMAGE);
+  const [editImage] = useMutation(EDIT_IMAGE);
   const [removeImage, { loading: loadingRemoveImage }] = useMutation(
     REMOVE_IMAGE,
     {

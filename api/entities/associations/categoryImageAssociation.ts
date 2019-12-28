@@ -13,7 +13,6 @@ import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
 import { User } from "../auth/user";
 import { Category } from "../category";
 import { Image } from "../image";
-import { Tag } from "../tag";
 import { Location } from "../utils/location";
 
 @ObjectType()
