@@ -35,6 +35,18 @@ export class Image extends TimeStamps {
   @Property({ default: true, index: true })
   active: boolean;
 
+  @Field({ nullable: true })
+  @Property()
+  size?: number;
+
+  @Field({ nullable: true })
+  @Property()
+  width?: number;
+
+  @Field({ nullable: true })
+  @Property()
+  height?: number;
+
   @Field(() => Date)
   readonly updatedAt: Readonly<Date>;
 

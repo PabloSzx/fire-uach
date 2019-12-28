@@ -81,6 +81,56 @@ export const uploadFileGridFSStream = (
   );
 };
 
+export const uploadFileGridFSBuffer = (
+  buffer: Buffer,
+  filename: string,
+  _id: ObjectId
+) => {
+  return new Promise<{ _id: ObjectId; filename: string }>(
+    async (resolve, reject) => {
+      try {
+        (await bucket).delete(_id, async err => {
+          if (err) {
+            if (!err.message?.includes("FileNotFound")) {
+              console.error(err);
+            }
+          }
+          const uploadStream = (await bucket).openUploadStreamWithId(
+            _id,
+            filename
+          );
+
+          uploadStream.end(buffer);
+
+          uploadStream.on("error", err => {
+            reject(err);
+          });
+
+          uploadStream.on(
+            "finish",
+            ({
+              _id,
+              filename,
+            }: {
+              _id: ObjectId;
+              length: number;
+              chunkSize: number;
+              uploadDate: Date;
+              filename: string;
+              md5: string;
+            }) => {
+              resolve({ _id, filename });
+            }
+          );
+        });
+      } catch (err) {
+        console.error(err);
+        reject(err);
+      }
+    }
+  );
+};
+
 export const readFileGridFS = async ({
   filename,
   _id,

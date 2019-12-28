@@ -82,6 +82,9 @@ type Image {
   extension: String!
   validated: Boolean!
   uploader: User
+  size: Float
+  width: Float
+  height: Float
   updatedAt: DateTime!
   createdAt: DateTime!
 }

@@ -1,8 +1,12 @@
 import assert, { AssertionError } from "assert";
 import encodeUrl from "encodeurl";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
+import imageMin from "imagemin";
+import imageMinJpegtran from "imagemin-jpegtran";
+import imageMinPngquant from "imagemin-pngquant";
 import mime from "mime";
 import { ObjectId } from "mongodb";
+import sharp from "sharp";
 import {
   Arg,
   Authorized,
@@ -17,7 +21,7 @@ import {
 import { isDocument } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
-import { uploadFileGridFSStream } from "../db/gridFS";
+import { uploadFileGridFSBuffer } from "../db/gridFS";
 import { UserModel } from "../entities/auth/user";
 import { EditImage, Image, ImageModel, RemoveImage } from "../entities/image";
 import { IContext } from "../interfaces";
@@ -60,6 +64,16 @@ export class ImageResolver {
 
     filename = user._id.toHexString() + "_" + encodeUrl(filename);
 
+    const chunks: Uint8Array[] = [];
+    for await (let chunk of createReadStream()) {
+      chunks.push(chunk);
+    }
+    const fileBuffer = Buffer.concat(chunks);
+
+    const image = sharp(fileBuffer);
+
+    const { size, width, height } = await image.metadata();
+
     try {
       const imageDoc = await ImageModel.findOneAndUpdate(
         {
@@ -71,6 +85,9 @@ export class ImageResolver {
           uploader: user._id,
           active: true,
           validated: false,
+          size,
+          width,
+          height,
         },
         {
           new: true,
@@ -83,9 +100,37 @@ export class ImageResolver {
         imageDoc._id,
       ];
 
+      let resizedImage: Buffer | undefined;
+
+      if (width !== undefined && width > 1920) {
+        resizedImage = await image.resize(1920).toBuffer();
+      }
+
+      const optimizedImage = await imageMin.buffer(resizedImage || fileBuffer, {
+        plugins: [
+          imageMinJpegtran(),
+          imageMinPngquant({
+            quality: [0.6, 0.8],
+          }),
+        ],
+      });
       await Promise.all([
-        uploadFileGridFSStream(createReadStream(), filename, imageDoc._id),
+        uploadFileGridFSBuffer(optimizedImage, filename, imageDoc._id),
         user.save(),
+        new Promise(async (resolve, reject) => {
+          try {
+            const { size, width, height } = await sharp(
+              optimizedImage
+            ).metadata();
+            imageDoc.size = size;
+            imageDoc.width = width;
+            imageDoc.height = height;
+            await imageDoc.save();
+            resolve();
+          } catch (err) {
+            reject(err);
+          }
+        }),
       ]);
       return await ImageModel.find({
         uploader: user._id,
