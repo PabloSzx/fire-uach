@@ -109,6 +109,7 @@ type Mutation {
   editCategory(data: EditCategory!): [Category!]!
   removeCategory(data: RemoveCategory!): [Category!]!
   uploadImage(file: Upload!): [Image!]!
+  optimizeImages(_ids: [ObjectId!]): [Image!]!
   editImage(data: EditImage!): [Image!]!
   removeImage(data: RemoveImage!): [Image!]!
   createTag(data: CreateTag!): [Tag!]!

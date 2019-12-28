@@ -6,6 +6,7 @@ import imageMinJpegtran from "imagemin-jpegtran";
 import imageMinPngquant from "imagemin-pngquant";
 import mime from "mime";
 import { ObjectId } from "mongodb";
+import { Document } from "mongoose";
 import sharp from "sharp";
 import {
   Arg,
@@ -21,7 +22,7 @@ import {
 import { isDocument } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
-import { uploadFileGridFSBuffer } from "../db/gridFS";
+import { readFileGridFS, uploadFileGridFSBuffer } from "../db/gridFS";
 import { UserModel } from "../entities/auth/user";
 import { EditImage, Image, ImageModel, RemoveImage } from "../entities/image";
 import { IContext } from "../interfaces";
@@ -102,7 +103,7 @@ export class ImageResolver {
 
       let resizedImage: Buffer | undefined;
 
-      if (width !== undefined && width > 1920) {
+      if (width && width > 1920) {
         resizedImage = await image.resize(1920).toBuffer();
       }
 
@@ -142,6 +143,73 @@ export class ImageResolver {
       console.error(40, err);
       throw err;
     }
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [Image])
+  async optimizeImages(
+    @Arg("_ids", () => [ObjectIdScalar], { nullable: true }) _ids?: ObjectId[]
+  ) {
+    const optimizedImages: (Document & Image)[] = [];
+
+    for (const id of _ids ||
+      (
+        await ImageModel.find(
+          {
+            active: true,
+          },
+          "_id"
+        )
+      ).map(({ _id }) => _id)) {
+      const [imageDoc, fileGridFS] = await Promise.all([
+        ImageModel.findById(id),
+        readFileGridFS({
+          _id: id,
+        }),
+      ]);
+      assertIsDefined(imageDoc, "Image doc not found!");
+      assertIsDefined(fileGridFS, "Image file not found!");
+
+      const chunks: Uint8Array[] = [];
+      for await (let chunk of fileGridFS) {
+        chunks.push(chunk);
+      }
+      const fileBuffer = Buffer.concat(chunks);
+
+      const image = sharp(fileBuffer);
+
+      const oldMetadata = await image.metadata();
+
+      let resizedImage: Buffer | undefined;
+
+      if (oldMetadata.width && oldMetadata.width > 1920) {
+        resizedImage = await image.resize(1920).toBuffer();
+      }
+
+      const optimizedImage = await imageMin.buffer(resizedImage || fileBuffer, {
+        plugins: [
+          imageMinJpegtran({
+            progressive: true,
+          }),
+          imageMinPngquant({
+            quality: [0.6, 0.8],
+          }),
+        ],
+      });
+
+      const { size, width, height } = await sharp(optimizedImage).metadata();
+      imageDoc.size = size;
+      imageDoc.width = width;
+      imageDoc.height = height;
+
+      await Promise.all([
+        imageDoc.save(),
+        uploadFileGridFSBuffer(optimizedImage, imageDoc.filename, imageDoc._id),
+      ]);
+
+      optimizedImages.push(imageDoc);
+    }
+    return optimizedImages;
   }
 
   @Query(() => Image, { nullable: true })
