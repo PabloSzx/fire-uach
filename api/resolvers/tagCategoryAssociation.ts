@@ -93,7 +93,7 @@ export class TagCategoryAssociationResolver {
   async answerTagCategoryAssociation(
     @Ctx() { user }: IContext,
     @Arg("data", () => TagCategoryAssociationAnswer)
-    { tag, categoriesChosen, rejectedCategories }: TagCategoryAssociationAnswer
+    { tag, categoryChosen, rejectedCategories }: TagCategoryAssociationAnswer
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
 
@@ -103,7 +103,7 @@ export class TagCategoryAssociationResolver {
         tag,
       },
       {
-        categoriesChosen,
+        categoryChosen,
         rejectedCategories,
       },
       {
@@ -140,20 +140,14 @@ export class TagCategoryAssociationResolver {
   }
 
   @FieldResolver()
-  async categoriesChosen(
-    @Root() { categoriesChosen }: Partial<TagCategoryAssociation>
+  async categoryChosen(
+    @Root() { categoryChosen }: Partial<TagCategoryAssociation>
   ) {
-    if (categoriesChosen) {
-      if (isDocumentArray(categoriesChosen)) {
-        return categoriesChosen;
+    if (categoryChosen) {
+      if (isDocument(categoryChosen)) {
+        return categoryChosen;
       } else {
-        return await CategoryModel.find({
-          _id: {
-            $in: categoriesChosen,
-          },
-        }).sort({
-          name: "asc",
-        });
+        return await CategoryModel.findById(categoryChosen);
       }
     }
     return null;

@@ -115,7 +115,7 @@ export class CategoryImageAssociationResolver {
     @Arg("data")
     {
       image,
-      categoriesChosen,
+      categoryChosen,
       rejectedCategories,
     }: CategoryImageAssociationAnswer
   ) {
@@ -126,7 +126,7 @@ export class CategoryImageAssociationResolver {
         image,
       },
       {
-        categoriesChosen,
+        categoryChosen,
         rejectedCategories,
       },
       {
@@ -151,20 +151,15 @@ export class CategoryImageAssociationResolver {
   }
 
   @FieldResolver()
-  async categoriesChosen(
-    @Root() { categoriesChosen }: Partial<CategoryImageAssociation>
+  async categoryChosen(
+    @Root()
+    { categoryChosen }: Partial<CategoryImageAssociation>
   ) {
-    if (categoriesChosen) {
-      if (isDocumentArray(categoriesChosen)) {
-        return categoriesChosen;
+    if (categoryChosen) {
+      if (isDocument(categoryChosen)) {
+        return categoryChosen;
       } else {
-        return await CategoryModel.find({
-          _id: {
-            $in: categoriesChosen,
-          },
-        }).sort({
-          name: "asc",
-        });
+        return await CategoryModel.findById(categoryChosen);
       }
     }
     return null;

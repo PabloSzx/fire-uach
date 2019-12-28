@@ -3,13 +3,13 @@ import { FC, useMemo, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import { Checkbox, Icon, Pagination } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
+import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Box, Button, Flex, Image, Spinner, Stack, Tag } from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../../constants";
 import {
-  CATEGORIES,
   EDIT_IMAGE,
   IImage,
   IMAGES,
@@ -83,10 +83,11 @@ const ImageEdit: FC<IImage> = ({ _id, filename, uploader, validated }) => {
         <Checkbox
           toggle
           checked={isValidated}
-          onChange={(_e, { checked }) => {
+          onChange={async (_e, { checked }) => {
             if (checked !== undefined) {
               setIsValidated(checked);
-              editImage({
+              await wait(500);
+              await editImage({
                 variables: {
                   data: {
                     _id,

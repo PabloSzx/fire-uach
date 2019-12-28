@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
-import { FiPlay } from "react-icons/fi";
+import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Badge, Box, Button, Flex, Stack, Tag, Text } from "@chakra-ui/core";
@@ -26,8 +26,8 @@ export const TagCategoryAssociation: FC = () => {
   if (errorNotAnsweredTag) {
     console.error(JSON.stringify(errorNotAnsweredTag, null, 2));
   }
-  const [selectedCategories, setSelectedCategories] = useState<
-    string[] | undefined
+  const [selectedCategory, setSelectedCategory] = useState<
+    string | undefined
   >();
 
   const { push } = useRouter();
@@ -36,7 +36,7 @@ export const TagCategoryAssociation: FC = () => {
     { loading: loadingAnswer },
   ] = useMutation(ANSWER_TAG_CATEGORY_ASSOCIATION, {
     update: (cache, { data }) => {
-      setSelectedCategories(undefined);
+      setSelectedCategory(undefined);
       cache.writeQuery({
         query: NOT_ANSWERED_TAG,
         data: {
@@ -78,7 +78,7 @@ export const TagCategoryAssociation: FC = () => {
             </Stack>
             <Flex wrap="wrap" mt={5} justifyContent="center">
               {notAnsweredTag.categories.map(({ _id, name }) => {
-                const selected = selectedCategories?.includes(_id) ?? false;
+                const selected = selectedCategory?.includes(_id) ?? false;
                 return (
                   <Tag
                     className="unselectable"
@@ -92,19 +92,21 @@ export const TagCategoryAssociation: FC = () => {
                     overflowWrap="break-word"
                     onClick={async () => {
                       if (user) {
-                        if (selectedCategories?.includes(_id)) {
-                          setSelectedCategories(categories =>
-                            categories?.filter(cat => cat !== _id)
-                          );
-                        } else {
-                          setSelectedCategories(categories => {
-                            return [
-                              ...(categories?.filter(cat => cat !== "none") ??
-                                []),
-                              _id,
-                            ];
-                          });
-                        }
+                        setSelectedCategory(_id);
+                        await wait(300);
+                        await answerTagCategoryAssociation({
+                          variables: {
+                            data: {
+                              tag: notAnsweredTag._id,
+                              categoryChosen: _id,
+                              rejectedCategories: notAnsweredTag.categories
+                                .filter(cat => {
+                                  return cat._id !== _id;
+                                })
+                                .map(({ _id }) => _id),
+                            },
+                          },
+                        });
                       } else {
                         push("/login");
                       }
@@ -117,11 +119,9 @@ export const TagCategoryAssociation: FC = () => {
               <Tag
                 className="unselectable"
                 transition="0.2s all ease-in-out"
-                variantColor={
-                  selectedCategories?.includes("none") ? "cyan" : "yellow"
-                }
+                variantColor={selectedCategory === "none" ? "cyan" : "yellow"}
                 fontSize={
-                  selectedCategories?.includes("none")
+                  selectedCategory === "none"
                     ? ["1.5em", "2em"]
                     : ["1em", "1.7em"]
                 }
@@ -130,11 +130,20 @@ export const TagCategoryAssociation: FC = () => {
                 cursor="pointer"
                 onClick={async () => {
                   if (user) {
-                    if (selectedCategories?.includes("none")) {
-                      setSelectedCategories(undefined);
-                    } else {
-                      setSelectedCategories(["none"]);
-                    }
+                    setSelectedCategory("none");
+                    await wait(300);
+
+                    await answerTagCategoryAssociation({
+                      variables: {
+                        data: {
+                          tag: notAnsweredTag._id,
+                          categoryChosen: undefined,
+                          rejectedCategories: notAnsweredTag.categories.map(
+                            ({ _id }) => _id
+                          ),
+                        },
+                      },
+                    });
                   } else {
                     push("/login");
                   }
@@ -143,44 +152,6 @@ export const TagCategoryAssociation: FC = () => {
               >
                 Ninguna
               </Tag>
-              <Box alignSelf="center">
-                <Button
-                  leftIcon={FiPlay}
-                  variantColor={
-                    (selectedCategories?.length ?? 0) < 1 ? "gray" : "blue"
-                  }
-                  variant="ghost"
-                  size="lg"
-                  isLoading={loadingAnswer}
-                  cursor="pointer"
-                  isDisabled={(selectedCategories?.length ?? 0) < 1}
-                  onClick={async () => {
-                    if (user) {
-                      await answerTagCategoryAssociation({
-                        variables: {
-                          data: {
-                            tag: notAnsweredTag._id,
-                            categoriesChosen: selectedCategories?.includes(
-                              "none"
-                            )
-                              ? undefined
-                              : selectedCategories,
-                            rejectedCategories: notAnsweredTag.categories
-                              .filter(cat => {
-                                return !selectedCategories?.includes(cat._id);
-                              })
-                              .map(({ _id }) => _id),
-                          },
-                        },
-                      });
-                    } else {
-                      push("/login");
-                    }
-                  }}
-                >
-                  Enviar
-                </Button>
-              </Box>
             </Flex>
           </motion.div>
         ) : (

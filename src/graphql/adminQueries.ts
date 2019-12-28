@@ -242,10 +242,10 @@ export type IUser = {
       _id: string;
       name: string;
     };
-    categoriesChosen?: {
+    categoryChosen?: {
       _id: string;
       name: string;
-    }[];
+    };
     rejectedCategories: {
       _id: string;
       name: string;
@@ -257,10 +257,10 @@ export type IUser = {
       _id: string;
       filename: string;
     };
-    categoriesChosen?: {
+    categoryChosen?: {
       _id: string;
       name: string;
-    }[];
+    };
     rejectedCategories: {
       _id: string;
       name: string;
@@ -288,7 +288,7 @@ const UserFragment = gql`
         _id
         name
       }
-      categoriesChosen {
+      categoryChosen {
         _id
         name
       }
@@ -303,7 +303,7 @@ const UserFragment = gql`
         _id
         filename
       }
-      categoriesChosen {
+      categoryChosen {
         _id
         name
       }
@@ -374,10 +374,10 @@ export const RESET_TAG_CATEGORY_ASSOCIATIONS: DocumentNode<
         _id: string;
         name: string;
       };
-      categoriesChosen?: {
+      categoryChosen?: {
         _id: string;
         name: string;
-      }[];
+      };
       rejectedCategories: {
         _id: string;
         name: string;
@@ -395,7 +395,7 @@ export const RESET_TAG_CATEGORY_ASSOCIATIONS: DocumentNode<
         _id
         name
       }
-      categoriesChosen {
+      categoryChosen {
         _id
         name
       }
@@ -415,10 +415,10 @@ export const RESET_CATEGORY_IMAGE_ASSOCIATIONS: DocumentNode<
         _id: string;
         filename: string;
       };
-      categoriesChosen?: {
+      categoryChosen?: {
         _id: string;
         name: string;
-      }[];
+      };
       rejectedCategories: {
         _id: string;
         name: string;
@@ -436,7 +436,7 @@ export const RESET_CATEGORY_IMAGE_ASSOCIATIONS: DocumentNode<
         _id
         filename
       }
-      categoriesChosen {
+      categoryChosen {
         _id
         name
       }

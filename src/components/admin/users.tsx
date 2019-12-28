@@ -355,8 +355,8 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                 >
                   <TabList>
                     <Tab>Imágenes subidas</Tab>
-                    <Tab>Asociaciones de Etiquetas - Categorías</Tab>
-                    <Tab>Asociaciones de Imagenes - Categorías</Tab>
+                    <Tab>Asociaciones de Etiquetas - Categoría</Tab>
+                    <Tab>Asociaciones de Imagenes - Categoría</Tab>
                   </TabList>
                   <TabPanels>
                     <TabPanel>
@@ -486,23 +486,19 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                     </Tag>
                                   </Flex>
                                   <Flex mt={1} p={2} wrap="wrap">
-                                    <Tag>Eligió categorías:</Tag>
-                                    {!tagAssoc.categoriesChosen ? (
+                                    <Tag>Eligió categoría:</Tag>
+                                    {!tagAssoc.categoryChosen ? (
                                       <Tag ml={1} variantColor="gray">
-                                        Ninguno
+                                        Ninguna
                                       </Tag>
                                     ) : (
-                                      tagAssoc.categoriesChosen.map(tag => {
-                                        return (
-                                          <Tag
-                                            key={tag._id}
-                                            ml={1}
-                                            variantColor="green"
-                                          >
-                                            {tag.name}
-                                          </Tag>
-                                        );
-                                      })
+                                      <Tag
+                                        key={tagAssoc.categoryChosen._id}
+                                        ml={1}
+                                        variantColor="green"
+                                      >
+                                        {tagAssoc.categoryChosen.name}
+                                      </Tag>
                                     )}
                                   </Flex>
 
@@ -597,25 +593,19 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                     }}
                                   </LazyImage>
                                   <Flex mt={1} p={2} wrap="wrap">
-                                    <Tag>Eligió categorías:</Tag>
-                                    {!catImgAssoc.categoriesChosen ? (
+                                    <Tag>Eligió categoría:</Tag>
+                                    {!catImgAssoc.categoryChosen ? (
                                       <Tag ml={1} variantColor="gray">
-                                        Ninguno
+                                        Ninguna
                                       </Tag>
                                     ) : (
-                                      catImgAssoc.categoriesChosen.map(
-                                        category => {
-                                          return (
-                                            <Tag
-                                              key={category._id}
-                                              ml={1}
-                                              variantColor="green"
-                                            >
-                                              {category.name}
-                                            </Tag>
-                                          );
-                                        }
-                                      )
+                                      <Tag
+                                        key={catImgAssoc.categoryChosen._id}
+                                        ml={1}
+                                        variantColor="green"
+                                      >
+                                        {catImgAssoc.categoryChosen.name}
+                                      </Tag>
                                     )}
                                   </Flex>
 

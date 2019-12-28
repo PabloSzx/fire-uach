@@ -151,7 +151,7 @@ export const ANSWER_CATEGORY_IMAGE_ASSOCIATION: DocumentNode<
   {
     data: {
       image: string;
-      categoriesChosen?: string[];
+      categoryChosen?: string;
       rejectedCategories: string[];
     };
   }
@@ -200,7 +200,7 @@ export const ANSWER_TAG_CATEGORY_ASSOCIATION: DocumentNode<
   {
     data: {
       tag: string;
-      categoriesChosen?: string[];
+      categoryChosen?: string;
       rejectedCategories: string[];
     };
   }

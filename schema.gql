@@ -11,8 +11,8 @@ type Category {
 type CategoryImageAssociation {
   _id: ObjectId!
   user: User
-  categoriesChosen: [Category!]
-  rejectedCategories: [Tag!]!
+  categoryChosen: Category
+  rejectedCategories: [Category!]!
   image: Image
   location: Location
   updatedAt: DateTime!
@@ -20,7 +20,7 @@ type CategoryImageAssociation {
 }
 
 input CategoryImageAssociationAnswer {
-  categoriesChosen: [ObjectId!]
+  categoryChosen: ObjectId
   image: ObjectId!
   rejectedCategories: [ObjectId!]!
 }
@@ -168,8 +168,8 @@ type TagCategoryAssociation {
   _id: ObjectId!
   user: User
   tag: Tag
-  categoriesChosen: [Tag!]
-  rejectedCategories: [Tag!]!
+  categoryChosen: Category
+  rejectedCategories: [Category!]!
   location: Location
   updatedAt: DateTime!
   createdAt: DateTime!
@@ -177,7 +177,7 @@ type TagCategoryAssociation {
 
 input TagCategoryAssociationAnswer {
   tag: ObjectId!
-  categoriesChosen: [ObjectId!]
+  categoryChosen: ObjectId
   rejectedCategories: [ObjectId!]!
 }
 

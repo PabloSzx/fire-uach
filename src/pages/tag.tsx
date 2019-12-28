@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import { useWindowSize } from "react-use";
 
 import { Stack } from "@chakra-ui/core";
 
@@ -8,7 +9,7 @@ const TagGamePage: NextPage = () => {
   return (
     <Stack
       className="tagGamePage"
-      height="100vh"
+      height="calc(100vh - 70px)"
       justifyContent="center"
       alignItems="center"
     >

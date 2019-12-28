@@ -1,21 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { FC, useMemo, useState } from "react";
-import { FiPlay } from "react-icons/fi";
 import LazyImage from "react-lazy-progressive-image";
-import { useOrientation } from "react-use";
+import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import {
-  Box,
-  Button,
-  Flex,
-  Image,
-  Spinner,
-  Stack,
-  Tag,
-  Text,
-} from "@chakra-ui/core";
+import { Flex, Image, Spinner, Stack, Tag, Text } from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../constants";
 import {
@@ -29,8 +19,8 @@ import { LoadingPage } from "./LoadingPage";
 export const CategoryImageAssociation: FC = () => {
   const { user } = useUser();
   const { push } = useRouter();
-  const [selectedCategories, setSelectedCategories] = useState<
-    string[] | undefined
+  const [selectedCategory, setSelectedCategory] = useState<
+    string | undefined
   >();
 
   const {
@@ -51,7 +41,7 @@ export const CategoryImageAssociation: FC = () => {
     { loading: loadingAnswer },
   ] = useMutation(ANSWER_CATEGORY_IMAGE_ASSOCIATION, {
     update: (cache, { data }) => {
-      setSelectedCategories(undefined);
+      setSelectedCategory(undefined);
       cache.writeQuery({
         query: NOT_ANSWERED_IMAGE,
         data: {
@@ -64,8 +54,6 @@ export const CategoryImageAssociation: FC = () => {
   const shuffledCategories = useMemo(() => {
     return dataCategories?.categories ?? [];
   }, [dataCategories]);
-
-  const { type: orientation } = useOrientation();
 
   if (loadingNotAnsweredImage) {
     return <LoadingPage />;
@@ -112,7 +100,7 @@ export const CategoryImageAssociation: FC = () => {
 
             <Flex wrap="wrap" mt={5} justifyContent="center">
               {shuffledCategories.map(({ _id, name }) => {
-                const selected = selectedCategories?.includes(_id) ?? false;
+                const selected = selectedCategory === _id;
                 return (
                   <Tag
                     className="unselectable"
@@ -126,19 +114,21 @@ export const CategoryImageAssociation: FC = () => {
                     overflowWrap="break-word"
                     onClick={async () => {
                       if (user) {
-                        if (selectedCategories?.includes(_id)) {
-                          setSelectedCategories(categories =>
-                            categories?.filter(cat => cat !== _id)
-                          );
-                        } else {
-                          setSelectedCategories(categories => {
-                            return [
-                              ...(categories?.filter(cat => cat !== "none") ??
-                                []),
-                              _id,
-                            ];
-                          });
-                        }
+                        setSelectedCategory(_id);
+                        await wait(300);
+                        await answerCategoryImageAssociation({
+                          variables: {
+                            data: {
+                              image: notAnsweredImage._id,
+                              categoryChosen: _id,
+                              rejectedCategories: shuffledCategories
+                                .filter(cat => {
+                                  return cat._id !== _id;
+                                })
+                                .map(({ _id }) => _id),
+                            },
+                          },
+                        });
                       } else {
                         await push("/login");
                       }
@@ -151,11 +141,9 @@ export const CategoryImageAssociation: FC = () => {
               <Tag
                 className="unselectable"
                 transition="0.2s all ease-in-out"
-                variantColor={
-                  selectedCategories?.includes("none") ? "cyan" : "yellow"
-                }
+                variantColor={selectedCategory === "none" ? "cyan" : "yellow"}
                 fontSize={
-                  selectedCategories?.includes("none")
+                  selectedCategory === "none"
                     ? ["1.5em", "2em"]
                     : ["1em", "1.7em"]
                 }
@@ -164,11 +152,19 @@ export const CategoryImageAssociation: FC = () => {
                 cursor="pointer"
                 onClick={async () => {
                   if (user) {
-                    if (selectedCategories?.includes("none")) {
-                      setSelectedCategories(undefined);
-                    } else {
-                      setSelectedCategories(["none"]);
-                    }
+                    setSelectedCategory("none");
+                    await wait(300);
+                    await answerCategoryImageAssociation({
+                      variables: {
+                        data: {
+                          image: notAnsweredImage._id,
+                          categoryChosen: undefined,
+                          rejectedCategories: shuffledCategories.map(
+                            ({ _id }) => _id
+                          ),
+                        },
+                      },
+                    });
                   } else {
                     push("/login");
                   }
@@ -177,44 +173,6 @@ export const CategoryImageAssociation: FC = () => {
               >
                 Ninguna
               </Tag>
-              <Box alignSelf="center">
-                <Button
-                  leftIcon={FiPlay}
-                  variantColor={
-                    (selectedCategories?.length ?? 0) < 1 ? "gray" : "blue"
-                  }
-                  variant="ghost"
-                  size="lg"
-                  cursor="pointer"
-                  isDisabled={(selectedCategories?.length ?? 0) < 1}
-                  isLoading={loadingAnswer}
-                  onClick={async () => {
-                    if (user) {
-                      await answerCategoryImageAssociation({
-                        variables: {
-                          data: {
-                            image: notAnsweredImage._id,
-                            categoriesChosen: selectedCategories?.includes(
-                              "none"
-                            )
-                              ? undefined
-                              : selectedCategories,
-                            rejectedCategories: shuffledCategories
-                              .filter(cat => {
-                                return !selectedCategories?.includes(cat._id);
-                              })
-                              .map(({ _id }) => _id),
-                          },
-                        },
-                      });
-                    } else {
-                      push("/login");
-                    }
-                  }}
-                >
-                  Enviar
-                </Button>
-              </Box>
             </Flex>
           </motion.div>
         ) : (

@@ -25,11 +25,11 @@ export class CategoryImageAssociation extends TimeStamps {
   @Property({ ref: "User", index: true })
   user?: Ref<User>;
 
-  @Field(() => [Category], { nullable: true })
-  @PropertyArray({ items: "Category", ref: "Category" })
-  categoriesChosen?: Ref<Category>[];
+  @Field(() => Category, { nullable: true })
+  @PropertyArray({ ref: "Category" })
+  categoryChosen?: Ref<Category>;
 
-  @Field(() => Tag)
+  @Field(() => [Category])
   @PropertyArray({ items: "Category", ref: "Category", default: [] })
   rejectedCategories?: Ref<Category>[];
 
@@ -55,8 +55,8 @@ export const CategoryImageAssociationModel = getModelForClass(
 @InputType()
 export class CategoryImageAssociationAnswer
   implements Partial<CategoryImageAssociation> {
-  @Field(() => [ObjectIdScalar], { nullable: true })
-  categoriesChosen?: ObjectId[];
+  @Field(() => ObjectIdScalar, { nullable: true })
+  categoryChosen?: ObjectId;
 
   @Field(() => ObjectIdScalar)
   image: ObjectId;
