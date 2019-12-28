@@ -97,10 +97,6 @@ export class ImageResolver {
         }
       );
 
-      user.imagesUploaded = user.imagesUploaded?.concat(imageDoc._id) ?? [
-        imageDoc._id,
-      ];
-
       let resizedImage: Buffer | undefined;
 
       if (width && width > 1920) {
@@ -117,7 +113,6 @@ export class ImageResolver {
       });
       await Promise.all([
         uploadFileGridFSBuffer(optimizedImage, filename, imageDoc._id),
-        user.save(),
         new Promise(async (resolve, reject) => {
           try {
             const { size, width, height } = await sharp(
