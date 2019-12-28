@@ -161,6 +161,7 @@ export type IImage = {
   filename: string;
   validated: boolean;
   uploader?: { _id: string; email: string };
+  updatedAt: string;
 };
 
 const ImageFragment = gql`
@@ -172,6 +173,7 @@ const ImageFragment = gql`
       _id
       email
     }
+    updatedAt
   }
 `;
 
@@ -235,6 +237,7 @@ export type IUser = {
   imagesUploaded: {
     _id: string;
     filename: string;
+    updatedAt: string;
   }[];
   tagCategoryAssociations: {
     _id: string;
@@ -281,6 +284,7 @@ const UserFragment = gql`
     imagesUploaded {
       _id
       filename
+      updatedAt
     }
     tagCategoryAssociations {
       _id

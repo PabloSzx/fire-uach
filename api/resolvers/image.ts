@@ -132,7 +132,7 @@ export class ImageResolver {
         uploader: user._id,
         active: true,
       }).sort({
-        updatedAt: -1,
+        updatedAt: "desc",
       });
     } catch (err) {
       console.error(40, err);
@@ -217,12 +217,16 @@ export class ImageResolver {
   async images() {
     return await ImageModel.find({
       active: true,
+    }).sort({
+      updatedAt: "desc",
     });
   }
 
   @Query(() => [Image])
   async validatedImages() {
-    return await ImageModel.find({ validated: true, active: true });
+    return await ImageModel.find({ validated: true, active: true }).sort({
+      updatedAt: "desc",
+    });
   }
 
   @Authorized()
@@ -232,7 +236,7 @@ export class ImageResolver {
       uploader: user?._id,
       active: true,
     }).sort({
-      updatedAt: -1,
+      updatedAt: "desc",
     });
   }
 
@@ -252,6 +256,8 @@ export class ImageResolver {
 
     return await ImageModel.find({
       active: true,
+    }).sort({
+      updatedAt: "desc",
     });
   }
 
@@ -270,6 +276,8 @@ export class ImageResolver {
 
     return await ImageModel.find({
       active: true,
+    }).sort({
+      updatedAt: "desc",
     });
   }
 

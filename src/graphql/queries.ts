@@ -6,10 +6,6 @@ export type IUser = {
   _id: string;
   email: string;
   admin: boolean;
-  imagesUploaded: {
-    _id: string;
-    filename: string;
-  }[];
 };
 
 export const CurrentUserFragment = gql`
@@ -17,10 +13,6 @@ export const CurrentUserFragment = gql`
     _id
     email
     admin
-    imagesUploaded {
-      _id
-      filename
-    }
   }
 `;
 
@@ -78,12 +70,13 @@ export const SIGN_UP: DocumentNode<
 `;
 
 export const OWN_IMAGES: DocumentNode<{
-  ownImages: { _id: string; filename: string }[];
+  ownImages: { _id: string; filename: string; updatedAt: string }[];
 }> = gql`
   query {
     ownImages {
       _id
       filename
+      updatedAt
     }
   }
 `;

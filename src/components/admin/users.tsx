@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+import esLocale from "date-fns/locale/es";
 import { chunk, isEqual, toInteger } from "lodash";
 import { ChangeEvent, FC, Fragment, useMemo, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
@@ -400,6 +402,20 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                           maxH="30vh"
                                           maxW="70vw"
                                         />
+                                        <Box>
+                                          <Tag>Fecha subida:</Tag>
+
+                                          <Tag variantColor="blue">
+                                            {format(
+                                              new Date(image.updatedAt),
+                                              "PPPPpppp",
+                                              {
+                                                locale: esLocale,
+                                              }
+                                            )}
+                                          </Tag>
+                                        </Box>
+
                                         <Confirm
                                           header={`¿Estás seguro que quieres eliminar la imagen ${image.filename}?`}
                                           content="Será eliminada permanentemente"

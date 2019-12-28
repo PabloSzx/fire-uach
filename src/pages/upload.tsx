@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+import esLocale from "date-fns/locale/es";
 import { chunk, toInteger } from "lodash";
 import { NextPage } from "next";
 import { useMemo } from "react";
@@ -9,7 +11,18 @@ import { Pagination } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Box, Flex, Icon, Image, Spinner, Stack, Text } from "@chakra-ui/core";
+import {
+  Box,
+  Divider,
+  Flex,
+  Heading,
+  Icon,
+  Image,
+  Spinner,
+  Stack,
+  Tag,
+  Text,
+} from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../constants";
 import { useUser } from "../components/Auth";
@@ -103,21 +116,27 @@ const UploadPage: NextPage = () => {
   return (
     <Stack pt="2em" align="center" justify="space-around" spacing="2em">
       {errorUpload && <Text>{JSON.stringify(errorUpload, null, 2)}</Text>}
-      <Flex
+      <Box
         {...getRootProps()}
-        justify="center"
         cursor="pointer"
         borderRadius="5px"
         border="3px solid"
         p={2}
       >
         <input {...getInputProps()} />
-        <Icon name="add" size="3em" />
-        <Box as={IoIosImages} size="3em" />
-      </Flex>
+        <Flex justify="center">
+          <Icon name="add" size="3em" />
+          <Box as={IoIosImages} size="3em" />
+        </Flex>
+        <Text>Sube tus propias imágenes</Text>
+      </Box>
 
       {uploadingImageSpinner}
+      <Divider width="100%" />
       <Stack align="center" spacing={5}>
+        <Box>
+          <Heading>Imágenes subidas por tí</Heading>
+        </Box>
         <Box>
           <Pagination
             activePage={activePagination}
@@ -139,7 +158,13 @@ const UploadPage: NextPage = () => {
                 >
                   {(src, loading) => {
                     return (
-                      <Stack align="center" spacing={3}>
+                      <Stack
+                        align="center"
+                        spacing={3}
+                        border="1px solid"
+                        borderRadius="5px"
+                        p={5}
+                      >
                         {loading && <Spinner />}
                         <Image
                           objectFit="contain"
@@ -149,6 +174,15 @@ const UploadPage: NextPage = () => {
                           maxW="90vw"
                           src={src}
                         />
+                        <Box>
+                          <Tag>Fecha subida:</Tag>
+
+                          <Tag variantColor="blue">
+                            {format(new Date(image.updatedAt), "PPPPpppp", {
+                              locale: esLocale,
+                            })}
+                          </Tag>
+                        </Box>
                       </Stack>
                     );
                   }}
