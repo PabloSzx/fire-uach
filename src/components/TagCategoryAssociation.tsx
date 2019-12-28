@@ -66,7 +66,8 @@ export const TagCategoryAssociation: FC = () => {
               <Badge
                 overflowWrap="break-word"
                 p={5}
-                fontSize="3em"
+                m={5}
+                fontSize={["2em", "2.5em", "3em"]}
                 variant="solid"
                 variantColor="green"
                 whiteSpace="break-spaces"
