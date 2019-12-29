@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
 import { chunk, compact, toInteger, uniq } from "lodash";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import Select from "react-select";
 import { Checkbox, Icon, Pagination } from "semantic-ui-react";
@@ -207,14 +207,17 @@ const AdminImages: FC = () => {
   });
 
   const filteredImages = useMemo(() => {
+    const selectedUsersMap = selectedUsers.reduce<Record<string, boolean>>(
+      (acum, { value }) => {
+        acum[value] = true;
+        return acum;
+      },
+      {}
+    );
     return (
       dataImages?.images.filter(image => {
         if (selectedUsers.length > 0) {
-          if (
-            selectedUsers.findIndex(selectedUser => {
-              return selectedUser.value === image.uploader?.email;
-            }) === -1
-          ) {
+          if (!image.uploader || !selectedUsersMap[image.uploader.email]) {
             return false;
           }
         }
@@ -237,6 +240,12 @@ const AdminImages: FC = () => {
   const paginatedImages = useMemo(() => {
     return chunk(filteredImages, 10) ?? [];
   }, [filteredImages]);
+
+  useEffect(() => {
+    if (paginatedImages.length && activePagination > paginatedImages.length) {
+      setActivePagination(1);
+    }
+  }, [activePagination, paginatedImages, setActivePagination]);
 
   return (
     <Stack pt={5} spacing="2em" align="center">
