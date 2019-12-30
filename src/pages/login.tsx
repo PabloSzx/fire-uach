@@ -59,7 +59,9 @@ const LoginPage: NextPage = () => {
     switch (route) {
       case "/profile":
       case "/upload":
-      case "/admin":
+      case "/games":
+      case "/tag":
+      case "image":
       case "/": {
         push(route);
         break;

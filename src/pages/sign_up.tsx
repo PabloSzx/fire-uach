@@ -80,6 +80,9 @@ const SignUpPage: NextPage = () => {
     switch (route) {
       case "/profile":
       case "/upload":
+      case "/games":
+      case "/tag":
+      case "image":
       case "/": {
         push(route);
         break;

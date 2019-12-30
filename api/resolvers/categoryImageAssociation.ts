@@ -28,7 +28,13 @@ import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => CategoryImageAssociation)
 export class CategoryImageAssociationResolver {
-  async notAnsweredImageQuery(user?: ObjectId) {
+  async notAnsweredImageQuery({
+    user,
+    onlyOwnImages,
+  }: {
+    user?: ObjectId;
+    onlyOwnImages: boolean;
+  }) {
     const filterImages: {
       validated?: true;
       _id?: {
@@ -36,14 +42,7 @@ export class CategoryImageAssociationResolver {
           $in: Ref<Image>[];
         };
       };
-      $or?: [
-        {
-          uploader: ObjectId;
-        },
-        {
-          validated: true;
-        }
-      ];
+      uploader?: ObjectId;
     } = {};
 
     if (user) {
@@ -62,14 +61,11 @@ export class CategoryImageAssociationResolver {
         },
       };
 
-      filterImages.$or = [
-        {
-          uploader: user,
-        },
-        {
-          validated: true,
-        },
-      ];
+      if (onlyOwnImages) {
+        filterImages.uploader = user;
+      } else {
+        filterImages.validated = true;
+      }
     } else {
       filterImages.validated = true;
     }
@@ -104,8 +100,14 @@ export class CategoryImageAssociationResolver {
   }
 
   @Query(() => Image, { nullable: true })
-  async notAnsweredImage(@Ctx() { user }: IContext) {
-    return await this.notAnsweredImageQuery(user?._id);
+  async notAnsweredImage(
+    @Ctx() { user }: IContext,
+    @Arg("onlyOwnImages", { defaultValue: false }) onlyOwnImages: boolean
+  ) {
+    return await this.notAnsweredImageQuery({
+      user: user?._id,
+      onlyOwnImages,
+    });
   }
 
   @Authorized()
@@ -117,7 +119,8 @@ export class CategoryImageAssociationResolver {
       image,
       categoryChosen,
       rejectedCategories,
-    }: CategoryImageAssociationAnswer
+    }: CategoryImageAssociationAnswer,
+    @Arg("onlyOwnImages", { defaultValue: false }) onlyOwnImages: boolean
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
     await CategoryImageAssociationModel.findOneAndUpdate(
@@ -135,7 +138,7 @@ export class CategoryImageAssociationResolver {
       }
     );
 
-    return await this.notAnsweredImageQuery(user._id);
+    return await this.notAnsweredImageQuery({ user: user._id, onlyOwnImages });
   }
 
   @FieldResolver()

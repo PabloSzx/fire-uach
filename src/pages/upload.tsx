@@ -26,6 +26,8 @@ import {
 
 import { imagePlaceholder } from "../../constants";
 import { useUser } from "../components/Auth";
+import { CategoriesContextContainer } from "../components/Categories";
+import { CategoryImageAssociation } from "../components/CategoryImageAssociation";
 import { LoadingPage } from "../components/LoadingPage";
 import { OWN_IMAGES, UPLOAD_IMAGE } from "../graphql/queries";
 
@@ -115,6 +117,11 @@ const UploadPage: NextPage = () => {
 
   return (
     <Stack pt="2em" align="center" justify="space-around" spacing="2em">
+      <CategoriesContextContainer>
+        <CategoryImageAssociation onlyOwnImages />
+      </CategoriesContextContainer>
+      <Divider width="100%" />
+
       {errorUpload && <Text>{JSON.stringify(errorUpload, null, 2)}</Text>}
       <Box
         {...getRootProps()}
@@ -128,7 +135,7 @@ const UploadPage: NextPage = () => {
           <Icon name="add" size="3em" />
           <Box as={IoIosImages} size="3em" />
         </Flex>
-        <Text>Sube tus propias imágenes</Text>
+        <Text m={1}>Haz click aquí para subir imágenes</Text>
       </Box>
 
       {uploadingImageSpinner}

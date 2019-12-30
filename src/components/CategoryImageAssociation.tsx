@@ -16,7 +16,9 @@ import { useUser } from "./Auth";
 import { CategoriesContext } from "./Categories";
 import { LoadingPage } from "./LoadingPage";
 
-export const CategoryImageAssociation: FC = () => {
+export const CategoryImageAssociation: FC<{
+  onlyOwnImages?: boolean;
+}> = ({ onlyOwnImages }) => {
   const { user } = useUser();
   const { push } = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<
@@ -30,6 +32,9 @@ export const CategoryImageAssociation: FC = () => {
   } = useQuery(NOT_ANSWERED_IMAGE, {
     fetchPolicy: "cache-and-network",
     ssr: false,
+    variables: {
+      onlyOwnImages,
+    },
   });
 
   if (errorNotAnsweredImage) {
@@ -42,6 +47,9 @@ export const CategoryImageAssociation: FC = () => {
         setSelectedCategory(undefined);
         cache.writeQuery({
           query: NOT_ANSWERED_IMAGE,
+          variables: {
+            onlyOwnImages,
+          },
           data: {
             notAnsweredImage: data?.answerCategoryImageAssociation,
           },
@@ -63,7 +71,7 @@ export const CategoryImageAssociation: FC = () => {
       <AnimatePresence>
         {notAnsweredImage ? (
           <motion.div
-            key={notAnsweredImage._id}
+            key={notAnsweredImage?._id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, display: "none" }}
@@ -124,6 +132,7 @@ export const CategoryImageAssociation: FC = () => {
                                 })
                                 .map(({ _id }) => _id),
                             },
+                            onlyOwnImages,
                           },
                         });
                       } else {
@@ -160,6 +169,7 @@ export const CategoryImageAssociation: FC = () => {
                             ({ _id }) => _id
                           ),
                         },
+                        onlyOwnImages,
                       },
                     });
                   } else {
@@ -179,7 +189,9 @@ export const CategoryImageAssociation: FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, display: "none" }}
           >
-            <Text>Puede subir más imágenes para seguir jugando</Text>
+            <Text p={4} border="1px solid" borderRadius="10px">
+              Puedes subir más imágenes para seguir jugando
+            </Text>
           </motion.div>
         )}
       </AnimatePresence>

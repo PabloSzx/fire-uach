@@ -118,7 +118,7 @@ type Mutation {
   resetTagCategoryAssociations(user: ObjectId!): [TagCategoryAssociation!]!
   answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): Tag
   resetCategoryImageAssociations(user: ObjectId!): [CategoryImageAssociation!]!
-  answerCategoryImageAssociation(data: CategoryImageAssociationAnswer!): Image
+  answerCategoryImageAssociation(onlyOwnImages: Boolean = false, data: CategoryImageAssociationAnswer!): Image
   editUser(data: EditUser!): [User!]!
   removeUser(id: ObjectId!): [User!]!
 }
@@ -137,7 +137,7 @@ type Query {
   resultsTagCategoryAssociations: [TagCategoryAssociation!]!
   notAnsweredTag: Tag
   resultsCategoryImageAssociations: [CategoryImageAssociation!]!
-  notAnsweredImage: Image
+  notAnsweredImage(onlyOwnImages: Boolean = false): Image
   allUsers: [User!]!
 }
 

@@ -120,14 +120,19 @@ export const LOGOUT: DocumentNode = gql`
   }
 `;
 
-export const NOT_ANSWERED_IMAGE: DocumentNode<{
-  notAnsweredImage?: {
-    _id: string;
-    filename: string;
-  };
-}> = gql`
-  query {
-    notAnsweredImage {
+export const NOT_ANSWERED_IMAGE: DocumentNode<
+  {
+    notAnsweredImage?: {
+      _id: string;
+      filename: string;
+    };
+  },
+  {
+    onlyOwnImages?: boolean;
+  }
+> = gql`
+  query($onlyOwnImages: Boolean) {
+    notAnsweredImage(onlyOwnImages: $onlyOwnImages) {
       _id
       filename
     }
@@ -142,6 +147,8 @@ export const ANSWER_CATEGORY_IMAGE_ASSOCIATION: DocumentNode<
     };
   },
   {
+    onlyOwnImages?: boolean;
+
     data: {
       image: string;
       categoryChosen?: string;
@@ -149,8 +156,8 @@ export const ANSWER_CATEGORY_IMAGE_ASSOCIATION: DocumentNode<
     };
   }
 > = gql`
-  mutation($data: CategoryImageAssociationAnswer!) {
-    answerCategoryImageAssociation(data: $data) {
+  mutation($data: CategoryImageAssociationAnswer!, $onlyOwnImages: Boolean) {
+    answerCategoryImageAssociation(data: $data, onlyOwnImages: $onlyOwnImages) {
       _id
       filename
     }

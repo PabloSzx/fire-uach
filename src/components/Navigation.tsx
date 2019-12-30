@@ -1,10 +1,11 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { FC } from "react";
 import {
-  AiFillCamera,
+  AiFillFire,
   AiFillHome,
   AiFillSetting,
-  AiOutlineCamera,
+  AiOutlineFire,
   AiOutlineHome,
   AiOutlinePoweroff,
   AiOutlineSetting,
@@ -46,19 +47,24 @@ export const Navigation: FC = () => {
           }}
         />
       </FakeHref>
-
-      <FakeHref href="/upload">
+      <FakeHref href="/games">
         <Box
-          as={pathname === "/upload" ? AiFillCamera : AiOutlineCamera}
+          as={(() => {
+            switch (pathname) {
+              case "/games":
+              case "/tag":
+              case "/image":
+              case "/upload":
+                return AiFillFire;
+              default:
+                return AiOutlineFire;
+            }
+          })()}
           color="black"
           fontSize="2em"
           onClick={() => {
             refetch();
-            if (user) {
-              push("/upload");
-            } else {
-              push("/login?route=/upload");
-            }
+            push("/games");
           }}
         />
       </FakeHref>
@@ -78,33 +84,47 @@ export const Navigation: FC = () => {
           }}
         />
       </FakeHref>
-
-      {user?.admin && (
-        <FakeHref href="/admin">
-          <Box
-            as={pathname === "/admin" ? AiFillSetting : AiOutlineSetting}
-            color="black"
-            fontSize="2em"
-            onClick={() => {
-              refetch();
-              push("/admin");
-            }}
-          />
-        </FakeHref>
-      )}
-
-      {user && (
-        <FakeHref href="/logout">
-          <Box
-            as={AiOutlinePoweroff}
-            color={pathname === "/logout" ? "rgb(255,0,0)" : "black"}
-            fontSize="2em"
-            onClick={() => {
-              push("/logout");
-            }}
-          />
-        </FakeHref>
-      )}
+      <AnimatePresence>
+        {user?.admin && (
+          <motion.div
+            key="admin"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, display: "none" }}
+          >
+            <FakeHref href="/admin">
+              <Box
+                as={pathname === "/admin" ? AiFillSetting : AiOutlineSetting}
+                color="black"
+                fontSize="2em"
+                onClick={() => {
+                  refetch();
+                  push("/admin");
+                }}
+              />
+            </FakeHref>
+          </motion.div>
+        )}
+        {user && (
+          <motion.div
+            key="logout"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, display: "none" }}
+          >
+            <FakeHref href="/logout">
+              <Box
+                as={AiOutlinePoweroff}
+                color={pathname === "/logout" ? "rgb(255,0,0)" : "black"}
+                fontSize="2em"
+                onClick={() => {
+                  push("/logout");
+                }}
+              />
+            </FakeHref>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Flex>
   );
 };
