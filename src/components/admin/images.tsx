@@ -34,7 +34,7 @@ const ImageEdit: FC<IImage> = ({
   filename,
   uploader,
   validated,
-  updatedAt,
+  uploadedAt,
 }) => {
   const [editImage] = useMutation(EDIT_IMAGE);
   const [removeImage, { loading: loadingRemoveImage }] = useMutation(
@@ -100,7 +100,7 @@ const ImageEdit: FC<IImage> = ({
         <Tag>Fecha subida:</Tag>
 
         <Tag variantColor="blue">
-          {format(new Date(updatedAt), "PPPPpppp", {
+          {format(new Date(uploadedAt), "PPPPpppp", {
             locale: esLocale,
           })}
         </Tag>

@@ -89,6 +89,7 @@ export class ImageResolver {
           size,
           width,
           height,
+          uploadedAt: new Date(),
         },
         {
           new: true,
@@ -279,6 +280,19 @@ export class ImageResolver {
     }).sort({
       updatedAt: "desc",
     });
+  }
+
+  @FieldResolver()
+  async uploadedAt(@Root() { uploadedAt, createdAt, _id }: Partial<Image>) {
+    if (!uploadedAt) {
+      ImageModel.findByIdAndUpdate(_id, {
+        uploadedAt: createdAt,
+      })
+        .then(() => {})
+        .catch(() => {});
+      return createdAt;
+    }
+    return uploadedAt;
   }
 
   @FieldResolver()

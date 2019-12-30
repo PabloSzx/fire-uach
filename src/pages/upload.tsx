@@ -185,7 +185,7 @@ const UploadPage: NextPage = () => {
                           <Tag>Fecha subida:</Tag>
 
                           <Tag variantColor="blue">
-                            {format(new Date(image.updatedAt), "PPPPpppp", {
+                            {format(new Date(image.uploadedAt), "PPPPpppp", {
                               locale: esLocale,
                             })}
                           </Tag>

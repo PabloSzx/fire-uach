@@ -48,6 +48,10 @@ export class Image extends TimeStamps {
   height?: number;
 
   @Field(() => Date)
+  @Property()
+  uploadedAt: Date;
+
+  @Field(() => Date)
   readonly updatedAt: Readonly<Date>;
 
   @Field(() => Date)

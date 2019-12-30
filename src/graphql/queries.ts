@@ -70,13 +70,13 @@ export const SIGN_UP: DocumentNode<
 `;
 
 export const OWN_IMAGES: DocumentNode<{
-  ownImages: { _id: string; filename: string; updatedAt: string }[];
+  ownImages: { _id: string; filename: string; uploadedAt: string }[];
 }> = gql`
   query {
     ownImages {
       _id
       filename
-      updatedAt
+      uploadedAt
     }
   }
 `;

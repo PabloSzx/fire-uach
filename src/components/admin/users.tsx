@@ -407,7 +407,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
 
                                           <Tag variantColor="blue">
                                             {format(
-                                              new Date(image.updatedAt),
+                                              new Date(image.uploadedAt),
                                               "PPPPpppp",
                                               {
                                                 locale: esLocale,

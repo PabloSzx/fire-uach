@@ -85,6 +85,7 @@ type Image {
   size: Float
   width: Float
   height: Float
+  uploadedAt: DateTime!
   updatedAt: DateTime!
   createdAt: DateTime!
 }
