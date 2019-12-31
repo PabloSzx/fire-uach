@@ -30,8 +30,8 @@ const IndexPage: NextPage = () => {
         maxHeight="50vh"
       />
       <Text fontSize="1.5em" textAlign="center">
-        Ayudanos a identificar sus caracteristicas asociandolas a conceptos e
-        imagenes, y tambien al compartir tus fotos que las representen.
+        Ayúdanos a identificar sus características asociandolas a conceptos e
+        imágenes, y también al compartir tus fotos que las representen.
       </Text>
       <Text fontSize="1.5em" textAlign="center">
         Recibiras tips en el camino, y al que más participe durante febrero 2020
