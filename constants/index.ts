@@ -13,4 +13,9 @@ export enum UserType {
   student = "student",
   other = "other",
 }
+export enum GameType {
+  Tag = "Tag",
+  Image = "Image",
+  Any = "Any",
+}
 export const imagePlaceholder = "/placeholder_image.png";

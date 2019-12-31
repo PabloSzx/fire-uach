@@ -32,7 +32,7 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
           <Box pos="relative" pb="70px">
             <Component {...pageProps} />
           </Box>
-          <ToastContainer />
+          <ToastContainer autoClose={10000} />
         </ThemeProvider>
       </ApolloProvider>
     );

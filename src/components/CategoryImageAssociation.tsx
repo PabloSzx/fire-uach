@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import wait from "waait";
 
@@ -12,6 +12,7 @@ import {
   ANSWER_CATEGORY_IMAGE_ASSOCIATION,
   NOT_ANSWERED_IMAGE,
 } from "../graphql/queries";
+import { tipAnswerImage } from "../utils/tips";
 import { useUser } from "./Auth";
 import { CategoriesContext } from "./Categories";
 import { LoadingPage } from "./LoadingPage";
@@ -44,6 +45,7 @@ export const CategoryImageAssociation: FC<{
     ANSWER_CATEGORY_IMAGE_ASSOCIATION,
     {
       update: (cache, { data }) => {
+        tipAnswerImage();
         setSelectedCategory(undefined);
         cache.writeQuery({
           query: NOT_ANSWERED_IMAGE,
@@ -59,6 +61,10 @@ export const CategoryImageAssociation: FC<{
   );
 
   const shuffledCategories = useContext(CategoriesContext);
+
+  useEffect(() => {
+    tipAnswerImage();
+  }, []);
 
   if (loadingNotAnsweredImage) {
     return <LoadingPage />;

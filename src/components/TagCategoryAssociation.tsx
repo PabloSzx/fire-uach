@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { intersectionBy } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -11,6 +11,7 @@ import {
   ANSWER_TAG_CATEGORY_ASSOCIATION,
   NOT_ANSWERED_TAG,
 } from "../graphql/queries";
+import { tipAnswerTag } from "../utils/tips";
 import { useUser } from "./Auth";
 import { CategoriesContext } from "./Categories";
 import { LoadingPage } from "./LoadingPage";
@@ -37,6 +38,7 @@ export const TagCategoryAssociation: FC = () => {
     ANSWER_TAG_CATEGORY_ASSOCIATION,
     {
       update: (cache, { data }) => {
+        tipAnswerTag();
         setSelectedCategory(undefined);
         cache.writeQuery({
           query: NOT_ANSWERED_TAG,
@@ -49,6 +51,10 @@ export const TagCategoryAssociation: FC = () => {
   );
 
   const shuffledCategories = useContext(CategoriesContext);
+
+  useEffect(() => {
+    tipAnswerTag();
+  }, []);
 
   if (loadingNotAnsweredTag) {
     return <LoadingPage />;
