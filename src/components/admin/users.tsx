@@ -652,9 +652,19 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                     </TabPanel>
                     <TabPanel>
                       <Stack>
-                        {readTips.map(tip => {
-                          return <Tag key={tip._id} mt="1em">{tip.text}</Tag>;
-                        })}
+                        {readTips.length === 0 ? (
+                          <Text p="2em" textAlign="center">
+                            Sin tips recibidos
+                          </Text>
+                        ) : (
+                          readTips.map(tip => {
+                            return (
+                              <Tag key={tip._id} mt="1em">
+                                {tip.text}
+                              </Tag>
+                            );
+                          })
+                        )}
                       </Stack>
                     </TabPanel>
                   </TabPanels>
