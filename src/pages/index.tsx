@@ -50,6 +50,7 @@ const IndexPage: NextPage = () => {
         socioecosistemas en Chile:
       </Paragraph>
       <Image
+        alignSelf="center"
         src="/introduction.png"
         width="100%"
         height="100%"
