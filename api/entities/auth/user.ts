@@ -3,13 +3,19 @@ import { ObjectId } from "mongodb";
 import { generate } from "randomstring";
 import { Field, InputType, ObjectType } from "type-graphql";
 
-import { getModelForClass, prop as Property } from "@typegoose/typegoose";
+import {
+  arrayProp as PropertyArray,
+  getModelForClass,
+  prop as Property,
+  Ref,
+} from "@typegoose/typegoose";
 
 import { UserType } from "../../../constants";
 import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
 import { CategoryImageAssociation } from "../associations/categoryImageAssociation";
 import { TagCategoryAssociation } from "../associations/tagCategoryAssociation";
 import { Image } from "../image";
+import { Tip } from "../tip";
 
 @ObjectType()
 export class User {
@@ -63,6 +69,10 @@ export class User {
 
   @Field(() => [CategoryImageAssociation])
   categoryImageAssociations: CategoryImageAssociation[];
+
+  @Field(() => [Tip])
+  @PropertyArray({ items: "Tip", ref: "Tip", default: [] })
+  readTips: Ref<Tip>[];
 
   @Property({ default: true })
   active: boolean;

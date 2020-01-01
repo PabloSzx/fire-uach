@@ -8,11 +8,11 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Flex, Image, Spinner, Stack, Tag, Text } from "@chakra-ui/core";
 
 import { imagePlaceholder } from "../../constants";
+import { useTip } from "../components/Tip";
 import {
   ANSWER_CATEGORY_IMAGE_ASSOCIATION,
   NOT_ANSWERED_IMAGE,
 } from "../graphql/queries";
-import { tipAnswerImage } from "../utils/tips";
 import { useUser } from "./Auth";
 import { CategoriesContext } from "./Categories";
 import { LoadingPage } from "./LoadingPage";
@@ -20,6 +20,9 @@ import { LoadingPage } from "./LoadingPage";
 export const CategoryImageAssociation: FC<{
   onlyOwnImages?: boolean;
 }> = ({ onlyOwnImages }) => {
+  const tipAnswerImage = useTip({
+    tipOnStart: true,
+  });
   const { user } = useUser();
   const { push } = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<

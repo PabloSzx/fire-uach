@@ -269,6 +269,11 @@ export type IUser = {
       name: string;
     }[];
   }[];
+  readTips: {
+    _id: string;
+    text: string;
+    priority: number;
+  }[];
 };
 
 const UserFragment = gql`
@@ -315,6 +320,11 @@ const UserFragment = gql`
         _id
         name
       }
+    }
+    readTips {
+      _id
+      text
+      priority
     }
   }
 `;
@@ -450,4 +460,83 @@ export const RESET_CATEGORY_IMAGE_ASSOCIATIONS: DocumentNode<
       }
     }
   }
+`;
+
+export type ITip = {
+  _id: string;
+  text: string;
+  priority: number;
+};
+
+const TipFragment = gql`
+  fragment TipFragment on Tip {
+    _id
+    text
+    priority
+  }
+`;
+
+export const ALL_TIPS: DocumentNode<{
+  allTips: ITip[];
+}> = gql`
+  query {
+    allTips {
+      ...TipFragment
+    }
+  }
+  ${TipFragment}
+`;
+
+export const CREATE_TIP: DocumentNode<
+  {
+    createTip: ITip[];
+  },
+  {
+    data: {
+      text: string;
+    };
+  }
+> = gql`
+  mutation($data: CreateTip!) {
+    createTip(data: $data) {
+      ...TipFragment
+    }
+  }
+  ${TipFragment}
+`;
+
+export const REMOVE_TIP: DocumentNode<
+  {
+    removeTip: ITip[];
+  },
+  {
+    _id: string;
+  }
+> = gql`
+  mutation($_id: ObjectId!) {
+    removeTip(_id: $_id) {
+      ...TipFragment
+    }
+  }
+  ${TipFragment}
+`;
+
+export const EDIT_TIP: DocumentNode<
+  {
+    editTip: ITip[];
+  },
+  {
+    data: {
+      _id: string;
+      text: string;
+      priority: number;
+    };
+  }
+> = gql`
+  mutation($data: EditTip!) {
+    editTip(data: $data) {
+      ...TipFragment
+    }
+  }
+  ${TipFragment}
 `;

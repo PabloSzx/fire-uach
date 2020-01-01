@@ -79,6 +79,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   tagCategoryAssociations,
   categoryImageAssociations,
   refetchAllUsers,
+  readTips,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure(false);
   const [editUser, { loading: loadingEditUser }] = useMutation(EDIT_USER);
@@ -358,6 +359,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                     <Tab>Imágenes subidas</Tab>
                     <Tab>Asociaciones de Etiquetas - Categoría</Tab>
                     <Tab>Asociaciones de Imagenes - Categoría</Tab>
+                    <Tab>Tips recibidos</Tab>
                   </TabList>
                   <TabPanels>
                     <TabPanel>
@@ -645,6 +647,13 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                               )}
                             </Fragment>
                           );
+                        })}
+                      </Stack>
+                    </TabPanel>
+                    <TabPanel>
+                      <Stack>
+                        {readTips.map(tip => {
+                          return <Tag key={tip._id} mt="1em">{tip.text}</Tag>;
                         })}
                       </Stack>
                     </TabPanel>

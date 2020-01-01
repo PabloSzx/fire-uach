@@ -38,6 +38,10 @@ input CreateTag {
   name: String!
 }
 
+input CreateTip {
+  text: String!
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
@@ -57,6 +61,12 @@ input EditTag {
   _id: ObjectId!
   name: String!
   categories: [ObjectId!]!
+}
+
+input EditTip {
+  text: String!
+  _id: ObjectId!
+  priority: Float = 0
 }
 
 input EditUser {
@@ -109,6 +119,8 @@ type Mutation {
   createCategory(data: CreateCategory!): [Category!]!
   editCategory(data: EditCategory!): [Category!]!
   removeCategory(data: RemoveCategory!): [Category!]!
+  resetCategoryImageAssociations(user: ObjectId!): [CategoryImageAssociation!]!
+  answerCategoryImageAssociation(onlyOwnImages: Boolean = false, data: CategoryImageAssociationAnswer!): Image
   uploadImage(file: Upload!): [Image!]!
   optimizeImages(_ids: [ObjectId!]): [Image!]!
   editImage(data: EditImage!): [Image!]!
@@ -118,8 +130,9 @@ type Mutation {
   removeTag(data: RemoveTag!): [Tag!]!
   resetTagCategoryAssociations(user: ObjectId!): [TagCategoryAssociation!]!
   answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): Tag
-  resetCategoryImageAssociations(user: ObjectId!): [CategoryImageAssociation!]!
-  answerCategoryImageAssociation(onlyOwnImages: Boolean = false, data: CategoryImageAssociationAnswer!): Image
+  createTip(data: CreateTip!): [Tip!]!
+  editTip(data: EditTip!): [Tip!]!
+  removeTip(_id: ObjectId!): [Tip!]!
   editUser(data: EditUser!): [User!]!
   removeUser(id: ObjectId!): [User!]!
 }
@@ -130,6 +143,8 @@ scalar ObjectId
 type Query {
   currentUser: User
   categories: [Category!]!
+  resultsCategoryImageAssociations: [CategoryImageAssociation!]!
+  notAnsweredImage(onlyOwnImages: Boolean = false): Image
   image(id: ObjectId!): Image
   images: [Image!]!
   validatedImages: [Image!]!
@@ -137,8 +152,8 @@ type Query {
   tags: [Tag!]!
   resultsTagCategoryAssociations: [TagCategoryAssociation!]!
   notAnsweredTag: Tag
-  resultsCategoryImageAssociations: [CategoryImageAssociation!]!
-  notAnsweredImage(onlyOwnImages: Boolean = false): Image
+  tip: Tip
+  allTips: [Tip!]!
   allUsers: [User!]!
 }
 
@@ -186,6 +201,12 @@ input TagCategoryAssociationAnswer {
   rejectedCategories: [ObjectId!]!
 }
 
+type Tip {
+  _id: ObjectId!
+  text: String!
+  priority: Int!
+}
+
 input UnlockInput {
   email: EmailAddress!
   password: String!
@@ -208,6 +229,7 @@ type User {
   imagesUploaded: [Image!]!
   tagCategoryAssociations: [TagCategoryAssociation!]!
   categoryImageAssociations: [CategoryImageAssociation!]!
+  readTips: [Tip!]!
 }
 
 enum UserType {

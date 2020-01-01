@@ -9,11 +9,14 @@ import {
   Root,
 } from "type-graphql";
 
+import { isDocumentArray } from "@typegoose/typegoose";
+
 import { ADMIN } from "../../constants";
 import { CategoryImageAssociationModel } from "../entities/associations/categoryImageAssociation";
 import { TagCategoryAssociationModel } from "../entities/associations/tagCategoryAssociation";
 import { EditUser, User, UserModel } from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
+import { TipModel } from "../entities/tip";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => User)
@@ -68,5 +71,18 @@ export class UserResolver {
     return await CategoryImageAssociationModel.find({
       user: _id,
     });
+  }
+
+  @FieldResolver()
+  async readTips(@Root() { readTips }: Pick<User, "readTips">) {
+    return isDocumentArray(readTips)
+      ? readTips
+      : await TipModel.find({
+          _id: {
+            $in: readTips,
+          },
+        }).sort({
+          priority: "desc",
+        });
   }
 }

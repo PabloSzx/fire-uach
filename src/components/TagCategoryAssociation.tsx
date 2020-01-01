@@ -7,11 +7,11 @@ import wait from "waait";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Badge, Flex, Stack, Tag, Text } from "@chakra-ui/core";
 
+import { useTip } from "../components/Tip";
 import {
   ANSWER_TAG_CATEGORY_ASSOCIATION,
   NOT_ANSWERED_TAG,
 } from "../graphql/queries";
-import { tipAnswerTag } from "../utils/tips";
 import { useUser } from "./Auth";
 import { CategoriesContext } from "./Categories";
 import { LoadingPage } from "./LoadingPage";
@@ -32,7 +32,9 @@ export const TagCategoryAssociation: FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<
     string | undefined
   >();
-
+  const tipAnswerTag = useTip({
+    tipOnStart: true,
+  });
   const { push } = useRouter();
   const [answerTagCategoryAssociation] = useMutation(
     ANSWER_TAG_CATEGORY_ASSOCIATION,

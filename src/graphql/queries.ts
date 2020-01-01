@@ -227,3 +227,17 @@ export const CATEGORIES_OPTIONS: DocumentNode<{
     }
   }
 `;
+
+export const TIP: DocumentNode<{
+  tip?: {
+    _id: string;
+    text: string;
+  };
+}> = gql`
+  query {
+    tip {
+      _id
+      text
+    }
+  }
+`;

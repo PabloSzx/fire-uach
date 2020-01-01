@@ -19,6 +19,7 @@ const Users = dynamic(() => import("../components/admin/users"));
 const Images = dynamic(() => import("../components/admin/images"));
 const Categories = dynamic(() => import("../components/admin/categories"));
 const Tags = dynamic(() => import("../components/admin/tags"));
+const Tips = dynamic(() => import("../components/admin/tips"));
 
 const AdminDashboard: FC = () => {
   const [index, setIndex] = useRememberState("admin_menu_index", 0);
@@ -37,6 +38,7 @@ const AdminDashboard: FC = () => {
           <Tab m={1}>Imágenes</Tab>
           <Tab m={1}>Categorías</Tab>
           <Tab m={1}>Etiquetas</Tab>
+          <Tab m={1}>Tips</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -50,6 +52,9 @@ const AdminDashboard: FC = () => {
           </TabPanel>
           <TabPanel>
             <Tags />
+          </TabPanel>
+          <TabPanel>
+            <Tips />
           </TabPanel>
         </TabPanels>
       </Tabs>
