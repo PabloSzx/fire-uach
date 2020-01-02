@@ -13,6 +13,7 @@ import {
   Spinner,
   Stack,
   Text,
+  Textarea,
 } from "@chakra-ui/core";
 
 import {
@@ -22,6 +23,7 @@ import {
   REMOVE_TIP,
 } from "../../graphql/adminQueries";
 import { Confirm } from "../Confirm";
+import { tipToast } from "../Tip";
 
 const EditTipComponent: FC<{
   _id: string;
@@ -47,17 +49,16 @@ const EditTipComponent: FC<{
 
   return (
     <Stack key={_id} align="center" spacing="2em" p={2}>
-      <InputGroup>
-        <InputLeftAddon>
-          <Text>Texto Tip</Text>
-        </InputLeftAddon>
-        <Input
+      <Stack align="center">
+        <Text>Texto Tip</Text>
+        <Textarea
+          isInvalid={!dataText}
           value={dataText}
           onChange={({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
             setDataText(value);
           }}
         />
-      </InputGroup>
+      </Stack>
 
       <InputGroup>
         <InputLeftAddon>
@@ -70,6 +71,17 @@ const EditTipComponent: FC<{
           }}
         />
       </InputGroup>
+
+      <Box>
+        <Button
+          variantColor="cyan"
+          onClick={() => {
+            tipToast(dataText);
+          }}
+        >
+          Previsualizar tip
+        </Button>
+      </Box>
 
       <Box>
         <Button
@@ -91,7 +103,9 @@ const EditTipComponent: FC<{
           }}
           variantColor="blue"
           isDisabled={
-            loadingEditTip || (dataText === text && dataPriority === priority)
+            !dataText ||
+            loadingEditTip ||
+            (dataText === text && dataPriority === priority)
           }
         >
           Guardar cambios
@@ -187,7 +201,7 @@ const AdminTips: FC = () => {
           isLoading={loadingNewTip}
           isDisabled={!newTip || disabledNewTip}
           onClick={() => {
-            if (newTip)
+            if (newTip) {
               createTip({
                 variables: {
                   data: {
@@ -195,6 +209,8 @@ const AdminTips: FC = () => {
                   },
                 },
               });
+              setNewTip("");
+            }
           }}
           variantColor="green"
         >

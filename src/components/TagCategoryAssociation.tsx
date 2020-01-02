@@ -32,9 +32,7 @@ export const TagCategoryAssociation: FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<
     string | undefined
   >();
-  const tipAnswerTag = useTip({
-    tipOnStart: true,
-  });
+  const tipAnswerTag = useTip({});
   const { push } = useRouter();
   const [answerTagCategoryAssociation] = useMutation(
     ANSWER_TAG_CATEGORY_ASSOCIATION,

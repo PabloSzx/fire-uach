@@ -7,6 +7,20 @@ import { Icon, Stack, Text } from "@chakra-ui/core";
 import { TIP } from "../graphql/queries";
 import { useUser } from "./Auth";
 
+export const tipToast = (text: string, autoClose = 15000) => {
+  toast(
+    <Stack isInline alignItems="center" m={1}>
+      <Icon size="2em" name="info" />
+      <Text fontSize="2em">{text}</Text>
+    </Stack>,
+    {
+      type: "info",
+      autoClose,
+      closeOnClick: false,
+    }
+  );
+};
+
 export const useTip = ({
   tipNLimit = 10,
   tipOnStart,
@@ -27,15 +41,7 @@ export const useTip = ({
 
   useEffect(() => {
     if (data?.tip) {
-      toast(
-        <Stack isInline alignItems="center">
-          <Icon size="2em" name="info" />
-          <Text fontSize="2em">{data.tip.text}</Text>
-        </Stack>,
-        {
-          type: "info",
-        }
-      );
+      tipToast(data.tip.text);
     }
   }, [data]);
 

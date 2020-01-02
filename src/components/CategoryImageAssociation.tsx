@@ -20,9 +20,7 @@ import { LoadingPage } from "./LoadingPage";
 export const CategoryImageAssociation: FC<{
   onlyOwnImages?: boolean;
 }> = ({ onlyOwnImages }) => {
-  const tipAnswerImage = useTip({
-    tipOnStart: true,
-  });
+  const tipAnswerImage = useTip({});
   const { user } = useUser();
   const { push } = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<

@@ -11,7 +11,7 @@ export class Tip {
   readonly _id: ObjectId;
 
   @Field()
-  @Property({ default: "", unique: true })
+  @Property({ default: "" })
   text: string;
 
   @Field(() => Int)
