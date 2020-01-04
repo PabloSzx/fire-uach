@@ -35,7 +35,7 @@ const AdminData: FC = () => {
         new Blob([dataCsvImageResults.csvResultsCategoryImageAssociations], {
           type: "text/plain;charset=utf-8",
         }),
-        `Resultados Imagen-Categoría ${new Date().toString()}.csv`
+        `Resultados Imagen-Categoría ${new Date().toLocaleString("es-CL")}.csv`
       );
     }
   }, [dataCsvImageResults]);
@@ -46,7 +46,9 @@ const AdminData: FC = () => {
         new Blob([dataCsvTagResults.csvResultsTagCategoryAssociations], {
           type: "text/plain;charset=utf-8",
         }),
-        `Resultados Etiqueta-Categoría ${new Date().toString()}.csv`
+        `Resultados Etiqueta-Categoría ${new Date().toLocaleString(
+          "es-CL"
+        )}.csv`
       );
     }
   }, [dataCsvTagResults]);

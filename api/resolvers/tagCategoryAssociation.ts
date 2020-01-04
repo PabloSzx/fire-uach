@@ -1,3 +1,4 @@
+import { utcToZonedTime } from "date-fns-tz";
 import { Parser } from "json2csv";
 import { compact } from "lodash";
 import { ObjectId } from "mongodb";
@@ -116,7 +117,10 @@ export class TagCategoryAssociationResolver {
               rejectedCategories && isDocumentArray(rejectedCategories)
                 ? rejectedCategories.map(({ name }) => name).join("-")
                 : "null",
-            updatedAt: updatedAt.toLocaleString("es-CL"),
+            updatedAt: utcToZonedTime(
+              updatedAt,
+              "America/Santiago"
+            ).toLocaleString("es-CL"),
           };
         })
       );
