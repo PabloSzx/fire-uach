@@ -120,6 +120,7 @@ type Mutation {
   editCategory(data: EditCategory!): [Category!]!
   removeCategory(data: RemoveCategory!): [Category!]!
   resetCategoryImageAssociations(user: ObjectId!): [CategoryImageAssociation!]!
+  csvResultsCategoryImageAssociations: String!
   answerCategoryImageAssociation(onlyOwnImages: Boolean = false, data: CategoryImageAssociationAnswer!): Image
   uploadImage(file: Upload!): [Image!]!
   optimizeImages(_ids: [ObjectId!]): [Image!]!
@@ -129,6 +130,7 @@ type Mutation {
   editTag(data: EditTag!): [Tag!]!
   removeTag(data: RemoveTag!): [Tag!]!
   resetTagCategoryAssociations(user: ObjectId!): [TagCategoryAssociation!]!
+  csvResultsTagCategoryAssociations: String!
   answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): Tag
   createTip(data: CreateTip!): [Tip!]!
   editTip(data: EditTip!): [Tip!]!
@@ -143,14 +145,12 @@ scalar ObjectId
 type Query {
   currentUser: User
   categories: [Category!]!
-  resultsCategoryImageAssociations: [CategoryImageAssociation!]!
   notAnsweredImage(onlyOwnImages: Boolean = false): Image
   image(id: ObjectId!): Image
   images: [Image!]!
   validatedImages: [Image!]!
   ownImages: [Image!]!
   tags: [Tag!]!
-  resultsTagCategoryAssociations: [TagCategoryAssociation!]!
   notAnsweredTag: Tag
   tip: Tip
   allTips: [Tip!]!

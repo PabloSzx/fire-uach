@@ -29,7 +29,7 @@ export class TagCategoryAssociation extends TimeStamps {
   tag?: Ref<Tag>;
 
   @Field(() => Category, { nullable: true })
-  @PropertyArray({ ref: "Category" })
+  @Property({ ref: "Category" })
   categoryChosen?: Ref<Category>;
 
   @Field(() => [Category])

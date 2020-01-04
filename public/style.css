@@ -2,6 +2,10 @@ body {
   overflow-y: scroll;
 }
 
+.colorInherit {
+  color: inherit !important;
+}
+
 a {
   color: inherit;
 }

@@ -1,3 +1,4 @@
+import { Parser } from "json2csv";
 import { compact } from "lodash";
 import { ObjectId } from "mongodb";
 import {
@@ -94,9 +95,49 @@ export class CategoryImageAssociationResolver {
   }
 
   @Authorized([ADMIN])
-  @Query(() => [CategoryImageAssociation])
-  async resultsCategoryImageAssociations() {
-    return await CategoryImageAssociationModel.find({});
+  @Mutation(() => String)
+  async csvResultsCategoryImageAssociations() {
+    const parser = new Parser({
+      fields: [
+        { value: "user", label: "Usuario" },
+        { value: "image", label: "Imagen" },
+        { value: "categoryChosen", label: "Categoría elegida" },
+        { value: "rejectedCategories", label: "Categorías rechazadas" },
+        { value: "updatedAt", label: "Fecha respuesta" },
+      ],
+    });
+    const data = await CategoryImageAssociationModel.find({})
+      .populate("user", "email")
+      .populate("categoryChosen", "name")
+      .populate("rejectedCategories", "name")
+      .populate("image", "filename");
+
+    return parser.parse(
+      data.map<{
+        user: string;
+        image: string;
+        categoryChosen: string;
+        rejectedCategories: string;
+        updatedAt: string;
+      }>(({ user, image, categoryChosen, rejectedCategories, updatedAt }) => {
+        return {
+          user: user && isDocument(user) ? user.email : "null",
+          image:
+            image && isDocument(image)
+              ? `${process.env.DOMAIN ?? ""}/api/images/${image.filename}`
+              : "null",
+          categoryChosen:
+            categoryChosen && isDocument(categoryChosen)
+              ? categoryChosen.name
+              : "null",
+          rejectedCategories:
+            rejectedCategories && isDocumentArray(rejectedCategories)
+              ? rejectedCategories.map(({ name }) => name).join("-")
+              : "null",
+          updatedAt: updatedAt.toLocaleString("es-CL"),
+        };
+      })
+    );
   }
 
   @Query(() => Image, { nullable: true })

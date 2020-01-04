@@ -25,7 +25,7 @@ export class CategoryImageAssociation extends TimeStamps {
   user?: Ref<User>;
 
   @Field(() => Category, { nullable: true })
-  @PropertyArray({ ref: "Category" })
+  @Property({ ref: "Category" })
   categoryChosen?: Ref<Category>;
 
   @Field(() => [Category])

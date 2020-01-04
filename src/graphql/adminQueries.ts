@@ -540,3 +540,19 @@ export const EDIT_TIP: DocumentNode<
   }
   ${TipFragment}
 `;
+
+export const CSV_RESULTS_TAG_CATEGORIES: DocumentNode<{
+  csvResultsTagCategoryAssociations: string;
+}> = gql`
+  mutation {
+    csvResultsTagCategoryAssociations
+  }
+`;
+
+export const CSV_RESULTS_CATEGORY_IMAGE: DocumentNode<{
+  csvResultsCategoryImageAssociations: string;
+}> = gql`
+  mutation {
+    csvResultsCategoryImageAssociations
+  }
+`;

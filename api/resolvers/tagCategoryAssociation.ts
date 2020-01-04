@@ -1,3 +1,4 @@
+import { Parser } from "json2csv";
 import { compact } from "lodash";
 import { ObjectId } from "mongodb";
 import {
@@ -78,9 +79,52 @@ export class TagCategoryAssociationResolver {
   }
 
   @Authorized([ADMIN])
-  @Query(() => [TagCategoryAssociation])
-  async resultsTagCategoryAssociations() {
-    return await TagCategoryAssociationModel.find({});
+  @Mutation(() => String)
+  async csvResultsTagCategoryAssociations() {
+    try {
+      const parser = new Parser({
+        fields: [
+          { value: "user", label: "Usuario" },
+          { value: "tag", label: "Etiqueta" },
+          { value: "categoryChosen", label: "Categoría elegida" },
+          { value: "rejectedCategories", label: "Categorías rechazadas" },
+          { value: "updatedAt", label: "Fecha respuesta" },
+        ],
+      });
+
+      const data = await TagCategoryAssociationModel.find({})
+        .populate("user", "email")
+        .populate("tag", "name")
+        .populate("categoryChosen", "name")
+        .populate("rejectedCategories", "name");
+      return parser.parse(
+        data.map<{
+          user: string;
+          tag: string;
+          categoryChosen: string;
+          rejectedCategories: string;
+          updatedAt: string;
+        }>(({ user, tag, categoryChosen, rejectedCategories, updatedAt }) => {
+          return {
+            user: user && isDocument(user) ? user.email : "null",
+            tag: tag && isDocument(tag) ? tag.name : "null",
+            categoryChosen:
+              categoryChosen && isDocument(categoryChosen)
+                ? categoryChosen.name
+                : "null",
+            rejectedCategories:
+              rejectedCategories && isDocumentArray(rejectedCategories)
+                ? rejectedCategories.map(({ name }) => name).join("-")
+                : "null",
+            updatedAt: updatedAt.toLocaleString("es-CL"),
+          };
+        })
+      );
+    } catch (err) {
+      console.error(90, err);
+    }
+
+    return "";
   }
 
   @Query(() => Tag, { nullable: true })
