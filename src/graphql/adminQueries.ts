@@ -259,6 +259,7 @@ export type IUser = {
     image?: {
       _id: string;
       filename: string;
+      uploadedAt: string;
     };
     categoryChosen?: {
       _id: string;
@@ -311,6 +312,7 @@ const UserFragment = gql`
       image {
         _id
         filename
+        uploadedAt
       }
       categoryChosen {
         _id
@@ -428,6 +430,7 @@ export const RESET_CATEGORY_IMAGE_ASSOCIATIONS: DocumentNode<
       image?: {
         _id: string;
         filename: string;
+        uploadedAt: string;
       };
       categoryChosen?: {
         _id: string;
@@ -449,6 +452,7 @@ export const RESET_CATEGORY_IMAGE_ASSOCIATIONS: DocumentNode<
       image {
         _id
         filename
+        uploadedAt
       }
       categoryChosen {
         _id

@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
 import { chunk, toInteger } from "lodash";
 import { NextPage } from "next";
-import { useMemo } from "react";
+import { FC, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { IoIosImages } from "react-icons/io";
 import LazyImage from "react-lazy-progressive-image";
@@ -31,7 +31,7 @@ import { CategoryImageAssociation } from "../components/CategoryImageAssociation
 import { LoadingPage } from "../components/LoadingPage";
 import { OWN_IMAGES, UPLOAD_IMAGE } from "../graphql/queries";
 
-const UploadPage: NextPage = () => {
+const UploadImages: FC = () => {
   const { loading: loadingUser, refetch, user } = useUser("/upload");
 
   const { data: dataOwnImages, loading: loadingOwnImages } = useQuery(
@@ -116,14 +116,12 @@ const UploadPage: NextPage = () => {
   }
 
   return (
-    <Stack pt="2em" align="center" justify="space-around" spacing="2em">
-      <CategoriesContextContainer>
-        <CategoryImageAssociation onlyOwnImages />
-      </CategoriesContextContainer>
-      <Divider width="100%" />
+    <>
+      <Divider p={5} width="100%" />
 
       {errorUpload && <Text>{JSON.stringify(errorUpload, null, 2)}</Text>}
       <Box
+        mt="3em"
         {...getRootProps()}
         cursor="pointer"
         borderRadius="5px"
@@ -139,8 +137,8 @@ const UploadPage: NextPage = () => {
       </Box>
 
       {uploadingImageSpinner}
-      <Divider width="100%" />
-      <Stack align="center" spacing={5}>
+      <Divider p={5} width="100%" />
+      <Stack mt="2em" align="center" spacing="3em">
         <Box>
           <Heading>Imágenes subidas por tí</Heading>
         </Box>
@@ -199,6 +197,17 @@ const UploadPage: NextPage = () => {
           })
         )}
       </Stack>
+    </>
+  );
+};
+
+const UploadPage: NextPage = () => {
+  return (
+    <Stack pt="2em" align="center" justify="space-around" spacing="2em">
+      <CategoriesContextContainer>
+        <CategoryImageAssociation onlyOwnImages />
+      </CategoriesContextContainer>
+      <UploadImages />
     </Stack>
   );
 };

@@ -86,6 +86,7 @@ export const UPLOAD_IMAGE: DocumentNode<
     uploadImage: {
       _id: string;
       filename: string;
+      uploadedAt: string;
     }[];
   },
   {
@@ -96,6 +97,7 @@ export const UPLOAD_IMAGE: DocumentNode<
     uploadImage(file: $file) {
       _id
       filename
+      uploadedAt
     }
   }
 `;
@@ -104,12 +106,14 @@ export const VALIDATED_IMAGES: DocumentNode<{
   validatedImages: {
     _id: string;
     filename: string;
+    uploadedAt: string;
   }[];
 }> = gql`
   query {
     validatedImages {
       _id
       filename
+      uploadedAt
     }
   }
 `;

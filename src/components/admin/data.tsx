@@ -32,10 +32,16 @@ const AdminData: FC = () => {
   useEffect(() => {
     if (dataCsvImageResults) {
       saveAs(
-        new Blob([dataCsvImageResults.csvResultsCategoryImageAssociations], {
-          type: "text/plain;charset=utf-8",
-        }),
-        `Resultados Imagen-Categoría ${new Date().toLocaleString("es-CL")}.csv`
+        new Blob(
+          ["\uFEFF" + dataCsvImageResults.csvResultsCategoryImageAssociations],
+          {
+            type: "text/csv;charset=UTF-8",
+          }
+        ),
+        `Resultados Imagen-Categoría ${new Date().toLocaleString("es-CL")}.csv`,
+        {
+          autoBom: false,
+        }
       );
     }
   }, [dataCsvImageResults]);
@@ -43,12 +49,18 @@ const AdminData: FC = () => {
   useEffect(() => {
     if (dataCsvTagResults) {
       saveAs(
-        new Blob([dataCsvTagResults.csvResultsTagCategoryAssociations], {
-          type: "text/plain;charset=utf-8",
-        }),
+        new Blob(
+          ["\uFEFF" + dataCsvTagResults.csvResultsTagCategoryAssociations],
+          {
+            type: "text/csv;charset=UTF-8",
+          }
+        ),
         `Resultados Etiqueta-Categoría ${new Date().toLocaleString(
           "es-CL"
-        )}.csv`
+        )}.csv`,
+        {
+          autoBom: false,
+        }
       );
     }
   }, [dataCsvTagResults]);
