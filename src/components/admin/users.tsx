@@ -86,14 +86,16 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   refetchAllUsers,
   readTips,
 }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure(false);
+
   const { data: dataUserStats, refetch: refetchStats } = useQuery(USER_STATS, {
     variables: {
       _id,
     },
     fetchPolicy: "cache-and-network",
+    skip: !isOpen,
   });
 
-  const { isOpen, onOpen, onClose } = useDisclosure(false);
   const [editUser, { loading: loadingEditUser }] = useMutation(EDIT_USER);
   const [removeUser, { loading: loadingRemoveUser }] = useMutation(
     REMOVE_USER,
@@ -364,7 +366,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                 </Stack>
               </Stack>
               <Stack align="center" spacing="1em">
-                {dataUserStats?.userStats && (
+                {dataUserStats?.userStats ? (
                   <StatGroup
                     border="1px solid"
                     textAlign="center"
@@ -396,6 +398,8 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                       </StatNumber>
                     </Stat>
                   </StatGroup>
+                ) : (
+                  <Spinner />
                 )}
                 <Tabs
                   defaultIndex={-1}
