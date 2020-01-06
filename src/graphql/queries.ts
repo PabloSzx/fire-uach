@@ -245,3 +245,21 @@ export const TIP: DocumentNode<{
     }
   }
 `;
+
+export const OWN_STATS: DocumentNode<{
+  ownStats: {
+    nAssociatedImages: number;
+    nAssociatedTags: number;
+    nUploadedImages: number;
+    nValidatedUploadedImages: number;
+  };
+}> = gql`
+  query {
+    ownStats {
+      nAssociatedImages
+      nAssociatedTags
+      nUploadedImages
+      nValidatedUploadedImages
+    }
+  }
+`;

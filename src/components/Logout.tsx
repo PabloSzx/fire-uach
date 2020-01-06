@@ -41,10 +41,12 @@ export const Logout: FC = () => {
       onClick={async () => {
         await logout();
       }}
+      fontFamily="Lato"
       size="lg"
       fontSize="3xl"
       isLoading={loadingLogout}
       leftIcon={FiLogOut}
+      m="2em"
     >
       Cerrar sesión
     </Button>

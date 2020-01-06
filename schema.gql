@@ -150,6 +150,7 @@ type Query {
   images: [Image!]!
   validatedImages: [Image!]!
   ownImages: [Image!]!
+  ownStats: Stats!
   tags: [Tag!]!
   notAnsweredTag: Tag
   tip: Tip
@@ -176,6 +177,14 @@ input SignUpInput {
   typeSpecify: String!
   fireRelated: Boolean!
   fireRelatedSpecify: String!
+}
+
+type Stats {
+  user: User!
+  nAssociatedImages: Int!
+  nAssociatedTags: Int!
+  nUploadedImages: Int!
+  nValidatedUploadedImages: Int!
 }
 
 type Tag {
