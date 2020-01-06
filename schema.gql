@@ -23,6 +23,7 @@ input CategoryImageAssociationAnswer {
   categoryChosen: ObjectId
   image: ObjectId!
   rejectedCategories: [ObjectId!]!
+  location: LocationInput
 }
 
 input ChangePasswordInput {
@@ -40,6 +41,11 @@ input CreateTag {
 
 input CreateTip {
   text: String!
+}
+
+input DateRange {
+  minDate: DateTime!
+  maxDate: DateTime!
 }
 
 """
@@ -105,6 +111,11 @@ type Location {
   longitude: Float!
 }
 
+input LocationInput {
+  latitude: Float!
+  longitude: Float!
+}
+
 input LoginInput {
   email: EmailAddress!
   password: String!
@@ -120,7 +131,7 @@ type Mutation {
   editCategory(data: EditCategory!): [Category!]!
   removeCategory(data: RemoveCategory!): [Category!]!
   resetCategoryImageAssociations(user: ObjectId!): [CategoryImageAssociation!]!
-  csvResultsCategoryImageAssociations: String!
+  csvResultsCategoryImageAssociations(dateRange: DateRange!, onlyValidatedImages: Boolean!): String!
   answerCategoryImageAssociation(onlyOwnImages: Boolean = false, data: CategoryImageAssociationAnswer!): Image
   uploadImage(file: Upload!): [Image!]!
   optimizeImages(_ids: [ObjectId!]): [Image!]!
@@ -130,7 +141,7 @@ type Mutation {
   editTag(data: EditTag!): [Tag!]!
   removeTag(data: RemoveTag!): [Tag!]!
   resetTagCategoryAssociations(user: ObjectId!): [TagCategoryAssociation!]!
-  csvResultsTagCategoryAssociations: String!
+  csvResultsTagCategoryAssociations(dateRange: DateRange!): String!
   answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): Tag
   createTip(data: CreateTip!): [Tip!]!
   editTip(data: EditTip!): [Tip!]!
@@ -201,6 +212,7 @@ input TagCategoryAssociationAnswer {
   tag: ObjectId!
   categoryChosen: ObjectId
   rejectedCategories: [ObjectId!]!
+  location: LocationInput
 }
 
 type Tip {

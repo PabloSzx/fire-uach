@@ -62,4 +62,7 @@ export class CategoryImageAssociationAnswer
 
   @Field(() => [ObjectIdScalar])
   rejectedCategories: ObjectId[];
+
+  @Field(() => Location, { nullable: true })
+  location?: Location;
 }

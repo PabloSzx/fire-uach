@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { intersectionBy } from "lodash";
 import { useRouter } from "next/router";
 import { FC, useContext, useEffect, useState } from "react";
+import { useGeolocation } from "react-use";
 import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -55,6 +56,8 @@ export const TagCategoryAssociation: FC = () => {
   useEffect(() => {
     tipAnswerTag();
   }, []);
+
+  const { longitude, latitude } = useGeolocation();
 
   if (loadingNotAnsweredTag) {
     return <LoadingPage />;
@@ -119,6 +122,10 @@ export const TagCategoryAssociation: FC = () => {
                                   return cat._id !== _id;
                                 })
                                 .map(({ _id }) => _id),
+                              location:
+                                latitude && longitude
+                                  ? { latitude, longitude }
+                                  : undefined,
                             },
                           },
                         });
@@ -156,6 +163,10 @@ export const TagCategoryAssociation: FC = () => {
                           rejectedCategories: notAnsweredTag.categories.map(
                             ({ _id }) => _id
                           ),
+                          location:
+                            latitude && longitude
+                              ? { latitude, longitude }
+                              : undefined,
                         },
                       },
                     });

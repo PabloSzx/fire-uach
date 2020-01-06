@@ -62,4 +62,7 @@ export class TagCategoryAssociationAnswer
 
   @Field(() => [ObjectIdScalar])
   rejectedCategories: ObjectId[];
+
+  @Field(() => Location, { nullable: true })
+  location?: Location;
 }

@@ -1,4 +1,4 @@
-import { utcToZonedTime } from "date-fns-tz";
+import { toDate, utcToZonedTime } from "date-fns-tz";
 import { Parser } from "json2csv";
 import { compact } from "lodash";
 import { ObjectId } from "mongodb";
@@ -24,6 +24,7 @@ import {
 import { UserModel } from "../entities/auth/user";
 import { CategoryModel } from "../entities/category";
 import { Image, ImageModel } from "../entities/image";
+import { DateRange } from "../entities/utils/date";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
@@ -97,7 +98,10 @@ export class CategoryImageAssociationResolver {
 
   @Authorized([ADMIN])
   @Mutation(() => String)
-  async csvResultsCategoryImageAssociations() {
+  async csvResultsCategoryImageAssociations(
+    @Arg("onlyValidatedImages") onlyValidatedImages: boolean,
+    @Arg("dateRange") { minDate, maxDate }: DateRange
+  ) {
     const parser = new Parser({
       fields: [
         { value: "user", label: "Usuario" },
@@ -105,26 +109,42 @@ export class CategoryImageAssociationResolver {
         { value: "categoryChosen", label: "Categoría elegida" },
         { value: "rejectedCategories", label: "Categorías rechazadas" },
         { value: "updatedAt", label: "Fecha respuesta" },
+        { value: "location", label: "Ubicación" },
       ],
     });
-    const data = await CategoryImageAssociationModel.find({})
+    const dataRaw = await CategoryImageAssociationModel.find({
+      updatedAt: {
+        $gte: toDate(minDate),
+        $lte: toDate(maxDate),
+      },
+    })
       .populate("user", "email")
       .populate("categoryChosen", "name")
       .populate("rejectedCategories", "name")
-      .populate("image", "filename");
+      .populate("image", "filename validated");
 
-    return parser.parse(
-      data.map<{
-        user: string;
-        image: string;
-        categoryChosen: string;
-        rejectedCategories: string;
-        updatedAt: string;
-      }>(({ user, image, categoryChosen, rejectedCategories, updatedAt }) => {
+    let processedData = dataRaw.map<{
+      user: string;
+      image: string;
+      categoryChosen: string;
+      rejectedCategories: string;
+      updatedAt: string;
+      location: string;
+    }>(
+      ({
+        user,
+        image,
+        categoryChosen,
+        rejectedCategories,
+        updatedAt,
+        location,
+      }) => {
         return {
           user: user && isDocument(user) ? user.email : "null",
           image:
-            image && isDocument(image)
+            image &&
+            isDocument(image) &&
+            (onlyValidatedImages ? image.validated : true)
               ? `${process.env.DOMAIN ?? ""}/api/images/${image.filename}`
               : "null",
           categoryChosen:
@@ -139,9 +159,18 @@ export class CategoryImageAssociationResolver {
             updatedAt,
             "America/Santiago"
           ).toLocaleString("es-CL"),
+          location: location
+            ? `lat:${location.latitude}|long:${location.longitude}`
+            : "null",
         };
-      })
+      }
     );
+    if (onlyValidatedImages) {
+      processedData = processedData.filter(({ image }) => {
+        return image !== "null";
+      });
+    }
+    return parser.parse(processedData);
   }
 
   @Query(() => Image, { nullable: true })
@@ -164,6 +193,7 @@ export class CategoryImageAssociationResolver {
       image,
       categoryChosen,
       rejectedCategories,
+      location,
     }: CategoryImageAssociationAnswer,
     @Arg("onlyOwnImages", { defaultValue: false }) onlyOwnImages: boolean
   ) {
@@ -176,6 +206,7 @@ export class CategoryImageAssociationResolver {
       {
         categoryChosen,
         rejectedCategories,
+        location,
       },
       {
         upsert: true,

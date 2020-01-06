@@ -1,4 +1,4 @@
-import { utcToZonedTime } from "date-fns-tz";
+import { toDate, utcToZonedTime } from "date-fns-tz";
 import { Parser } from "json2csv";
 import { compact } from "lodash";
 import { ObjectId } from "mongodb";
@@ -24,6 +24,7 @@ import {
 import { UserModel } from "../entities/auth/user";
 import { CategoryModel } from "../entities/category";
 import { Tag, TagModel } from "../entities/tag";
+import { DateRange } from "../entities/utils/date";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
@@ -81,7 +82,9 @@ export class TagCategoryAssociationResolver {
 
   @Authorized([ADMIN])
   @Mutation(() => String)
-  async csvResultsTagCategoryAssociations() {
+  async csvResultsTagCategoryAssociations(
+    @Arg("dateRange") { minDate, maxDate }: DateRange
+  ) {
     try {
       const parser = new Parser({
         fields: [
@@ -90,10 +93,16 @@ export class TagCategoryAssociationResolver {
           { value: "categoryChosen", label: "Categoría elegida" },
           { value: "rejectedCategories", label: "Categorías rechazadas" },
           { value: "updatedAt", label: "Fecha respuesta" },
+          { value: "location", label: "Ubicación" },
         ],
       });
 
-      const data = await TagCategoryAssociationModel.find({})
+      const data = await TagCategoryAssociationModel.find({
+        updatedAt: {
+          $gte: toDate(minDate),
+          $lte: toDate(maxDate),
+        },
+      })
         .populate("user", "email")
         .populate("tag", "name")
         .populate("categoryChosen", "name")
@@ -105,24 +114,37 @@ export class TagCategoryAssociationResolver {
           categoryChosen: string;
           rejectedCategories: string;
           updatedAt: string;
-        }>(({ user, tag, categoryChosen, rejectedCategories, updatedAt }) => {
-          return {
-            user: user && isDocument(user) ? user.email : "null",
-            tag: tag && isDocument(tag) ? tag.name : "null",
-            categoryChosen:
-              categoryChosen && isDocument(categoryChosen)
-                ? categoryChosen.name
+          location: string;
+        }>(
+          ({
+            user,
+            tag,
+            categoryChosen,
+            rejectedCategories,
+            updatedAt,
+            location,
+          }) => {
+            return {
+              user: user && isDocument(user) ? user.email : "null",
+              tag: tag && isDocument(tag) ? tag.name : "null",
+              categoryChosen:
+                categoryChosen && isDocument(categoryChosen)
+                  ? categoryChosen.name
+                  : "null",
+              rejectedCategories:
+                rejectedCategories && isDocumentArray(rejectedCategories)
+                  ? rejectedCategories.map(({ name }) => name).join("-")
+                  : "null",
+              updatedAt: utcToZonedTime(
+                updatedAt,
+                "America/Santiago"
+              ).toLocaleString("es-CL"),
+              location: location
+                ? `lat:${location.latitude}|long:${location.longitude}`
                 : "null",
-            rejectedCategories:
-              rejectedCategories && isDocumentArray(rejectedCategories)
-                ? rejectedCategories.map(({ name }) => name).join("-")
-                : "null",
-            updatedAt: utcToZonedTime(
-              updatedAt,
-              "America/Santiago"
-            ).toLocaleString("es-CL"),
-          };
-        })
+            };
+          }
+        )
       );
     } catch (err) {
       console.error(90, err);
@@ -141,7 +163,12 @@ export class TagCategoryAssociationResolver {
   async answerTagCategoryAssociation(
     @Ctx() { user }: IContext,
     @Arg("data", () => TagCategoryAssociationAnswer)
-    { tag, categoryChosen, rejectedCategories }: TagCategoryAssociationAnswer
+    {
+      tag,
+      categoryChosen,
+      rejectedCategories,
+      location,
+    }: TagCategoryAssociationAnswer
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
 
@@ -153,6 +180,7 @@ export class TagCategoryAssociationResolver {
       {
         categoryChosen,
         rejectedCategories,
+        location,
       },
       {
         upsert: true,

@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { FC, useContext, useEffect, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
+import { useGeolocation } from "react-use";
 import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -66,6 +67,8 @@ export const CategoryImageAssociation: FC<{
   useEffect(() => {
     tipAnswerImage();
   }, []);
+
+  const { longitude, latitude } = useGeolocation();
 
   if (loadingNotAnsweredImage) {
     return <LoadingPage />;
@@ -138,6 +141,10 @@ export const CategoryImageAssociation: FC<{
                                   return cat._id !== _id;
                                 })
                                 .map(({ _id }) => _id),
+                              location:
+                                latitude && longitude
+                                  ? { latitude, longitude }
+                                  : undefined,
                             },
                             onlyOwnImages,
                           },
@@ -175,6 +182,10 @@ export const CategoryImageAssociation: FC<{
                           rejectedCategories: shuffledCategories.map(
                             ({ _id }) => _id
                           ),
+                          location:
+                            latitude && longitude
+                              ? { latitude, longitude }
+                              : undefined,
                         },
                         onlyOwnImages,
                       },

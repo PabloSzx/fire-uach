@@ -544,20 +544,35 @@ export const EDIT_TIP: DocumentNode<
   }
   ${TipFragment}
 `;
+type IdateRange = { minDate: Date; maxDate: Date };
 
-export const CSV_RESULTS_TAG_CATEGORIES: DocumentNode<{
-  csvResultsTagCategoryAssociations: string;
-}> = gql`
-  mutation {
-    csvResultsTagCategoryAssociations
+export const CSV_RESULTS_TAG_CATEGORIES: DocumentNode<
+  {
+    csvResultsTagCategoryAssociations: string;
+  },
+  {
+    dateRange: IdateRange;
+  }
+> = gql`
+  mutation($dateRange: DateRange!) {
+    csvResultsTagCategoryAssociations(dateRange: $dateRange)
   }
 `;
 
-export const CSV_RESULTS_CATEGORY_IMAGE: DocumentNode<{
-  csvResultsCategoryImageAssociations: string;
-}> = gql`
-  mutation {
-    csvResultsCategoryImageAssociations
+export const CSV_RESULTS_CATEGORY_IMAGE: DocumentNode<
+  {
+    csvResultsCategoryImageAssociations: string;
+  },
+  {
+    onlyValidatedImages: boolean;
+    date: IdateRange;
+  }
+> = gql`
+  mutation($onlyValidatedImages: Boolean!, $dateRange: DateRange!) {
+    csvResultsCategoryImageAssociations(
+      onlyValidatedImages: $onlyValidatedImages
+      dateRange: $dateRange
+    )
   }
 `;
 
