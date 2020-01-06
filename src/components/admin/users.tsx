@@ -426,6 +426,9 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                                 setActivePagination(toInteger(activePage));
                               }}
                               totalPages={paginatedImagesUploaded.length}
+                              secondary
+                              pointing
+                              boundaryRange={0}
                             />
                           </Box>
                         )}

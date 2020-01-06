@@ -149,6 +149,9 @@ const UploadImages: FC = () => {
               setActivePagination(toInteger(activePage));
             }}
             totalPages={paginatedImages.length}
+            secondary
+            pointing
+            boundaryRange={0}
           />
         </Box>
         {loadingOwnImages ? (

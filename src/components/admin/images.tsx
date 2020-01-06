@@ -323,6 +323,9 @@ const AdminImages: FC = () => {
           setActivePagination(toInteger(activePage));
         }}
         totalPages={paginatedImages.length}
+        secondary
+        pointing
+        boundaryRange={0}
       />
 
       <Box mt={3}>
