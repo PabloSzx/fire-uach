@@ -410,14 +410,14 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                   <TabList>
                     <Tab>Imágenes subidas</Tab>
                     <Tab>Asociaciones de Etiquetas - Categoría</Tab>
-                    <Tab>Asociaciones de Imagenes - Categoría</Tab>
+                    <Tab>Asociaciones de Imágenes - Categoría</Tab>
                     <Tab>Tips recibidos</Tab>
                   </TabList>
                   <TabPanels>
                     <TabPanel>
                       <Stack align="center" textAlign="center">
                         {paginatedImagesUploaded.length === 0 ? (
-                          <Text pt={3}>Sin imagenes subídas</Text>
+                          <Text pt={3}>Sin imágenes subidas</Text>
                         ) : (
                           <Box pt={3}>
                             <Pagination

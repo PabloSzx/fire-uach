@@ -44,7 +44,7 @@ const Stats: FC = () => {
         <StatHelpText>
           {data.ownStats.nUploadedImages === 0
             ? "Te invitamos a contribuir con la comunidad"
-            : "Recuerda que puedes subir más imagenes y clasificarlas"}
+            : "Recuerda que puedes subir más imágenes y clasificarlas"}
         </StatHelpText>
       </Stat>
       {data.ownStats.nValidatedUploadedImages > 0 && (
