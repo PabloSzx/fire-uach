@@ -180,9 +180,11 @@ export class ImageResolver {
 
       if (oldMetadata.width && oldMetadata.width > 1920) {
         resizedImage = await image.resize(1920).toBuffer();
+      } else {
+        continue;
       }
 
-      const optimizedImage = await imageMin.buffer(resizedImage || fileBuffer, {
+      const optimizedImage = await imageMin.buffer(resizedImage, {
         plugins: [
           imageMinJpegtran({
             progressive: true,
