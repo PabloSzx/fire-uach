@@ -42,13 +42,7 @@ const IndexPage: NextPage = () => {
         objectFit="contain"
         maxHeight="20vh"
       />
-      <Header>
-        ¿Qué factores se deben considerar para ser resiliente a los incendios?
-      </Header>
-      <Paragraph>
-        Las siguientes categorías influyen en la resiliencia a incendios en
-        socioecosistemas en Chile:
-      </Paragraph>
+      <Header>Así estudiamos los incendios</Header>
       <Image
         alignSelf="center"
         src="/introduction.png"
@@ -58,15 +52,13 @@ const IndexPage: NextPage = () => {
         maxWidth="90vw"
         maxHeight="50vh"
       />
-      <Header>¿Cómo puedes ayudarnos?</Header>
-      <Paragraph>
-        Ayúdanos a identificar sus características asociándolas a conceptos e
-        imágenes, y también al compartir tus fotos que las representen.
-      </Paragraph>
+      <Header>Ayúdanos jugando</Header>
+      <Paragraph>Comparte tus fotos, asocia imágenes y conceptos.</Paragraph>
       <Header>¡Participa y gana premios!</Header>
       <Paragraph>
-        Recibirás tips en el camino, y al que más participe durante febrero 2020
-        le regalaremos una cámara polaroid con 200 fotos.
+        Recibirás consejos mientras juegas, y solo por participar durante
+        febrero 2020, entrarás en un sorteo de una cámara Polaroid con 200
+        fotos.
       </Paragraph>
       <Text fontSize="2em" textAlign="center" ml="10%" mr="10%">
         Para participar haz click{" "}

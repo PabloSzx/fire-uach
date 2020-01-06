@@ -553,7 +553,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                               {tagAssoc.tag && (
                                 <Stack align="center">
                                   <Flex mt={1} p={2} wrap="wrap">
-                                    <Tag>Tag:</Tag>
+                                    <Tag>Etiqueta:</Tag>
                                     <Tag ml={1} variantColor="blue">
                                       {tagAssoc.tag.name}
                                     </Tag>
