@@ -86,7 +86,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   refetchAllUsers,
   readTips,
 }) => {
-  const { data: dataUserStats } = useQuery(USER_STATS, {
+  const { data: dataUserStats, refetch: refetchStats } = useQuery(USER_STATS, {
     variables: {
       _id,
     },
@@ -126,6 +126,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   ] = useMutation(REMOVE_IMAGE, {
     onCompleted: () => {
       refetchAllUsers();
+      refetchStats();
     },
   });
 
@@ -137,6 +138,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
     {
       onCompleted: () => {
         refetchAllUsers();
+        refetchStats();
       },
     }
   );
@@ -145,6 +147,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
     {
       onCompleted: () => {
         refetchAllUsers();
+        refetchStats();
       },
     }
   );
