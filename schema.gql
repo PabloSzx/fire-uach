@@ -150,7 +150,8 @@ type Query {
   images: [Image!]!
   validatedImages: [Image!]!
   ownImages: [Image!]!
-  ownStats: Stats!
+  userStats(_id: ObjectId!): UserStats
+  ownStats: UserStats!
   tags: [Tag!]!
   notAnsweredTag: Tag
   tip: Tip
@@ -177,14 +178,6 @@ input SignUpInput {
   typeSpecify: String!
   fireRelated: Boolean!
   fireRelatedSpecify: String!
-}
-
-type Stats {
-  user: User!
-  nAssociatedImages: Int!
-  nAssociatedTags: Int!
-  nUploadedImages: Int!
-  nValidatedUploadedImages: Int!
 }
 
 type Tag {
@@ -239,6 +232,15 @@ type User {
   tagCategoryAssociations: [TagCategoryAssociation!]!
   categoryImageAssociations: [CategoryImageAssociation!]!
   readTips: [Tip!]!
+}
+
+type UserStats {
+  _id: ObjectId!
+  user: User!
+  nAssociatedImages: Int!
+  nAssociatedTags: Int!
+  nUploadedImages: Int!
+  nValidatedUploadedImages: Int!
 }
 
 enum UserType {

@@ -31,6 +31,10 @@ import {
   RadioGroup,
   Spinner,
   Stack,
+  Stat,
+  StatGroup,
+  StatLabel,
+  StatNumber,
   Tab,
   TabList,
   TabPanel,
@@ -50,6 +54,7 @@ import {
   REMOVE_USER,
   RESET_CATEGORY_IMAGE_ASSOCIATIONS,
   RESET_TAG_CATEGORY_ASSOCIATIONS,
+  USER_STATS,
 } from "../../graphql/adminQueries";
 import { userTypeToText } from "../../utils/enums";
 import { Confirm } from "../Confirm";
@@ -81,6 +86,13 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   refetchAllUsers,
   readTips,
 }) => {
+  const { data: dataUserStats } = useQuery(USER_STATS, {
+    variables: {
+      _id,
+    },
+    fetchPolicy: "cache-and-network",
+  });
+
   const { isOpen, onOpen, onClose } = useDisclosure(false);
   const [editUser, { loading: loadingEditUser }] = useMutation(EDIT_USER);
   const [removeUser, { loading: loadingRemoveUser }] = useMutation(
@@ -349,6 +361,39 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                 </Stack>
               </Stack>
               <Stack align="center" spacing="1em">
+                {dataUserStats?.userStats && (
+                  <StatGroup
+                    border="1px solid"
+                    textAlign="center"
+                    alignItems="center"
+                  >
+                    <Stat p={0} m={4}>
+                      <StatLabel>Imágenes asociadas</StatLabel>
+                      <StatNumber>
+                        {dataUserStats.userStats.nAssociatedImages}
+                      </StatNumber>
+                    </Stat>
+
+                    <Stat p={0} m={4}>
+                      <StatLabel>Etiquetas asociadas</StatLabel>
+                      <StatNumber>
+                        {dataUserStats.userStats.nAssociatedTags}
+                      </StatNumber>
+                    </Stat>
+                    <Stat p={0} m={4}>
+                      <StatLabel>Imágenes subidas</StatLabel>
+                      <StatNumber>
+                        {dataUserStats.userStats.nUploadedImages}
+                      </StatNumber>
+                    </Stat>
+                    <Stat p={0} m={4}>
+                      <StatLabel>Imágenes validadas</StatLabel>
+                      <StatNumber>
+                        {dataUserStats.userStats.nValidatedUploadedImages}
+                      </StatNumber>
+                    </Stat>
+                  </StatGroup>
+                )}
                 <Tabs
                   defaultIndex={-1}
                   variant="soft-rounded"

@@ -1,4 +1,6 @@
+import { ObjectId } from "mongodb";
 import {
+  Arg,
   Authorized,
   Ctx,
   FieldResolver,
@@ -8,26 +10,42 @@ import {
   Root,
 } from "type-graphql";
 
+import { ADMIN } from "../../constants";
 import { CategoryImageAssociationModel } from "../entities/associations/categoryImageAssociation";
 import { TagCategoryAssociationModel } from "../entities/associations/tagCategoryAssociation";
+import { UserModel } from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
-import { Stats } from "../entities/stats";
+import { UserStats } from "../entities/stats";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
+import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
-@Resolver(() => Stats)
-export class StatsResolver implements ResolverInterface<Stats> {
+@Resolver(() => UserStats)
+export class UserStatsResolver implements ResolverInterface<UserStats> {
+  @Authorized([ADMIN])
+  @Query(() => UserStats, { nullable: true })
+  async userStats(@Arg("_id", () => ObjectIdScalar) _id: ObjectId) {
+    const user = await UserModel.findById(_id);
+
+    if (user) {
+      return { _id, user };
+    }
+
+    return null;
+  }
+
   @Authorized()
-  @Query(() => Stats)
+  @Query(() => UserStats)
   async ownStats(@Ctx() { user }: IContext) {
     assertIsDefined(user, "Context user failed!");
     return {
+      _id: user._id,
       user,
     };
   }
 
   @FieldResolver()
-  async nAssociatedImages(@Root() { user }: Pick<Stats, "user">) {
+  async nAssociatedImages(@Root() { user }: Pick<UserStats, "user">) {
     const n = await CategoryImageAssociationModel.countDocuments({
       user: user._id,
     });
@@ -36,7 +54,7 @@ export class StatsResolver implements ResolverInterface<Stats> {
   }
 
   @FieldResolver()
-  async nAssociatedTags(@Root() { user }: Pick<Stats, "user">) {
+  async nAssociatedTags(@Root() { user }: Pick<UserStats, "user">) {
     const n = await TagCategoryAssociationModel.countDocuments({
       user: user._id,
     });
@@ -45,7 +63,7 @@ export class StatsResolver implements ResolverInterface<Stats> {
   }
 
   @FieldResolver()
-  async nUploadedImages(@Root() { user }: Pick<Stats, "user">) {
+  async nUploadedImages(@Root() { user }: Pick<UserStats, "user">) {
     const n = await ImageModel.countDocuments({
       uploader: user._id,
       active: true,
@@ -55,7 +73,7 @@ export class StatsResolver implements ResolverInterface<Stats> {
   }
 
   @FieldResolver()
-  async nValidatedUploadedImages(@Root() { user }: Pick<Stats, "user">) {
+  async nValidatedUploadedImages(@Root() { user }: Pick<UserStats, "user">) {
     const n = await ImageModel.countDocuments({
       uploader: user._id,
       active: true,

@@ -1,9 +1,14 @@
+import { ObjectId } from "mongodb";
 import { Field, Int, ObjectType } from "type-graphql";
 
+import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 import { User } from "./auth/user";
 
 @ObjectType()
-export class Stats {
+export class UserStats {
+  @Field(() => ObjectIdScalar)
+  _id: ObjectId;
+
   @Field(() => User)
   user: User;
 

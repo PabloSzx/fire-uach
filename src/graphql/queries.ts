@@ -248,6 +248,7 @@ export const TIP: DocumentNode<{
 
 export const OWN_STATS: DocumentNode<{
   ownStats: {
+    _id: string;
     nAssociatedImages: number;
     nAssociatedTags: number;
     nUploadedImages: number;
@@ -256,6 +257,7 @@ export const OWN_STATS: DocumentNode<{
 }> = gql`
   query {
     ownStats {
+      _id
       nAssociatedImages
       nAssociatedTags
       nUploadedImages

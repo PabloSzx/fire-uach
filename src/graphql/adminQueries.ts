@@ -560,3 +560,28 @@ export const CSV_RESULTS_CATEGORY_IMAGE: DocumentNode<{
     csvResultsCategoryImageAssociations
   }
 `;
+
+export const USER_STATS: DocumentNode<
+  {
+    userStats?: {
+      _id: string;
+      nAssociatedImages: number;
+      nAssociatedTags: number;
+      nUploadedImages: number;
+      nValidatedUploadedImages: number;
+    };
+  },
+  {
+    _id: string;
+  }
+> = gql`
+  query($_id: ObjectId!) {
+    userStats(_id: $_id) {
+      _id
+      nAssociatedImages
+      nAssociatedTags
+      nUploadedImages
+      nValidatedUploadedImages
+    }
+  }
+`;
