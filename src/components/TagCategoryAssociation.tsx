@@ -1,12 +1,19 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { intersectionBy } from "lodash";
 import { useRouter } from "next/router";
 import { FC, useContext, useEffect, useState } from "react";
 import { useGeolocation } from "react-use";
 import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Flex, Stack, Tag, Text } from "@chakra-ui/core";
+import {
+  Badge,
+  Box,
+  Flex,
+  SimpleGrid,
+  Stack,
+  Tag,
+  Text,
+} from "@chakra-ui/core";
 
 import { useTip } from "../components/Tip";
 import {
@@ -65,128 +72,182 @@ export const TagCategoryAssociation: FC = () => {
 
   const notAnsweredTag = dataNotAnsweredTag?.notAnsweredTag;
 
+  const CircularTag: FC<{ color?: string; name: string }> = ({
+    color,
+    name,
+  }) => {
+    return (
+      <Flex height="100%" alignItems="center" justifyContent="center">
+        <Tag
+          className="unselectable"
+          transition="0.2s all ease-in-out"
+          variantColor={color || "green"}
+          key={name}
+          fontSize={["1.5em", "2em"]}
+          p={[2, 4]}
+          m={["0.2em", "0.5em"]}
+          cursor="pointer"
+          overflowWrap="break-word"
+          textAlign="center"
+          justifyContent="center"
+          alignItems="center"
+          height="3em"
+          width="7em"
+        >
+          {name}
+        </Tag>
+      </Flex>
+    );
+  };
+
   return (
     <Stack align="center" p={5}>
-      <AnimatePresence>
-        {notAnsweredTag ? (
-          <motion.div
-            key={notAnsweredTag._id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, display: "none" }}
+      <Box>
+        <SimpleGrid columns={3}>
+          {shuffledCategories.slice(0, 4).map(({ _id, name }) => {
+            return <CircularTag name={name} />;
+          })}
+          <Badge
+            overflowWrap="break-word"
+            p={5}
+            m={5}
+            fontSize={["2em", "2.5em", "6em"]}
+            variant="solid"
+            variantColor="green"
+            whiteSpace="break-spaces"
+            textAlign="center"
+            lineHeight="1em"
           >
-            <Stack align="center">
-              <Badge
-                overflowWrap="break-word"
-                p={5}
-                m={5}
-                fontSize={["2em", "2.5em", "3em"]}
-                variant="solid"
-                variantColor="green"
-                whiteSpace="break-spaces"
-                textAlign="center"
-                lineHeight="1em"
-              >
-                {notAnsweredTag.name}
-              </Badge>
-            </Stack>
-            <Flex wrap="wrap" mt={5} justifyContent="center">
-              {shuffledCategories.map(({ _id, name }) => {
-                const selected = selectedCategory?.includes(_id) ?? false;
-                return (
-                  <Tag
-                    className="unselectable"
-                    transition="0.2s all ease-in-out"
-                    variantColor={selected ? "cyan" : "green"}
-                    key={_id}
-                    fontSize={selected ? ["1.5em", "2em"] : ["1em", "1.7em"]}
-                    p={[2, 4]}
-                    m={["0.2em", "0.5em"]}
-                    cursor="pointer"
-                    overflowWrap="break-word"
-                    onClick={async () => {
-                      if (user) {
-                        setSelectedCategory(_id);
-                        await wait(300);
-                        await answerTagCategoryAssociation({
-                          variables: {
-                            data: {
-                              tag: notAnsweredTag._id,
-                              categoryChosen: _id,
-                              rejectedCategories: shuffledCategories
-                                .filter(cat => {
-                                  return cat._id !== _id;
-                                })
-                                .map(({ _id }) => _id),
-                              location:
-                                latitude && longitude
-                                  ? { latitude, longitude }
-                                  : undefined,
+            Alarma
+          </Badge>
+          {shuffledCategories.slice(4).map(({ _id, name }) => {
+            return <CircularTag name={name} />;
+          })}
+          <CircularTag name="Otra" color="yellow" />
+        </SimpleGrid>
+      </Box>
+      {!!false && (
+        <AnimatePresence>
+          {notAnsweredTag ? (
+            <motion.div
+              key={notAnsweredTag._id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, display: "none" }}
+            >
+              <Stack align="center">
+                <Badge
+                  overflowWrap="break-word"
+                  p={5}
+                  m={5}
+                  fontSize={["2em", "2.5em", "3em"]}
+                  variant="solid"
+                  variantColor="green"
+                  whiteSpace="break-spaces"
+                  textAlign="center"
+                  lineHeight="1em"
+                >
+                  {notAnsweredTag.name}
+                </Badge>
+              </Stack>
+              <Flex wrap="wrap" mt={5} justifyContent="center">
+                {shuffledCategories.map(({ _id, name }) => {
+                  const selected = selectedCategory?.includes(_id) ?? false;
+                  return (
+                    <Tag
+                      className="unselectable"
+                      transition="0.2s all ease-in-out"
+                      variantColor={selected ? "cyan" : "green"}
+                      key={_id}
+                      fontSize={selected ? ["1.5em", "2em"] : ["1em", "1.7em"]}
+                      p={[2, 4]}
+                      m={["0.2em", "0.5em"]}
+                      cursor="pointer"
+                      overflowWrap="break-word"
+                      onClick={async () => {
+                        if (user) {
+                          setSelectedCategory(_id);
+                          await wait(300);
+                          await answerTagCategoryAssociation({
+                            variables: {
+                              data: {
+                                tag: notAnsweredTag._id,
+                                categoryChosen: _id,
+                                rejectedCategories: shuffledCategories
+                                  .filter(cat => {
+                                    return cat._id !== _id;
+                                  })
+                                  .map(({ _id }) => _id),
+                                location:
+                                  latitude && longitude
+                                    ? { latitude, longitude }
+                                    : undefined,
+                              },
                             },
-                          },
-                        });
-                      } else {
-                        push("/login");
-                      }
-                    }}
-                  >
-                    {name}
-                  </Tag>
-                );
-              })}
-              <Tag
-                className="unselectable"
-                transition="0.2s all ease-in-out"
-                variantColor={selectedCategory === "none" ? "cyan" : "yellow"}
-                fontSize={
-                  selectedCategory === "none"
-                    ? ["1.5em", "2em"]
-                    : ["1em", "1.7em"]
-                }
-                p={[2, 4]}
-                m={["0.2em", "0.5em"]}
-                cursor="pointer"
-                onClick={async () => {
-                  if (user) {
-                    setSelectedCategory("none");
-                    await wait(300);
-
-                    await answerTagCategoryAssociation({
-                      variables: {
-                        data: {
-                          tag: notAnsweredTag._id,
-                          categoryChosen: undefined,
-                          rejectedCategories: shuffledCategories.map(
-                            ({ _id }) => _id
-                          ),
-                          location:
-                            latitude && longitude
-                              ? { latitude, longitude }
-                              : undefined,
-                        },
-                      },
-                    });
-                  } else {
-                    push("/login");
+                          });
+                        } else {
+                          push("/login");
+                        }
+                      }}
+                    >
+                      {name}
+                    </Tag>
+                  );
+                })}
+                <Tag
+                  className="unselectable"
+                  transition="0.2s all ease-in-out"
+                  variantColor={selectedCategory === "none" ? "cyan" : "yellow"}
+                  fontSize={
+                    selectedCategory === "none"
+                      ? ["1.5em", "2em"]
+                      : ["1em", "1.7em"]
                   }
-                }}
-                overflowWrap="break-word"
-              >
-                Otra
-              </Tag>
-            </Flex>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, display: "none" }}
-          >
-            <Text>Muchas gracias por jugar</Text>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  p={[2, 4]}
+                  m={["0.2em", "0.5em"]}
+                  cursor="pointer"
+                  onClick={async () => {
+                    if (user) {
+                      setSelectedCategory("none");
+                      await wait(300);
+
+                      await answerTagCategoryAssociation({
+                        variables: {
+                          data: {
+                            tag: notAnsweredTag._id,
+                            categoryChosen: undefined,
+                            rejectedCategories: shuffledCategories.map(
+                              ({ _id }) => _id
+                            ),
+                            location:
+                              latitude && longitude
+                                ? { latitude, longitude }
+                                : undefined,
+                          },
+                        },
+                      });
+                    } else {
+                      push("/login");
+                    }
+                  }}
+                  overflowWrap="break-word"
+                >
+                  Otra
+                </Tag>
+              </Flex>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, display: "none" }}
+            >
+              <Text>Muchas gracias por jugar</Text>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </Stack>
   );
 };
