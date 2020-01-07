@@ -151,7 +151,6 @@ const UploadImages: FC = () => {
             totalPages={paginatedImages.length}
             secondary
             pointing
-            boundaryRange={0}
           />
         </Box>
         {loadingOwnImages ? (

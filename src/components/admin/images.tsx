@@ -325,7 +325,6 @@ const AdminImages: FC = () => {
         totalPages={paginatedImages.length}
         secondary
         pointing
-        boundaryRange={0}
       />
 
       <Box mt={3}>

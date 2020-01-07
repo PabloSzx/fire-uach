@@ -196,7 +196,6 @@ const AdminTags: FC = () => {
           totalPages={paginatedTags.length}
           secondary
           pointing
-          boundaryRange={0}
         />
       </Box>
       {paginatedTags[activePage - 1]?.map(({ _id, name }) => {
