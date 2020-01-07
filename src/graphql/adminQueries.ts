@@ -75,17 +75,12 @@ export const EDIT_CATEGORY: DocumentNode<
 export type ITag = {
   _id: string;
   name: string;
-  categories: { _id: string; name: string }[];
 };
 
 const TagFragment = gql`
   fragment TagFragment on Tag {
     _id
     name
-    categories {
-      _id
-      name
-    }
   }
 `;
 
@@ -144,7 +139,6 @@ export const EDIT_TAG: DocumentNode<
     data: {
       _id: string;
       name: string;
-      categories: string[];
     };
   }
 > = gql`

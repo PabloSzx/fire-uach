@@ -40,17 +40,17 @@ const IndexPage: NextPage = () => {
           pb={1}
           alignItems="center"
           justifyContent="space-around"
+          onClick={() => {
+            push("/tag");
+          }}
+          cursor="pointer"
         >
           <Box p={5} border="1px solid" borderRadius="15px">
             <Box
               as={MdTextFields}
-              cursor="pointer"
               m={0}
               p={0}
               fontSize={iconSize}
-              onClick={() => {
-                push("/tag");
-              }}
               verticalAlign="middle"
             />
           </Box>
@@ -67,17 +67,13 @@ const IndexPage: NextPage = () => {
           p={1}
           alignItems="center"
           justifyContent="space-around"
+          cursor="pointer"
+          onClick={() => {
+            push("/image");
+          }}
         >
           <Box p={5} border="1px solid" borderRadius="15px">
-            <Box
-              as={FaFileImage}
-              cursor="pointer"
-              fontSize={iconSize}
-              onClick={() => {
-                push("/image");
-              }}
-              verticalAlign="middle"
-            />
+            <Box as={FaFileImage} fontSize={iconSize} verticalAlign="middle" />
           </Box>
           <Box>
             <GameTitle>Etiqueta imágenes</GameTitle>
@@ -91,17 +87,13 @@ const IndexPage: NextPage = () => {
           p={1}
           alignItems="center"
           justifyContent="space-around"
+          onClick={() => {
+            push("/upload");
+          }}
+          cursor="pointer"
         >
           <Box p={5} border="1px solid" borderRadius="15px">
-            <Box
-              as={FaFileUpload}
-              fontSize={iconSize}
-              cursor="pointer"
-              onClick={() => {
-                push("/upload");
-              }}
-              verticalAlign="middle"
-            />
+            <Box as={FaFileUpload} fontSize={iconSize} verticalAlign="middle" />
           </Box>
 
           <Box>

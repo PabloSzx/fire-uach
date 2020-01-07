@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import { map } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { FaSignInAlt } from "react-icons/fa";
 import LazyImage from "react-lazy-progressive-image";
 import { isEmail } from "validator";
 
@@ -182,7 +183,7 @@ const LoginPage: NextPage = () => {
                 <FormControl
                   isInvalid={!!(touched.password && errors.password)}
                 >
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Contraseña</FormLabel>
                   <Input
                     type="password"
                     name="password"
@@ -200,8 +201,9 @@ const LoginPage: NextPage = () => {
                   isLoading={isSubmitting}
                   variantColor="blue"
                   isDisabled={!isValid || !dirty}
+                  leftIcon={FaSignInAlt}
                 >
-                  Inicar Sesión
+                  Iniciar Sesión
                 </Button>
               </Box>
               <Box width="50%" textAlign="center">
@@ -230,6 +232,7 @@ const LoginPage: NextPage = () => {
                       }
                     }
                   }}
+                  leftIcon={FaSignInAlt}
                 >
                   Registrarse
                 </Button>

@@ -54,7 +54,7 @@ export const SIGN_UP: DocumentNode<
     data: {
       email: string;
       password: string;
-      type?: UserType;
+      type: UserType;
       typeSpecify: string;
       fireRelated: boolean;
       fireRelatedSpecify: string;
@@ -173,20 +173,12 @@ export const NOT_ANSWERED_TAG: DocumentNode<{
   notAnsweredTag?: {
     _id: string;
     name: string;
-    categories: {
-      _id: string;
-      name: string;
-    }[];
   };
 }> = gql`
   query {
     notAnsweredTag {
       _id
       name
-      categories {
-        _id
-        name
-      }
     }
   }
 `;
@@ -196,10 +188,6 @@ export const ANSWER_TAG_CATEGORY_ASSOCIATION: DocumentNode<
     answerTagCategoryAssociation?: {
       _id: string;
       name: string;
-      categories: {
-        _id: string;
-        name: string;
-      }[];
     };
   },
   {
@@ -215,10 +203,6 @@ export const ANSWER_TAG_CATEGORY_ASSOCIATION: DocumentNode<
     answerTagCategoryAssociation(data: $data) {
       _id
       name
-      categories {
-        _id
-        name
-      }
     }
   }
 `;

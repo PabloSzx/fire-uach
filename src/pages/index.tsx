@@ -56,9 +56,9 @@ const IndexPage: NextPage = () => {
       <Paragraph>Comparte tus fotos, asocia imágenes y conceptos.</Paragraph>
       <Header>¡Participa y gana premios!</Header>
       <Paragraph>
-        Recibirás consejos mientras juegas, y solo por participar durante
-        febrero 2020, entrarás en un sorteo de una cámara Polaroid con 200
-        fotos.
+        Recibirás consejos mientras juegas, y mientras más participes de todos
+        los juegos durante febrero 2020, irás subiendo de categoría hasta poder
+        entrar al sorteo de una cámara Polaroid y más de 100 fotos
       </Paragraph>
       <Text fontSize="2em" textAlign="center" ml="10%" mr="10%">
         Para participar haz click{" "}

@@ -37,13 +37,13 @@ export class User {
   @Property({ default: () => generate() })
   unlockKey: string;
 
-  @Field(() => UserType, { nullable: true })
+  @Field(() => UserType)
   @Property({
     enum: UserType,
     type: String,
-    default: undefined,
+    default: UserType.other,
   })
-  type?: UserType;
+  type: UserType;
 
   @Field()
   @Property({ default: "" })
@@ -88,8 +88,8 @@ export class EditUser implements Partial<User> {
   @Field()
   admin: boolean;
 
-  @Field(() => UserType, { nullable: true })
-  type?: UserType;
+  @Field(() => UserType)
+  type: UserType;
 
   @Field()
   typeSpecify: string;

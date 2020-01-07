@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import { map } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { FaSignInAlt } from "react-icons/fa";
 import LazyImage from "react-lazy-progressive-image";
 import { isEmail } from "validator";
 
@@ -123,22 +124,24 @@ const SignUpPage: NextPage = () => {
           fireRelated,
           fireRelatedSpecify,
         }) => {
-          try {
-            await signUp({
-              variables: {
-                data: {
-                  email,
-                  password: sha256(password).toString(),
-                  type,
-                  typeSpecify,
-                  fireRelated,
-                  fireRelatedSpecify,
+          if (type !== undefined) {
+            try {
+              await signUp({
+                variables: {
+                  data: {
+                    email,
+                    password: sha256(password).toString(),
+                    type,
+                    typeSpecify,
+                    fireRelated,
+                    fireRelatedSpecify,
+                  },
                 },
-              },
-            });
-          } catch (err) {}
+              });
+            } catch (err) {}
+          }
         }}
-        validate={({ email, password, termsAndConditions }) => {
+        validate={({ email, password, termsAndConditions, type }) => {
           const errors: Record<string, string> = {};
 
           if (!isEmail(email)) {
@@ -150,6 +153,9 @@ const SignUpPage: NextPage = () => {
           if (!termsAndConditions) {
             errors.termsAndConditions =
               "Debe aceptar los términos y condiciones!";
+          }
+          if (type === undefined) {
+            errors.type = "Debe especifir su ocupación";
           }
 
           return errors;
@@ -251,45 +257,51 @@ const SignUpPage: NextPage = () => {
                 </Box>
                 <Divider width="80%" />
                 <Box width={["80%", "60%", "40%"]}>
-                  <Heading as="h2" size="lg">
-                    ¿A qué te dedicas?
-                  </Heading>
-                  <RadioGroup
-                    value={values.type}
-                    onChange={({ target: { value } }) => {
-                      setFieldValue("type", value);
-                    }}
+                  <FormControl
+                    isInvalid={!!(touched.type && errors.type)}
+                    isRequired
                   >
-                    <Radio
-                      variantColor="green"
-                      value={UserType.scientificOrAcademic}
-                      aria-label="scientific"
-                      borderColor="grey"
+                    <FormLabel as="h3" fontSize="1.5em">
+                      <b>¿A qué te dedicas?</b>
+                    </FormLabel>
+                    <RadioGroup
+                      value={values.type}
+                      onChange={({ target: { value } }) => {
+                        setFieldValue("type", value);
+                      }}
                     >
-                      {userTypeToText(UserType.scientificOrAcademic)}
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.professional}
-                      borderColor="grey"
-                    >
-                      {userTypeToText(UserType.professional)}
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.student}
-                      borderColor="grey"
-                    >
-                      {userTypeToText(UserType.student)}
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.other}
-                      borderColor="grey"
-                    >
-                      {userTypeToText(UserType.other)}
-                    </Radio>
-                  </RadioGroup>
+                      <Radio
+                        variantColor="green"
+                        value={UserType.scientificOrAcademic}
+                        aria-label="scientific"
+                        borderColor="grey"
+                      >
+                        {userTypeToText(UserType.scientificOrAcademic)}
+                      </Radio>
+                      <Radio
+                        variantColor="green"
+                        value={UserType.professional}
+                        borderColor="grey"
+                      >
+                        {userTypeToText(UserType.professional)}
+                      </Radio>
+                      <Radio
+                        variantColor="green"
+                        value={UserType.student}
+                        borderColor="grey"
+                      >
+                        {userTypeToText(UserType.student)}
+                      </Radio>
+                      <Radio
+                        variantColor="green"
+                        value={UserType.other}
+                        borderColor="grey"
+                      >
+                        {userTypeToText(UserType.other)}
+                      </Radio>
+                    </RadioGroup>
+                    <FormErrorMessage>{errors.type}</FormErrorMessage>
+                  </FormControl>
                 </Box>
                 <Box width={["80%", "60%", "40%"]}>
                   <FormControl>
@@ -304,22 +316,28 @@ const SignUpPage: NextPage = () => {
                 <Divider width="80%" />
 
                 <Box width={["80%", "60%", "40%"]}>
-                  <Heading as="h2" size="lg">
-                    ¿Tus actividades diarias se relacionan con los incendios?
-                  </Heading>
-                  <RadioGroup
-                    value={values.fireRelated ? "y" : "n"}
-                    onChange={({ target: { value } }) => {
-                      setFieldValue("fireRelated", value === "y");
-                    }}
-                  >
-                    <Radio value="y" borderColor="grey" variantColor="green">
-                      Sí
-                    </Radio>
-                    <Radio value="n" borderColor="grey" variantColor="green">
-                      No
-                    </Radio>
-                  </RadioGroup>
+                  <FormControl>
+                    <FormLabel as="h3" fontSize="1.5em">
+                      <b>
+                        ¿Tus actividades diarias se relacionan con los
+                        incendios?
+                      </b>
+                    </FormLabel>
+                    <RadioGroup
+                      value={values.fireRelated ? "y" : "n"}
+                      onChange={({ target: { value } }) => {
+                        setFieldValue("fireRelated", value === "y");
+                      }}
+                    >
+                      <Radio value="y" borderColor="grey" variantColor="green">
+                        Sí
+                      </Radio>
+                      <Radio value="n" borderColor="grey" variantColor="green">
+                        No
+                      </Radio>
+                    </RadioGroup>
+                  </FormControl>
+
                   <FormControl>
                     <FormLabel>Especifica</FormLabel>
                     <Input
@@ -366,6 +384,7 @@ const SignUpPage: NextPage = () => {
                     isLoading={isSubmitting}
                     variantColor="blue"
                     isDisabled={!values.password || !isValid}
+                    leftIcon={FaSignInAlt}
                   >
                     Registrarse
                   </Button>

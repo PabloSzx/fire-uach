@@ -105,6 +105,7 @@ export class CategoryImageAssociationResolver {
     const parser = new Parser({
       fields: [
         { value: "user", label: "Usuario" },
+        { value: "type", label: "Tipo de usuario" },
         { value: "image", label: "Imagen" },
         { value: "categoryChosen", label: "Categoría elegida" },
         { value: "rejectedCategories", label: "Categorías rechazadas" },
@@ -118,13 +119,14 @@ export class CategoryImageAssociationResolver {
         $lte: toDate(maxDate),
       },
     })
-      .populate("user", "email")
+      .populate("user", "email type")
       .populate("categoryChosen", "name")
       .populate("rejectedCategories", "name")
       .populate("image", "filename validated");
 
     let processedData = dataRaw.map<{
       user: string;
+      type: string;
       image: string;
       categoryChosen: string;
       rejectedCategories: string;
@@ -141,6 +143,7 @@ export class CategoryImageAssociationResolver {
       }) => {
         return {
           user: user && isDocument(user) ? user.email : "null",
+          type: user && isDocument(user) ? user.type : "null",
           image:
             image &&
             isDocument(image) &&

@@ -1,14 +1,4 @@
-import {
-  Arg,
-  Authorized,
-  FieldResolver,
-  Mutation,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
-
-import { isDocumentArray } from "@typegoose/typegoose";
+import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 
 import { ADMIN } from "../../constants";
 import { CategoryModel } from "../entities/category";
@@ -59,13 +49,12 @@ export class TagResolver {
   @Mutation(() => [Tag])
   async editTag(
     @Arg("data")
-    { _id, name, categories }: EditTag
+    { _id, name }: EditTag
   ) {
     await TagModel.findByIdAndUpdate(
       _id,
       {
         name,
-        categories,
       },
       {
         setDefaultsOnInsert: true,
@@ -94,24 +83,5 @@ export class TagResolver {
     return await TagModel.find({
       active: true,
     });
-  }
-
-  @FieldResolver()
-  async categories(@Root() { categories }: Partial<Tag>) {
-    if (categories) {
-      if (isDocumentArray(categories)) {
-        return categories;
-      } else {
-        return await CategoryModel.find({
-          _id: {
-            $in: categories,
-          },
-          active: true,
-        }).sort({
-          name: "asc",
-        });
-      }
-    }
-    return [];
   }
 }

@@ -91,11 +91,7 @@ export const TagCategoryAssociation: FC = () => {
               </Badge>
             </Stack>
             <Flex wrap="wrap" mt={5} justifyContent="center">
-              {intersectionBy(
-                shuffledCategories,
-                notAnsweredTag.categories,
-                ({ _id }) => _id
-              ).map(({ _id, name }) => {
+              {shuffledCategories.map(({ _id, name }) => {
                 const selected = selectedCategory?.includes(_id) ?? false;
                 return (
                   <Tag
@@ -117,7 +113,7 @@ export const TagCategoryAssociation: FC = () => {
                             data: {
                               tag: notAnsweredTag._id,
                               categoryChosen: _id,
-                              rejectedCategories: notAnsweredTag.categories
+                              rejectedCategories: shuffledCategories
                                 .filter(cat => {
                                   return cat._id !== _id;
                                 })
@@ -160,7 +156,7 @@ export const TagCategoryAssociation: FC = () => {
                         data: {
                           tag: notAnsweredTag._id,
                           categoryChosen: undefined,
-                          rejectedCategories: notAnsweredTag.categories.map(
+                          rejectedCategories: shuffledCategories.map(
                             ({ _id }) => _id
                           ),
                           location:
@@ -176,7 +172,7 @@ export const TagCategoryAssociation: FC = () => {
                 }}
                 overflowWrap="break-word"
               >
-                Ninguna
+                Otra
               </Tag>
             </Flex>
           </motion.div>

@@ -196,7 +196,7 @@ export const CategoryImageAssociation: FC<{
                 }}
                 overflowWrap="break-word"
               >
-                Ninguna
+                Otra
               </Tag>
             </Flex>
           </motion.div>

@@ -1,15 +1,9 @@
 import { ObjectId } from "mongodb";
 import { Field, InputType, ObjectType } from "type-graphql";
 
-import {
-  arrayProp as PropertyArray,
-  getModelForClass,
-  prop as Property,
-  Ref,
-} from "@typegoose/typegoose";
+import { getModelForClass, prop as Property } from "@typegoose/typegoose";
 
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
-import { Category } from "./category";
 
 @ObjectType()
 export class Tag {
@@ -19,10 +13,6 @@ export class Tag {
   @Field()
   @Property({ required: true, unique: true })
   name: string;
-
-  @Field(() => [Category])
-  @PropertyArray({ items: "Category", ref: "Category", default: [] })
-  categories: Ref<Category>[];
 
   @Property({ default: true })
   active: boolean;
@@ -49,7 +39,4 @@ export class EditTag implements Partial<Tag> {
 
   @Field()
   name: string;
-
-  @Field(() => [ObjectIdScalar])
-  categories: ObjectId[];
 }

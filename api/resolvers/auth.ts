@@ -82,7 +82,15 @@ export class AuthResolver {
   @Mutation(() => User)
   async signUp(
     @Ctx() { req, res }: IContext,
-    @Arg("data") { email, password }: SignUpInput
+    @Arg("data")
+    {
+      email,
+      password,
+      type,
+      typeSpecify,
+      fireRelated,
+      fireRelatedSpecify,
+    }: SignUpInput
   ) {
     let user = await UserModel.findOne({
       email,
@@ -92,6 +100,10 @@ export class AuthResolver {
       user = await UserModel.create({
         email,
         password,
+        type,
+        typeSpecify,
+        fireRelated,
+        fireRelatedSpecify,
       });
       AuthResolver.authenticate({
         req,
@@ -100,6 +112,10 @@ export class AuthResolver {
       });
       return user;
     } else if (!user.active) {
+      user.type = type;
+      user.typeSpecify = typeSpecify;
+      user.fireRelated = fireRelated;
+      user.fireRelatedSpecify = fireRelatedSpecify;
       user.active = true;
       user.password = password;
       await user.save();

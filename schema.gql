@@ -66,7 +66,6 @@ input EditImage {
 input EditTag {
   _id: ObjectId!
   name: String!
-  categories: [ObjectId!]!
 }
 
 input EditTip {
@@ -78,7 +77,7 @@ input EditTip {
 input EditUser {
   _id: ObjectId!
   admin: Boolean!
-  type: UserType
+  type: UserType!
   typeSpecify: String!
   fireRelated: Boolean!
   fireRelatedSpecify: String!
@@ -185,7 +184,7 @@ input RemoveTag {
 input SignUpInput {
   email: EmailAddress!
   password: String!
-  type: UserType
+  type: UserType!
   typeSpecify: String!
   fireRelated: Boolean!
   fireRelatedSpecify: String!
@@ -194,7 +193,6 @@ input SignUpInput {
 type Tag {
   _id: ObjectId!
   name: String!
-  categories: [Category!]!
 }
 
 type TagCategoryAssociation {
@@ -235,7 +233,7 @@ type User {
   email: EmailAddress!
   admin: Boolean!
   unlockKey: String!
-  type: UserType
+  type: UserType!
   typeSpecify: String!
   fireRelated: Boolean!
   fireRelatedSpecify: String!

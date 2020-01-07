@@ -1,7 +1,5 @@
-import { chunk, isEqual, toInteger } from "lodash";
-import { ChangeEvent, FC, memo, useMemo } from "react";
-import Select from "react-select";
-import { useSetState } from "react-use";
+import { chunk, toInteger } from "lodash";
+import { ChangeEvent, FC, memo, useMemo, useState } from "react";
 import { Pagination } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
@@ -15,12 +13,10 @@ import {
   InputLeftAddon,
   Spinner,
   Stack,
-  Tag,
   Text,
 } from "@chakra-ui/core";
 
 import {
-  CATEGORIES,
   CREATE_TAG,
   EDIT_TAG,
   ITag,
@@ -29,13 +25,7 @@ import {
 } from "../../graphql/adminQueries";
 import { Confirm } from "../Confirm";
 
-const TagEdit: FC<ITag> = ({ _id, name, categories }) => {
-  const { data: dataAllCategories, loading: loadingAllCategories } = useQuery(
-    CATEGORIES,
-    {
-      fetchPolicy: "cache-first",
-    }
-  );
+const TagEdit: FC<ITag> = ({ _id, name: nameProp }) => {
   const [editTag, { loading: loadingEditTag }] = useMutation(EDIT_TAG, {
     update: (cache, { data }) => {
       if (data?.editTag) {
@@ -60,83 +50,33 @@ const TagEdit: FC<ITag> = ({ _id, name, categories }) => {
       }
     },
   });
-  const [data, setData] = useSetState({
-    name,
-    categories,
-  });
+
+  const [name, setName] = useState(nameProp);
 
   return (
     <Stack align="center" spacing="2em" p={2}>
-      {loadingAllCategories && <Spinner />}
       <InputGroup>
         <InputLeftAddon>
           <Text>Nombre etiqueta</Text>
         </InputLeftAddon>
         <Input
-          value={data.name}
+          value={name}
           onChange={({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
-            setData({
-              name: value,
-            });
+            setName(value);
           }}
         />
       </InputGroup>
-      <Box
-        width="100%"
-        pl={10}
-        pr={10}
-        key={"0" + categories.map(({ name }) => name).join("")}
-      >
-        <Tag textAlign="center">
-          <Text justifyContent="center" textAlign="center">
-            Asociaciones de Categorías posibles
-          </Text>
-        </Tag>
-        <Select<{ value: string; label: string }>
-          value={data.categories.map(({ _id, name }) => {
-            return {
-              label: name,
-              value: _id,
-            };
-          })}
-          options={dataAllCategories?.categories.map(({ _id, name }) => {
-            return {
-              label: name,
-              value: _id,
-            };
-          })}
-          isMulti
-          onChange={(selected: any) => {
-            const selectedPossibleCategories =
-              (selected as {
-                label: string;
-                value: string;
-              }[])?.map(({ value, label }) => {
-                return {
-                  _id: value,
-                  name: label,
-                };
-              }) ?? [];
-            setData({
-              categories: selectedPossibleCategories,
-            });
-          }}
-          placeholder="Seleccionar posibles asociaciones de categorías"
-          noOptionsMessage={() => "No hay categorías disponibles"}
-        />
-      </Box>
 
       <Box>
         <Button
           isLoading={loadingEditTag}
           onClick={() => {
-            if (data.name) {
+            if (name) {
               editTag({
                 variables: {
                   data: {
                     _id,
-                    name: data.name,
-                    categories: data.categories.map(({ _id }) => _id),
+                    name,
                   },
                 },
               });
@@ -145,13 +85,7 @@ const TagEdit: FC<ITag> = ({ _id, name, categories }) => {
             }
           }}
           variantColor="blue"
-          isDisabled={isEqual(
-            {
-              name,
-              categories,
-            },
-            data
-          )}
+          isDisabled={name === nameProp}
         >
           Guardar cambios
         </Button>
@@ -265,15 +199,8 @@ const AdminTags: FC = () => {
           boundaryRange={0}
         />
       </Box>
-      {paginatedTags[activePage - 1]?.map(({ _id, name, categories }) => {
-        return (
-          <TagEdit
-            key={_id}
-            name={name}
-            _id={_id}
-            categories={categories.map(({ _id, name }) => ({ _id, name }))}
-          />
-        );
+      {paginatedTags[activePage - 1]?.map(({ _id, name }) => {
+        return <TagEdit key={_id} name={name} _id={_id} />;
       })}
 
       <NewTag />

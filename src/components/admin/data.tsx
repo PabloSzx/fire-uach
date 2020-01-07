@@ -26,7 +26,7 @@ const AdminData: FC = () => {
   );
   const [maxDate, setMaxDate] = useRememberState(
     "maxDateAdminDataCsv",
-    new Date()
+    addDays(new Date(), 30)
   );
   useEffect(() => {
     if (typeof minDate === "string") {
@@ -144,7 +144,7 @@ const AdminData: FC = () => {
             }
           }}
           minDate={toDate(minDate)}
-          maxDate={addDays(new Date(), 1)}
+          maxDate={addDays(new Date(), 365)}
           showTimeSelect
           dateFormat="Pp"
         />
