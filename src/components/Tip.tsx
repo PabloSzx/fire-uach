@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { Icon, Stack, Text } from "@chakra-ui/core";
 
 import { TIP } from "../graphql/queries";
@@ -31,7 +31,7 @@ export const useTip = ({
   const { user } = useUser();
   const counter = useRef(0);
 
-  const [getTip, { data }] = useLazyQuery(TIP);
+  const [getTip, { data }] = useMutation(TIP);
 
   useEffect(() => {
     if (tipOnStart && user) {

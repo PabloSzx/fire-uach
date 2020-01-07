@@ -142,6 +142,7 @@ type Mutation {
   resetTagCategoryAssociations(user: ObjectId!): [TagCategoryAssociation!]!
   csvResultsTagCategoryAssociations(dateRange: DateRange!): String!
   answerTagCategoryAssociation(data: TagCategoryAssociationAnswer!): Tag
+  tip: Tip
   createTip(data: CreateTip!): [Tip!]!
   editTip(data: EditTip!): [Tip!]!
   removeTip(_id: ObjectId!): [Tip!]!
@@ -164,7 +165,6 @@ type Query {
   ownStats: UserStats!
   tags: [Tag!]!
   notAnsweredTag: Tag
-  tip: Tip
   allTips: [Tip!]!
   allUsers: [User!]!
 }

@@ -17,7 +17,7 @@ const GameTitle: FC = ({ children }) => {
       alignSelf="center"
       textAlign="center"
       borderRadius="10px"
-      backgroundColor="#0C9ADB"
+      backgroundColor="#8BC63E"
       color="white"
       p={2}
       m={0}
@@ -32,7 +32,12 @@ const GameTitle: FC = ({ children }) => {
 const IndexPage: NextPage = () => {
   const { push } = useRouter();
   return (
-    <Stack alignItems="center" pt="1em" width="100%" height="100%" p={4}>
+    <Stack
+      alignItems="center"
+      height="100%"
+      className="indexPage"
+      justifyContent="center"
+    >
       <FakeHref href="/tag">
         <Stack
           spacing="2em"
@@ -44,6 +49,7 @@ const IndexPage: NextPage = () => {
             push("/tag");
           }}
           cursor="pointer"
+          color="black"
         >
           <Box p={5} border="1px solid" borderRadius="15px">
             <Box
@@ -68,6 +74,7 @@ const IndexPage: NextPage = () => {
           alignItems="center"
           justifyContent="space-around"
           cursor="pointer"
+          color="black"
           onClick={() => {
             push("/image");
           }}
@@ -91,6 +98,7 @@ const IndexPage: NextPage = () => {
             push("/upload");
           }}
           cursor="pointer"
+          color="black"
         >
           <Box p={5} border="1px solid" borderRadius="15px">
             <Box as={FaFileUpload} fontSize={iconSize} verticalAlign="middle" />

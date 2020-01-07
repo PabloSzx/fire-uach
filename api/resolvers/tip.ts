@@ -10,7 +10,7 @@ import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 @Resolver(() => Tip)
 export class TipResolver {
   @Authorized()
-  @Query(() => Tip, { nullable: true })
+  @Mutation(() => Tip, { nullable: true })
   async tip(@Ctx() { user }: IContext) {
     assertIsDefined(user, "User context failed");
 

@@ -28,9 +28,11 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
         </Head>
 
         <ThemeProvider theme={theme}>
-          <Navigation />
-          <Box pos="relative" pb="70px">
-            <Component {...pageProps} />
+          <Box pos="relative" height="100vh">
+            <Box overflowY="auto" height="calc(100vh - 50px)">
+              <Component {...pageProps} />
+            </Box>
+            <Navigation />
           </Box>
           <ToastContainer autoClose={10000} />
         </ThemeProvider>

@@ -224,7 +224,7 @@ export const TIP: DocumentNode<{
     text: string;
   };
 }> = gql`
-  query {
+  mutation {
     tip {
       _id
       text
