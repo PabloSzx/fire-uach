@@ -16,6 +16,7 @@ import {
 import { isDocument, isDocumentArray, Ref } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
+import { userTypeToText } from "../../constants/enums";
 import {
   CategoryImageAssociation,
   CategoryImageAssociationAnswer,
@@ -143,7 +144,7 @@ export class CategoryImageAssociationResolver {
       }) => {
         return {
           user: user && isDocument(user) ? user.email : "null",
-          type: user && isDocument(user) ? user.type : "null",
+          type: user && isDocument(user) ? userTypeToText(user.type) : "null",
           image:
             image &&
             isDocument(image) &&

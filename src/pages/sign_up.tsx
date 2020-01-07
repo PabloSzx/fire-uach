@@ -42,10 +42,10 @@ import {
   USER_ALREADY_EXISTS,
   UserType,
 } from "../../constants";
+import { userTypeToText } from "../../constants/enums";
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
 import { CURRENT_USER, SIGN_UP } from "../graphql/queries";
-import { userTypeToText } from "../utils/enums";
 
 const SignUpPage: NextPage = () => {
   const { user, loading } = useUser();

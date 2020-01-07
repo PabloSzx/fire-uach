@@ -1,4 +1,4 @@
-import { UserType } from "../../constants";
+import { UserType } from "./";
 
 export function userTypeToText(type?: UserType | null): string {
   switch (type) {

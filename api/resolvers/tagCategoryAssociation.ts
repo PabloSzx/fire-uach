@@ -16,6 +16,7 @@ import {
 import { isDocument, isDocumentArray, Ref } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
+import { userTypeToText } from "../../constants/enums";
 import {
   TagCategoryAssociation,
   TagCategoryAssociationAnswer,
@@ -128,7 +129,8 @@ export class TagCategoryAssociationResolver {
           }) => {
             return {
               user: user && isDocument(user) ? user.email : "null",
-              type: user && isDocument(user) ? user.type : "null",
+              type:
+                user && isDocument(user) ? userTypeToText(user.type) : "null",
               tag: tag && isDocument(tag) ? tag.name : "null",
               categoryChosen:
                 categoryChosen && isDocument(categoryChosen)

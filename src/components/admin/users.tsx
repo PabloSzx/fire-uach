@@ -46,6 +46,7 @@ import {
 } from "@chakra-ui/core";
 
 import { imagePlaceholder, UserType } from "../../../constants";
+import { userTypeToText } from "../../../constants/enums";
 import {
   ALL_USERS,
   EDIT_USER,
@@ -56,7 +57,6 @@ import {
   RESET_TAG_CATEGORY_ASSOCIATIONS,
   USER_STATS,
 } from "../../graphql/adminQueries";
-import { userTypeToText } from "../../utils/enums";
 import { Confirm } from "../Confirm";
 
 function defaultUserType(type?: string): UserType | undefined {
