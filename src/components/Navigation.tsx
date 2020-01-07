@@ -1,16 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { FC } from "react";
-import {
-  AiFillFire,
-  AiFillHome,
-  AiFillSetting,
-  AiOutlineFire,
-  AiOutlineHome,
-  AiOutlinePoweroff,
-  AiOutlineSetting,
-} from "react-icons/ai";
-import { MdPerson, MdPersonOutline } from "react-icons/md";
+import { AiFillHome, AiFillSetting, AiOutlinePoweroff } from "react-icons/ai";
+import { GiGamepad } from "react-icons/gi";
+import { MdPerson } from "react-icons/md";
 
 import { Box, Flex } from "@chakra-ui/core";
 
@@ -24,7 +17,7 @@ export const Navigation: FC = () => {
   return (
     <Flex
       zIndex={10}
-      position="fixed"
+      position="relative"
       left={0}
       bottom={0}
       borderTop="1px solid"
@@ -38,8 +31,8 @@ export const Navigation: FC = () => {
     >
       <FakeHref href="/">
         <Box
-          as={pathname === "/" ? AiFillHome : AiOutlineHome}
-          color="black"
+          as={AiFillHome}
+          color={pathname === "/" ? "#8BC63E" : "black"}
           fontSize="2em"
           onClick={() => {
             refetch();
@@ -49,18 +42,18 @@ export const Navigation: FC = () => {
       </FakeHref>
       <FakeHref href="/games">
         <Box
-          as={(() => {
+          as={GiGamepad}
+          color={(() => {
             switch (pathname) {
               case "/games":
               case "/tag":
               case "/image":
               case "/upload":
-                return AiFillFire;
+                return "#8BC63E";
               default:
-                return AiOutlineFire;
+                return "black";
             }
           })()}
-          color="black"
           fontSize="2em"
           onClick={() => {
             refetch();
@@ -71,8 +64,8 @@ export const Navigation: FC = () => {
 
       <FakeHref href="/profile">
         <Box
-          as={pathname === "/profile" ? MdPerson : MdPersonOutline}
-          color="black"
+          as={MdPerson}
+          color={pathname === "/profile" ? "#8BC63E" : "black"}
           fontSize="2em"
           onClick={() => {
             refetch();
@@ -94,8 +87,8 @@ export const Navigation: FC = () => {
           >
             <FakeHref href="/admin">
               <Box
-                as={pathname === "/admin" ? AiFillSetting : AiOutlineSetting}
-                color="black"
+                as={AiFillSetting}
+                color={pathname === "/admin" ? "#8BC63E" : "black"}
                 fontSize="2em"
                 onClick={() => {
                   refetch();
@@ -115,7 +108,7 @@ export const Navigation: FC = () => {
             <FakeHref href="/logout">
               <Box
                 as={AiOutlinePoweroff}
-                color={pathname === "/logout" ? "rgb(255,0,0)" : "black"}
+                color={pathname === "/logout" ? "#8BC63E" : "black"}
                 fontSize="2em"
                 onClick={() => {
                   push("/logout");

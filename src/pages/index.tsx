@@ -12,7 +12,7 @@ const Header: FC = ({ children }) => {
       alignSelf="flex-start"
       textAlign="center"
       borderRadius="10px"
-      backgroundColor="#0C9ADB"
+      backgroundColor="#8BC63E"
       color="white"
       p={3}
       ml="10%"
@@ -65,8 +65,8 @@ const IndexPage: NextPage = () => {
         <FakeHref href="/login?route=/games">
           <b
             style={{
-              backgroundColor: "cyan",
-              color: "black",
+              backgroundColor: "#57585A",
+              color: "white",
               padding: "5px",
               borderRadius: "5px",
             }}
