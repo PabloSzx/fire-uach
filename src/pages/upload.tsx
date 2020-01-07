@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
 import { chunk, toInteger } from "lodash";
 import { NextPage } from "next";
-import { FC, useMemo } from "react";
+import { FC, MutableRefObject, useMemo, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { IoIosImages } from "react-icons/io";
 import LazyImage from "react-lazy-progressive-image";
@@ -31,7 +31,9 @@ import { CategoryImageAssociation } from "../components/CategoryImageAssociation
 import { LoadingPage } from "../components/LoadingPage";
 import { OWN_IMAGES, UPLOAD_IMAGE } from "../graphql/queries";
 
-const UploadImages: FC = () => {
+const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
+  refetch: refetchRef,
+}) => {
   const { loading: loadingUser, refetch, user } = useUser("/upload");
 
   const { data: dataOwnImages, loading: loadingOwnImages } = useQuery(
@@ -47,6 +49,7 @@ const UploadImages: FC = () => {
   ] = useMutation(UPLOAD_IMAGE, {
     update: (cache, { data }) => {
       if (data?.uploadImage) {
+        refetchRef.current();
         cache.writeQuery({
           query: OWN_IMAGES,
           data: {
@@ -204,12 +207,13 @@ const UploadImages: FC = () => {
 };
 
 const UploadPage: NextPage = () => {
+  const refetch = useRef<() => Promise<any>>(async () => {});
   return (
     <Stack pt="2em" align="center" justify="space-around" spacing="2em">
       <CategoriesContextContainer>
-        <CategoryImageAssociation onlyOwnImages />
+        <CategoryImageAssociation onlyOwnImages refetch={refetch} />
       </CategoriesContextContainer>
-      <UploadImages />
+      <UploadImages refetch={refetch} />
     </Stack>
   );
 };

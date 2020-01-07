@@ -1,6 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { FC, useCallback, useContext, useRef, useState } from "react";
+import {
+  FC,
+  MutableRefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import LazyImage from "react-lazy-progressive-image";
 import { useGeolocation } from "react-use";
 import wait from "waait";
@@ -28,7 +36,8 @@ import { LoadingPage } from "./LoadingPage";
 
 export const CategoryImageAssociation: FC<{
   onlyOwnImages?: boolean;
-}> = ({ onlyOwnImages }) => {
+  refetch?: MutableRefObject<(() => Promise<any>) | undefined>;
+}> = ({ onlyOwnImages, refetch: refetchRef }) => {
   const tipAnswerImage = useTip({});
   const { user } = useUser();
   const { push } = useRouter();
@@ -37,6 +46,7 @@ export const CategoryImageAssociation: FC<{
     data: dataNotAnsweredImage,
     error: errorNotAnsweredImage,
     loading: loadingNotAnsweredImage,
+    refetch: refetchNotAnsweredImage,
   } = useQuery(NOT_ANSWERED_IMAGE, {
     fetchPolicy: "cache-and-network",
     ssr: false,
@@ -44,6 +54,12 @@ export const CategoryImageAssociation: FC<{
       onlyOwnImages,
     },
   });
+
+  useEffect(() => {
+    if (refetchRef) {
+      refetchRef.current = refetchNotAnsweredImage;
+    }
+  }, [refetchNotAnsweredImage]);
 
   if (errorNotAnsweredImage) {
     console.error(JSON.stringify(errorNotAnsweredImage, null, 2));
