@@ -254,7 +254,6 @@ const AdminImages: FC = () => {
       ) : (
         <Box cursor="pointer">
           <Icon
-            disabled={loadingDataImages}
             name="repeat"
             onClick={() => {
               refetchAllImages();

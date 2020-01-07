@@ -4,7 +4,7 @@ import { chunk, isEqual, toInteger } from "lodash";
 import { ChangeEvent, FC, Fragment, useMemo, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import { useSetState } from "react-use";
-import { Pagination, Table } from "semantic-ui-react";
+import { Icon as SemanticIcon, Pagination, Table } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
@@ -758,7 +758,18 @@ const AdminUsers: FC = () => {
 
   return (
     <Stack pt={5} align="center">
-      {loadingAllUsers && <Spinner />}
+      {loadingAllUsers ? (
+        <Spinner />
+      ) : (
+        <Box cursor="pointer">
+          <SemanticIcon
+            name="repeat"
+            onClick={() => {
+              refetchAllUsers();
+            }}
+          />
+        </Box>
+      )}
 
       <Table>
         <Table.Header>
