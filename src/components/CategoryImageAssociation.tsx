@@ -145,6 +145,7 @@ export const CategoryImageAssociation: FC<{
                             ? { latitude, longitude }
                             : undefined,
                       },
+                      onlyOwnImages,
                     },
                   });
                 } else {

@@ -140,68 +140,76 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
       </Box>
 
       {uploadingImageSpinner}
-      <Divider p={5} width="100%" />
-      <Stack mt="2em" align="center" spacing="3em">
-        <Box>
-          <Heading>Imágenes subidas por tí</Heading>
-        </Box>
-        <Box>
-          <Pagination
-            activePage={activePagination}
-            onPageChange={(_e, { activePage }) => {
-              setActivePagination(toInteger(activePage));
-            }}
-            totalPages={paginatedImages.length}
-            secondary
-            pointing
-          />
-        </Box>
-        {loadingOwnImages ? (
-          <Spinner />
-        ) : (
-          paginatedImages[activePagination - 1]?.map(image => {
-            return (
-              <Box key={image._id}>
-                <LazyImage
-                  src={`/api/images/${image.filename}`}
-                  placeholder={imagePlaceholder}
-                >
-                  {(src, loading) => {
-                    return (
-                      <Stack
-                        align="center"
-                        spacing={3}
-                        border="1px solid"
-                        borderRadius="5px"
-                        p={5}
-                      >
-                        {loading && <Spinner />}
-                        <Image
-                          objectFit="contain"
-                          width="100%"
-                          height="100%"
-                          maxH="50vh"
-                          maxW="90vw"
-                          src={src}
-                        />
-                        <Box>
-                          <Tag>Fecha subida:</Tag>
+      {paginatedImages.length > 0 && (
+        <>
+          <Divider p={5} width="100%" />
+          <Stack mt="2em" align="center" spacing="3em">
+            <Box>
+              <Heading>Imágenes subidas por tí</Heading>
+            </Box>
+            <Box>
+              <Pagination
+                activePage={activePagination}
+                onPageChange={(_e, { activePage }) => {
+                  setActivePagination(toInteger(activePage));
+                }}
+                totalPages={paginatedImages.length}
+                secondary
+                pointing
+              />
+            </Box>
+            {loadingOwnImages ? (
+              <Spinner />
+            ) : (
+              paginatedImages[activePagination - 1]?.map(image => {
+                return (
+                  <Box key={image._id}>
+                    <LazyImage
+                      src={`/api/images/${image.filename}`}
+                      placeholder={imagePlaceholder}
+                    >
+                      {(src, loading) => {
+                        return (
+                          <Stack
+                            align="center"
+                            spacing={3}
+                            border="1px solid"
+                            borderRadius="5px"
+                            p={5}
+                          >
+                            {loading && <Spinner />}
+                            <Image
+                              objectFit="contain"
+                              width="100%"
+                              height="100%"
+                              maxH="50vh"
+                              maxW="90vw"
+                              src={src}
+                            />
+                            <Box>
+                              <Tag>Fecha subida:</Tag>
 
-                          <Tag variantColor="blue">
-                            {format(new Date(image.uploadedAt), "PPPPpppp", {
-                              locale: esLocale,
-                            })}
-                          </Tag>
-                        </Box>
-                      </Stack>
-                    );
-                  }}
-                </LazyImage>
-              </Box>
-            );
-          })
-        )}
-      </Stack>
+                              <Tag variantColor="blue">
+                                {format(
+                                  new Date(image.uploadedAt),
+                                  "PPPPpppp",
+                                  {
+                                    locale: esLocale,
+                                  }
+                                )}
+                              </Tag>
+                            </Box>
+                          </Stack>
+                        );
+                      }}
+                    </LazyImage>
+                  </Box>
+                );
+              })
+            )}
+          </Stack>
+        </>
+      )}
     </>
   );
 };
