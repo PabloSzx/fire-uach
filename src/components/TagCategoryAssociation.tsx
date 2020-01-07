@@ -178,6 +178,7 @@ export const TagCategoryAssociation: FC = () => {
                 alignItems="center"
                 justifyContent="center"
                 justifyItems="center"
+                maxWidth="35vw"
               >
                 {notAnsweredTag.name}
               </Badge>
