@@ -28,8 +28,8 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
         </Head>
 
         <ThemeProvider theme={theme}>
-          <Box pos="relative" height="100vh">
-            <Box overflowY="auto" height="calc(100vh - 50px)">
+          <Box pos="relative" height="100%">
+            <Box overflowY="auto" height="100%" m={1} pb="50px">
               <Component {...pageProps} />
             </Box>
             <Navigation />

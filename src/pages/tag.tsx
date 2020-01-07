@@ -10,7 +10,7 @@ const TagGamePage: NextPage = () => {
     <CategoriesContextContainer>
       <Stack
         className="tagGamePage"
-        height="calc(100vh - 70px)"
+        height="100%"
         justifyContent="center"
         alignItems="center"
       >

@@ -17,7 +17,7 @@ export const Navigation: FC = () => {
   return (
     <Flex
       zIndex={10}
-      position="relative"
+      position="fixed"
       left={0}
       bottom={0}
       borderTop="1px solid"
