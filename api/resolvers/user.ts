@@ -11,7 +11,7 @@ import {
 
 import { isDocumentArray } from "@typegoose/typegoose";
 
-import { ADMIN } from "../../constants";
+import { ADMIN, UserType } from "../../constants";
 import { CategoryImageAssociationModel } from "../entities/associations/categoryImageAssociation";
 import { TagCategoryAssociationModel } from "../entities/associations/tagCategoryAssociation";
 import { EditUser, User, UserModel } from "../entities/auth/user";
@@ -49,6 +49,11 @@ export class UserResolver {
     return await UserModel.find({
       active: true,
     });
+  }
+
+  @FieldResolver()
+  async type(@Root() { type }: Partial<User>) {
+    return type || UserType.other;
   }
 
   @FieldResolver()
