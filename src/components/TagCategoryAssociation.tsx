@@ -5,15 +5,7 @@ import { useGeolocation } from "react-use";
 import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import {
-  Badge,
-  Flex,
-  SimpleGrid,
-  Stack,
-  Tag,
-  TagProps,
-  Text,
-} from "@chakra-ui/core";
+import { Badge, Flex, SimpleGrid, Stack, Tag, Text } from "@chakra-ui/core";
 
 import { useTip } from "../components/Tip";
 import {
@@ -63,14 +55,12 @@ export const TagCategoryAssociation: FC = () => {
   const notAnsweredTag = dataNotAnsweredTag?.notAnsweredTag;
 
   const ResponsiveCategoryTag = useCallback<
-    FC<
-      {
-        text?: string;
-        _id?: string;
-      } & TagProps
-    >
+    FC<{
+      text?: string;
+      _id?: string;
+    }>
   >(
-    ({ variantColor, text, _id, ...rest }) => {
+    ({ text, _id }) => {
       const [clicked, setClicked] = useState(false);
       const { longitude, latitude } = useGeolocation();
 
@@ -143,7 +133,6 @@ export const TagCategoryAssociation: FC = () => {
                 }
               }
             }}
-            {...rest}
           >
             {text}
           </Tag>

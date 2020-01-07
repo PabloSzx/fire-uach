@@ -20,7 +20,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Heading,
   Image,
   Input,
   Modal,
