@@ -14,7 +14,7 @@ export const tipToast = (text: string, autoClose = 15000) => {
       <Text fontSize="2em">{text}</Text>
     </Stack>,
     {
-      type: "info",
+      type: "error",
       autoClose,
       closeOnClick: false,
     }

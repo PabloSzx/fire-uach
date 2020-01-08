@@ -78,7 +78,6 @@ export const TagCategoryAssociation: FC = () => {
             p={[2, 2, 2, 2, 2]}
             m={["0em", "0.2em", "0.2em", "0.4em", "0.8em"]}
             cursor="pointer"
-            // overflowWrap="break-word"
             textAlign="center"
             justifyContent="center"
             alignItems="center"
@@ -163,10 +162,9 @@ export const TagCategoryAssociation: FC = () => {
                 );
               })}
               <Badge
-                // overflowWrap="break-word"
                 p={5}
                 m={5}
-                fontSize={["1.1em", "1.8em", "2.5em", "3.1em", "4.1em"]}
+                fontSize={["3.3vw", "3.5vw", "3.7vw", "4.0vw", "4.2vw"]}
                 variant="solid"
                 variantColor="green"
                 whiteSpace="break-spaces"
