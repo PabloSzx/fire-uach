@@ -7,6 +7,7 @@ import { MdTextFields } from "react-icons/md";
 import { Box, Heading, Stack } from "@chakra-ui/core";
 
 import { FakeHref } from "../components/FakeHref";
+import { useShouldBeCentered } from "../utils/useShouldBeCentered";
 
 const iconSize = "3.5em";
 const textSize = "1.3em";
@@ -31,12 +32,19 @@ const GameTitle: FC = ({ children }) => {
 
 const IndexPage: NextPage = () => {
   const { push } = useRouter();
+  const shouldBeCentered = useShouldBeCentered(400);
+
   return (
     <Stack
-      alignItems="center"
-      height="100%"
+      transition="all 1s"
+      {...(shouldBeCentered
+        ? { height: "100%", justifyContent: "center" }
+        : {
+            paddingTop: "1em",
+            paddingBottom: "1em",
+          })}
       className="indexPage"
-      justifyContent="center"
+      alignItems="center"
     >
       <FakeHref href="/tag">
         <Stack
