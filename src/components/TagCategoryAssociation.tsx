@@ -186,7 +186,7 @@ export const TagCategoryAssociation: FC = () => {
                   color="rgb(255,0,0)"
                   borderColor="#E3321F"
                   border="2px solid"
-                  fontSize={["3.3vw", "3.5vw", "3.7vw", "4.0vw", "4.2vw"]}
+                  fontSize={["3.1vw", "3.3vw", "3.5vw", "3.7vw", "3.9vw"]}
                   variant="solid"
                   whiteSpace="break-spaces"
                   textAlign="center"
