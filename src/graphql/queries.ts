@@ -158,6 +158,7 @@ export const ANSWER_CATEGORY_IMAGE_ASSOCIATION: DocumentNode<
       categoryChosen?: string;
       rejectedCategories: string[];
       location?: { latitude: number; longitude: number };
+      otherCategoryInput?: string;
     };
   }
 > = gql`
@@ -196,6 +197,7 @@ export const ANSWER_TAG_CATEGORY_ASSOCIATION: DocumentNode<
       categoryChosen?: string;
       rejectedCategories: string[];
       location?: { latitude: number; longitude: number };
+      otherCategoryInput?: string;
     };
   }
 > = gql`

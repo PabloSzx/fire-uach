@@ -45,7 +45,7 @@ const IndexPage: NextPage = () => {
       <Header>Así estudiamos los incendios</Header>
       <Image
         alignSelf="center"
-        src="/introduction.png"
+        src="/home_roulette.png"
         width="100%"
         height="100%"
         objectFit="contain"
@@ -56,9 +56,9 @@ const IndexPage: NextPage = () => {
       <Paragraph>Comparte tus fotos, asocia imágenes y conceptos.</Paragraph>
       <Header>¡Participa y gana premios!</Header>
       <Paragraph>
-        Recibirás consejos mientras juegas, y mientras más participes de todos
-        los juegos durante febrero 2020, irás subiendo de categoría hasta poder
-        entrar al sorteo de una cámara Polaroid y más de 100 fotos
+        Recibirás consejos y puntos mientras juegas. Acumula puntos suficientes
+        durante febrero 2020 para participar en un sorteo de una cámara
+        instantánea con más de 100 fotos.
       </Paragraph>
       <Text fontSize="2em" textAlign="center" ml="10%" mr="10%">
         Para participar haz click{" "}

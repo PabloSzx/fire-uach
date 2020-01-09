@@ -96,6 +96,7 @@ export class TagCategoryAssociationResolver {
           { value: "rejectedCategories", label: "Categorías rechazadas" },
           { value: "updatedAt", label: "Fecha respuesta" },
           { value: "location", label: "Ubicación" },
+          { value: "otherCategory", label: "Otra categoría" },
         ],
       });
 
@@ -118,6 +119,7 @@ export class TagCategoryAssociationResolver {
           rejectedCategories: string;
           updatedAt: string;
           location: string;
+          otherCategory: string;
         }>(
           ({
             user,
@@ -126,6 +128,7 @@ export class TagCategoryAssociationResolver {
             rejectedCategories,
             updatedAt,
             location,
+            otherCategoryInput,
           }) => {
             return {
               user: user && isDocument(user) ? user.email : "null",
@@ -147,6 +150,7 @@ export class TagCategoryAssociationResolver {
               location: location
                 ? `lat:${location.latitude}|long:${location.longitude}`
                 : "null",
+              otherCategory: otherCategoryInput ?? "null",
             };
           }
         )
@@ -173,6 +177,7 @@ export class TagCategoryAssociationResolver {
       categoryChosen,
       rejectedCategories,
       location,
+      otherCategoryInput,
     }: TagCategoryAssociationAnswer
   ) {
     assertIsDefined(user, "Auth context is not working properly!");
@@ -186,6 +191,7 @@ export class TagCategoryAssociationResolver {
         categoryChosen,
         rejectedCategories,
         location,
+        otherCategoryInput,
       },
       {
         upsert: true,

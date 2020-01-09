@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { FC } from "react";
 import { AiFillHome, AiFillSetting, AiOutlinePoweroff } from "react-icons/ai";
-import { GiGamepad } from "react-icons/gi";
+import { IoLogoGameControllerB } from "react-icons/io";
 import { MdPerson } from "react-icons/md";
 
 import { Box, Flex } from "@chakra-ui/core";
@@ -42,7 +42,7 @@ export const Navigation: FC = () => {
       </FakeHref>
       <FakeHref href="/games">
         <Box
-          as={GiGamepad}
+          as={IoLogoGameControllerB}
           color={(() => {
             switch (pathname) {
               case "/games":

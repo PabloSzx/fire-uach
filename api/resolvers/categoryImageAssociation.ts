@@ -112,6 +112,7 @@ export class CategoryImageAssociationResolver {
         { value: "rejectedCategories", label: "Categorías rechazadas" },
         { value: "updatedAt", label: "Fecha respuesta" },
         { value: "location", label: "Ubicación" },
+        { value: "otherCategory", label: "Otra categoría" },
       ],
     });
     const dataRaw = await CategoryImageAssociationModel.find({
@@ -133,6 +134,7 @@ export class CategoryImageAssociationResolver {
       rejectedCategories: string;
       updatedAt: string;
       location: string;
+      otherCategory: string;
     }>(
       ({
         user,
@@ -141,6 +143,7 @@ export class CategoryImageAssociationResolver {
         rejectedCategories,
         updatedAt,
         location,
+        otherCategoryInput,
       }) => {
         return {
           user: user && isDocument(user) ? user.email : "null",
@@ -166,6 +169,7 @@ export class CategoryImageAssociationResolver {
           location: location
             ? `lat:${location.latitude}|long:${location.longitude}`
             : "null",
+          otherCategory: otherCategoryInput ?? "null",
         };
       }
     );
@@ -198,6 +202,7 @@ export class CategoryImageAssociationResolver {
       categoryChosen,
       rejectedCategories,
       location,
+      otherCategoryInput,
     }: CategoryImageAssociationAnswer,
     @Arg("onlyOwnImages", { defaultValue: false }) onlyOwnImages: boolean
   ) {
@@ -211,6 +216,7 @@ export class CategoryImageAssociationResolver {
         categoryChosen,
         rejectedCategories,
         location,
+        otherCategoryInput,
       },
       {
         upsert: true,

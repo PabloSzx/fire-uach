@@ -12,6 +12,7 @@ type CategoryImageAssociation {
   _id: ObjectId!
   user: User
   categoryChosen: Category
+  otherCategoryInput: String
   rejectedCategories: [Category!]!
   image: Image
   location: Location
@@ -21,6 +22,7 @@ type CategoryImageAssociation {
 
 input CategoryImageAssociationAnswer {
   categoryChosen: ObjectId
+  otherCategoryInput: String
   image: ObjectId!
   rejectedCategories: [ObjectId!]!
   location: LocationInput
@@ -200,6 +202,7 @@ type TagCategoryAssociation {
   user: User
   tag: Tag
   categoryChosen: Category
+  otherCategoryInput: String
   rejectedCategories: [Category!]!
   location: Location
   updatedAt: DateTime!
@@ -209,6 +212,7 @@ type TagCategoryAssociation {
 input TagCategoryAssociationAnswer {
   tag: ObjectId!
   categoryChosen: ObjectId
+  otherCategoryInput: String
   rejectedCategories: [ObjectId!]!
   location: LocationInput
 }

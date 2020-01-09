@@ -29,7 +29,11 @@ import { useUser } from "../components/Auth";
 import { CategoriesContextContainer } from "../components/Categories";
 import { CategoryImageAssociation } from "../components/CategoryImageAssociation";
 import { LoadingPage } from "../components/LoadingPage";
-import { OWN_IMAGES, UPLOAD_IMAGE } from "../graphql/queries";
+import {
+  NOT_ANSWERED_IMAGE,
+  OWN_IMAGES,
+  UPLOAD_IMAGE,
+} from "../graphql/queries";
 
 const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
   refetch: refetchRef,
@@ -114,35 +118,42 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
     return null;
   }, [loadingUploadImage]);
 
+  const { data: dataNotAnsweredImage } = useQuery(NOT_ANSWERED_IMAGE, {
+    fetchPolicy: "cache-and-network",
+    ssr: false,
+    variables: {
+      onlyOwnImages: true,
+    },
+  });
+
   if (loadingUser) {
     return <LoadingPage />;
   }
 
   return (
     <>
-      <Divider p={5} width="100%" />
-
       {errorUpload && <Text>{JSON.stringify(errorUpload, null, 2)}</Text>}
-      <Box
-        mt="3em"
-        {...getRootProps()}
-        cursor="pointer"
-        borderRadius="5px"
-        border="3px solid"
-        p={2}
-      >
-        <input {...getInputProps()} />
-        <Flex justify="center">
-          <Icon name="add" size="3em" />
-          <Box as={IoIosImages} size="3em" />
-        </Flex>
-        <Text m={1}>Haz click aquí para subir imágenes</Text>
-      </Box>
+      {!dataNotAnsweredImage?.notAnsweredImage && (
+        <Box
+          mt="3em"
+          {...getRootProps()}
+          cursor="pointer"
+          borderRadius="5px"
+          border="3px solid"
+          p={2}
+        >
+          <input {...getInputProps()} />
+          <Flex justify="center">
+            <Icon name="add" size="3em" />
+            <Box as={IoIosImages} size="3em" />
+          </Flex>
+          <Text m={1}>Haz click aquí para subir imágenes</Text>
+        </Box>
+      )}
 
       {uploadingImageSpinner}
-      {paginatedImages.length > 0 && (
+      {paginatedImages.length !== 0 && (
         <>
-          <Divider p={5} width="100%" />
           <Stack mt="2em" align="center" spacing="3em">
             <Box>
               <Heading>Imágenes subidas por tí</Heading>
