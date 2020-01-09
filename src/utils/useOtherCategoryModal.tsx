@@ -17,6 +17,7 @@ export const useOtherCategoryModal = () => {
   const [value, setValue] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [answer, setAnswer] = useState<string>();
+
   const modal = (
     <>
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
@@ -24,30 +25,34 @@ export const useOtherCategoryModal = () => {
         <ModalContent>
           <ModalHeader>¿Qué nos propones?</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <Input
-              value={value}
-              onChange={({
-                target: { value },
-              }: ChangeEvent<HTMLInputElement>) => {
-                if (value.length < 50) {
-                  setValue(value);
-                }
-              }}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              cursor="pointer"
-              variantColor="blue"
-              onClick={() => {
-                setAnswer(value);
-                setValue("");
-              }}
-            >
-              Enviar
-            </Button>
-          </ModalFooter>
+
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              onClose();
+              setAnswer(value);
+              setValue("");
+            }}
+          >
+            <ModalBody>
+              <Input
+                value={value}
+                autoFocus
+                onChange={({
+                  target: { value },
+                }: ChangeEvent<HTMLInputElement>) => {
+                  if (value.length < 50) {
+                    setValue(value);
+                  }
+                }}
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button cursor="pointer" variantColor="blue" type="submit">
+                Enviar
+              </Button>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </Modal>
     </>
