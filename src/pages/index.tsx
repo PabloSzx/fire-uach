@@ -9,10 +9,10 @@ import { FakeHref } from "../components/FakeHref";
 const Header: FC = ({ children }) => {
   return (
     <Heading
-      alignSelf="flex-start"
+      alignSelf="center"
       textAlign="center"
       borderRadius="10px"
-      backgroundColor="#8BC63E"
+      backgroundColor="#0C9ADB"
       color="white"
       p={3}
       ml="10%"

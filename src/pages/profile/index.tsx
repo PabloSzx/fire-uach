@@ -17,7 +17,6 @@ import {
 
 import { useUser } from "../../components/Auth";
 import { LoadingPage } from "../../components/LoadingPage";
-import { Logout } from "../../components/Logout";
 import { OWN_STATS } from "../../graphql/queries";
 
 const Stats: FC = () => {
@@ -79,7 +78,6 @@ const ProfilePage: NextPage = ({}) => {
         </Text>
       </Box>
       <Stats />
-      <Logout />
     </Stack>
   );
 };
