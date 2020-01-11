@@ -10,25 +10,55 @@ import {
   Root,
 } from "type-graphql";
 
+import { isDocument, Ref } from "@typegoose/typegoose";
+
 import { ADMIN } from "../../constants";
 import { CategoryImageAssociationModel } from "../entities/associations/categoryImageAssociation";
 import { TagCategoryAssociationModel } from "../entities/associations/tagCategoryAssociation";
-import { UserModel } from "../entities/auth/user";
+import { User, UserModel } from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
-import { UserStats } from "../entities/stats";
+import { UserStats, UserStatsModel } from "../entities/stats";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => UserStats)
 export class UserStatsResolver implements ResolverInterface<UserStats> {
+  static async updateScore(user: Ref<User>, score: number) {
+    const newStats = await UserStatsModel.findOneAndUpdate(
+      {
+        user: isDocument(user) ? user._id : user,
+      },
+      {
+        $inc: {
+          score,
+        },
+      },
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true,
+      }
+    );
+  }
+
   @Authorized([ADMIN])
   @Query(() => UserStats, { nullable: true })
-  async userStats(@Arg("_id", () => ObjectIdScalar) _id: ObjectId) {
-    const user = await UserModel.findById(_id);
+  async userStats(@Arg("user_id", () => ObjectIdScalar) user_id: ObjectId) {
+    const user = await UserModel.findById(user_id);
 
     if (user) {
-      return { _id, user };
+      return await UserStatsModel.findOneAndUpdate(
+        {
+          user: user._id,
+        },
+        {},
+        {
+          upsert: true,
+          new: true,
+          setDefaultsOnInsert: true,
+        }
+      );
     }
 
     return null;
@@ -38,47 +68,98 @@ export class UserStatsResolver implements ResolverInterface<UserStats> {
   @Query(() => UserStats)
   async ownStats(@Ctx() { user }: IContext) {
     assertIsDefined(user, "Context user failed!");
-    return {
-      _id: user._id,
-      user,
-    };
+    return await UserStatsModel.findOneAndUpdate(
+      {
+        user: user._id,
+      },
+      {},
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true,
+      }
+    );
   }
 
   @FieldResolver()
-  async nAssociatedImages(@Root() { user }: Pick<UserStats, "user">) {
+  async nAssociatedImages(
+    @Root() { user, _id }: Pick<UserStats, "user" | "_id">
+  ) {
+    if (!user) {
+      return 0;
+    }
     const n = await CategoryImageAssociationModel.countDocuments({
-      user: user._id,
+      user: isDocument(user) ? user._id : user,
     });
+
+    UserStatsModel.findByIdAndUpdate(_id, { nAssociatedImages: n })
+      .then(() => {})
+      .catch(err => {
+        console.error(err);
+      });
 
     return n;
   }
 
   @FieldResolver()
-  async nAssociatedTags(@Root() { user }: Pick<UserStats, "user">) {
+  async nAssociatedTags(
+    @Root() { user, _id }: Pick<UserStats, "user" | "_id">
+  ) {
+    if (!user) {
+      return 0;
+    }
     const n = await TagCategoryAssociationModel.countDocuments({
-      user: user._id,
+      user: isDocument(user) ? user._id : user,
     });
+
+    UserStatsModel.findByIdAndUpdate(_id, { nAssociatedTags: n })
+      .then(() => {})
+      .catch(err => {
+        console.error(err);
+      });
 
     return n;
   }
 
   @FieldResolver()
-  async nUploadedImages(@Root() { user }: Pick<UserStats, "user">) {
+  async nUploadedImages(
+    @Root() { user, _id }: Pick<UserStats, "user" | "_id">
+  ) {
+    if (!user) {
+      return 0;
+    }
     const n = await ImageModel.countDocuments({
-      uploader: user._id,
+      uploader: isDocument(user) ? user._id : user,
       active: true,
     });
 
+    UserStatsModel.findByIdAndUpdate(_id, { nUploadedImages: n })
+      .then(() => {})
+      .catch(err => {
+        console.error(err);
+      });
+
     return n;
   }
 
   @FieldResolver()
-  async nValidatedUploadedImages(@Root() { user }: Pick<UserStats, "user">) {
+  async nValidatedUploadedImages(
+    @Root() { user, _id }: Pick<UserStats, "user" | "_id">
+  ) {
+    if (!user) {
+      return 0;
+    }
     const n = await ImageModel.countDocuments({
-      uploader: user._id,
+      uploader: isDocument(user) ? user._id : user,
       active: true,
       validated: true,
     });
+
+    UserStatsModel.findByIdAndUpdate(_id, { nValidatedUploadedImages: n })
+      .then(() => {})
+      .catch(err => {
+        console.error(err);
+      });
 
     return n;
   }

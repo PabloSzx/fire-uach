@@ -119,7 +119,7 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
   }, [loadingUploadImage]);
 
   const { data: dataNotAnsweredImage } = useQuery(NOT_ANSWERED_IMAGE, {
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
     ssr: false,
     variables: {
       onlyOwnImages: true,
