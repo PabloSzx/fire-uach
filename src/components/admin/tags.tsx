@@ -1,13 +1,10 @@
-import { chunk, toInteger } from "lodash";
-import { ChangeEvent, FC, memo, useMemo, useState } from "react";
-import { Pagination } from "semantic-ui-react";
+import { ChangeEvent, FC, memo, useState } from "react";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
   Box,
   Button,
-  Divider,
   Input,
   InputGroup,
   InputLeftAddon,
@@ -23,6 +20,7 @@ import {
   REMOVE_TAG,
   TAGS,
 } from "../../graphql/adminQueries";
+import { usePagination } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
 const TagEdit: FC<ITag> = ({ _id, name: nameProp }) => {
@@ -54,7 +52,7 @@ const TagEdit: FC<ITag> = ({ _id, name: nameProp }) => {
   const [name, setName] = useState(nameProp);
 
   return (
-    <Stack align="center" spacing="2em" p={2}>
+    <Stack align="center" spacing="2em" p={5} border="1px solid">
       <InputGroup>
         <InputLeftAddon>
           <Text>Nombre etiqueta</Text>
@@ -114,7 +112,6 @@ const TagEdit: FC<ITag> = ({ _id, name: nameProp }) => {
           </Button>
         </Confirm>
       </Box>
-      <Divider width="100%" borderBottom="1px solid" />
     </Stack>
   );
 };
@@ -174,33 +171,20 @@ const AdminTags: FC = () => {
     fetchPolicy: "cache-and-network",
   });
 
-  const [activePage, setActivePage] = useRememberState(
-    "active_page_admin_tags",
-    1
-  );
-  const paginatedTags = useMemo(() => {
-    return chunk(dataAllTags?.tags ?? [], 10);
-  }, [dataAllTags]);
+  const { selectedData, pagination } = usePagination({
+    name: "admin_tags_pagination",
+    data: dataAllTags?.tags,
+  });
 
   return (
-    <Stack align="center" pt={5} spacing={5}>
-      <Divider borderBottom="1px solid" width="100%" />
+    <Stack align="center" spacing={5}>
       {loadingAllTags && <Spinner />}
 
-      <Box m={3}>
-        <Pagination
-          activePage={activePage}
-          onPageChange={(_e, { activePage }) => {
-            setActivePage(toInteger(activePage));
-          }}
-          totalPages={paginatedTags.length}
-          secondary
-          pointing
-        />
-      </Box>
-      {paginatedTags[activePage - 1]?.map(({ _id, name }) => {
+      <Box p="2em">{pagination}</Box>
+      {selectedData.map(({ _id, name }) => {
         return <TagEdit key={_id} name={name} _id={_id} />;
       })}
+      <Box p="2em">{pagination}</Box>
 
       <NewTag />
     </Stack>

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useWindowSize } from "react-use";
 
-export const useShouldBeCentered = (n = 450) => {
-  const { height } = useWindowSize();
+export const useShouldBeCentered = (nHeight = 300, nWidth = 300) => {
+  const { height, width } = useWindowSize();
 
   const [shouldBeCentered, setShouldBeCentered] = useState(false);
 
   useEffect(() => {
-    setShouldBeCentered(height >= n);
+    setShouldBeCentered(height >= nHeight && width >= nWidth);
   }, [height]);
 
   return shouldBeCentered;

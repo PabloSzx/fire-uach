@@ -1,10 +1,10 @@
 import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
-import { chunk, isEqual, toInteger } from "lodash";
-import { ChangeEvent, FC, Fragment, useMemo, useState } from "react";
+import { isEqual } from "lodash";
+import { ChangeEvent, FC, Fragment } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import { useSetState } from "react-use";
-import { Icon as SemanticIcon, Pagination, Table } from "semantic-ui-react";
+import { Icon as SemanticIcon, Table } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
@@ -57,6 +57,7 @@ import {
   RESET_TAG_CATEGORY_ASSOCIATIONS,
   USER_STATS,
 } from "../../graphql/adminQueries";
+import { usePagination } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
 function defaultUserType(type?: string): UserType | undefined {
@@ -154,11 +155,10 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
     }
   );
 
-  const paginatedImagesUploaded = useMemo(() => {
-    return chunk(imagesUploaded, 10);
-  }, [imagesUploaded]);
-
-  const [activePagination, setActivePagination] = useState(1);
+  const { pagination, selectedData, paginatedData } = usePagination({
+    name: "admin_users_pagination",
+    data: imagesUploaded,
+  });
 
   return (
     <>
@@ -416,93 +416,87 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                   <TabPanels>
                     <TabPanel>
                       <Stack align="center" textAlign="center">
-                        {paginatedImagesUploaded.length === 0 ? (
+                        {paginatedData.length === 0 ? (
                           <Text pt={3}>Sin imágenes subidas</Text>
                         ) : (
-                          <Box pt={3}>
-                            <Pagination
-                              activePage={activePagination}
-                              onPageChange={(_e, { activePage }) => {
-                                setActivePagination(toInteger(activePage));
-                              }}
-                              totalPages={paginatedImagesUploaded.length}
-                              secondary
-                              pointing
-                            />
-                          </Box>
+                          <Box pt={3}>{pagination}</Box>
                         )}
 
                         <Box mt={3}>
-                          {paginatedImagesUploaded[activePagination - 1]?.map(
-                            image => {
-                              return (
-                                <LazyImage
-                                  key={image._id}
-                                  src={`/api/images/${image.filename}`}
-                                  placeholder={imagePlaceholder}
-                                >
-                                  {(src, loading) => {
-                                    return (
-                                      <Stack
-                                        align="center"
-                                        mt={3}
-                                        border="1px solid"
-                                        p={3}
+                          {selectedData.map(image => {
+                            return (
+                              <LazyImage
+                                key={image._id}
+                                src={`/api/images/${image.filename}`}
+                                placeholder={imagePlaceholder}
+                              >
+                                {(src, loading) => {
+                                  return (
+                                    <Stack
+                                      align="center"
+                                      mt={3}
+                                      border="1px solid"
+                                      p={3}
+                                    >
+                                      {loading && <Spinner />}
+                                      <Image
+                                        src={src}
+                                        w="100%"
+                                        h="100%"
+                                        objectFit="contain"
+                                        maxH="30vh"
+                                        maxW="70vw"
+                                      />
+                                      <Box>
+                                        <Tag>Fecha subida:</Tag>
+
+                                        <Tag variantColor="blue">
+                                          {format(
+                                            new Date(image.uploadedAt),
+                                            "PPPPpppp",
+                                            {
+                                              locale: esLocale,
+                                            }
+                                          )}
+                                        </Tag>
+                                      </Box>
+
+                                      <Confirm
+                                        header={`¿Estás seguro que quieres eliminar la imagen ${image.filename}?`}
+                                        content="Será eliminada permanentemente"
+                                        confirmButton="Estoy seguro"
+                                        cancelButton="Cancelar"
                                       >
-                                        {loading && <Spinner />}
-                                        <Image
-                                          src={src}
-                                          w="100%"
-                                          h="100%"
-                                          objectFit="contain"
-                                          maxH="30vh"
-                                          maxW="70vw"
-                                        />
-                                        <Box>
-                                          <Tag>Fecha subida:</Tag>
-
-                                          <Tag variantColor="blue">
-                                            {format(
-                                              new Date(image.uploadedAt),
-                                              "PPPPpppp",
-                                              {
-                                                locale: esLocale,
-                                              }
-                                            )}
-                                          </Tag>
-                                        </Box>
-
-                                        <Confirm
-                                          header={`¿Estás seguro que quieres eliminar la imagen ${image.filename}?`}
-                                          content="Será eliminada permanentemente"
-                                          confirmButton="Estoy seguro"
-                                          cancelButton="Cancelar"
-                                        >
-                                          <Button
-                                            variantColor="red"
-                                            cursor="pointer"
-                                            onClick={async () => {
-                                              await removeImage({
-                                                variables: {
-                                                  data: {
-                                                    _id: image._id,
-                                                  },
+                                        <Button
+                                          variantColor="red"
+                                          cursor="pointer"
+                                          onClick={async () => {
+                                            await removeImage({
+                                              variables: {
+                                                data: {
+                                                  _id: image._id,
                                                 },
-                                              });
-                                            }}
-                                            isLoading={loadingRemoveImage}
-                                          >
-                                            Eliminar imagen
-                                          </Button>
-                                        </Confirm>
-                                      </Stack>
-                                    );
-                                  }}
-                                </LazyImage>
-                              );
-                            }
-                          )}
+                                              },
+                                            });
+                                          }}
+                                          isLoading={loadingRemoveImage}
+                                        >
+                                          Eliminar imagen
+                                        </Button>
+                                      </Confirm>
+                                    </Stack>
+                                  );
+                                }}
+                              </LazyImage>
+                            );
+                          })}
                         </Box>
+
+                        {paginatedData.length !== 0 && (
+                          <Box pt={3} pb={3}>
+                            {pagination}
+                          </Box>
+                        )}
                       </Stack>
                     </TabPanel>
                     <TabPanel>

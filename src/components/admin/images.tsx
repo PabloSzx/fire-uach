@@ -1,10 +1,10 @@
 import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
-import { chunk, compact, toInteger, uniq } from "lodash";
-import { FC, useEffect, useMemo, useState } from "react";
+import { compact, uniq } from "lodash";
+import { FC, useMemo, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import Select from "react-select";
-import { Checkbox, Icon, Pagination } from "semantic-ui-react";
+import { Checkbox, Icon } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 import wait from "waait";
 
@@ -27,6 +27,7 @@ import {
   IMAGES,
   REMOVE_IMAGE,
 } from "../../graphql/adminQueries";
+import { usePagination } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
 const ImageEdit: FC<IImage> = ({
@@ -166,11 +167,6 @@ const AdminImages: FC = () => {
     fetchPolicy: "cache-and-network",
   });
 
-  const [activePagination, setActivePagination] = useRememberState(
-    "admin_active_pagination",
-    1
-  );
-
   const users = useMemo(() => {
     return uniq(
       compact(
@@ -237,15 +233,10 @@ const AdminImages: FC = () => {
     );
   }, [dataImages, selectedUsers, typeFilter]);
 
-  const paginatedImages = useMemo(() => {
-    return chunk(filteredImages, 10) ?? [];
-  }, [filteredImages]);
-
-  useEffect(() => {
-    if (paginatedImages.length && activePagination > paginatedImages.length) {
-      setActivePagination(1);
-    }
-  }, [activePagination, paginatedImages, setActivePagination]);
+  const { pagination, selectedData } = usePagination({
+    name: "admin_images_pagination",
+    data: filteredImages,
+  });
 
   return (
     <Stack pt={5} spacing="2em" align="center">
@@ -316,21 +307,15 @@ const AdminImages: FC = () => {
         />
       </Box>
 
-      <Pagination
-        activePage={activePagination}
-        onPageChange={(_e, { activePage }) => {
-          setActivePagination(toInteger(activePage));
-        }}
-        totalPages={paginatedImages.length}
-        secondary
-        pointing
-      />
+      {pagination}
 
-      <Box mt={3}>
-        {paginatedImages[activePagination - 1]?.map(image => {
+      <Box mt={3} mb={3}>
+        {selectedData.map(image => {
           return <ImageEdit key={image._id} {...image} />;
         })}
       </Box>
+
+      {pagination}
     </Stack>
   );
 };

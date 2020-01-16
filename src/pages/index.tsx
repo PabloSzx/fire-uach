@@ -36,13 +36,13 @@ const IndexPage: NextPage = () => {
   return (
     <Stack spacing="1em" pt="1em" pb="2em" width="100%">
       <Image
-        src="/logo_fireses.png"
+        src="/logo.png"
         width="100%"
         height="100%"
         objectFit="contain"
-        maxHeight="20vh"
+        maxHeight="30vh"
       />
-      <Header>Así estudiamos los incendios</Header>
+      <Header>¿Qué estudiamos de los incendios?</Header>
       <Image
         alignSelf="center"
         src="/home_roulette.png"

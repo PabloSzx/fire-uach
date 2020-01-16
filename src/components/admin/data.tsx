@@ -1,5 +1,3 @@
-import "react-datepicker/dist/react-datepicker.css";
-
 import { addDays, isAfter, isPast } from "date-fns";
 import { toDate } from "date-fns-tz";
 import esLocale from "date-fns/locale/es";
