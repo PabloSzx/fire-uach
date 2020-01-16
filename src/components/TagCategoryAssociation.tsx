@@ -180,7 +180,7 @@ export const TagCategoryAssociation: FC = () => {
                 p={0}
                 pb={3}
               >
-                Elije la categoría que más se asocia a la palabra en rojo
+                Elige la categoría que más se asocia a la palabra en rojo
               </Text>
               <SimpleGrid columns={3}>
                 {shuffledCategories.slice(0, 4).map(({ _id, name }) => {

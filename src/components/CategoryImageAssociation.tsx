@@ -210,7 +210,7 @@ export const CategoryImageAssociation: FC<{
                 p={0}
                 pb={3}
               >
-                Elije la categoría que más se asocia a la imagen
+                Elige la categoría que más se asocia a la imagen
               </Text>
               <SimpleGrid columns={3}>
                 {shuffledCategories.slice(0, 4).map(({ _id, name }) => {
