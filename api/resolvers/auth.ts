@@ -86,7 +86,7 @@ export class AuthResolver {
     {
       email,
       password,
-      type,
+      types,
       typeSpecify,
       fireRelated,
       fireRelatedSpecify,
@@ -100,7 +100,7 @@ export class AuthResolver {
       user = await UserModel.create({
         email,
         password,
-        type,
+        types,
         typeSpecify,
         fireRelated,
         fireRelatedSpecify,
@@ -112,7 +112,7 @@ export class AuthResolver {
       });
       return user;
     } else if (!user.active) {
-      user.type = type;
+      user.types = types;
       user.typeSpecify = typeSpecify;
       user.fireRelated = fireRelated;
       user.fireRelatedSpecify = fireRelatedSpecify;

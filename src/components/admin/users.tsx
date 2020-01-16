@@ -63,9 +63,11 @@ import { Confirm } from "../Confirm";
 function defaultUserType(type?: string): UserType | undefined {
   switch (type) {
     case UserType.scientificOrAcademic:
-    case UserType.professional:
+    case UserType.technicianOrProfessional:
     case UserType.student:
     case UserType.other:
+    case UserType.corralHabitant:
+    case UserType.villaAlemanaHabitant:
       return type;
     default:
       return undefined;
@@ -77,7 +79,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   email,
   admin,
   locked,
-  type,
+  types,
   typeSpecify,
   fireRelated,
   fireRelatedSpecify,
@@ -117,7 +119,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   const [data, setData] = useSetState({
     admin,
     locked,
-    type,
+    types,
     typeSpecify,
     fireRelated,
     fireRelatedSpecify,
@@ -160,6 +162,32 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
     data: imagesUploaded,
   });
 
+  const TypeCheckbox: FC<{ children: UserType }> = ({
+    children: typeCheck,
+  }) => {
+    return (
+      <Checkbox
+        isChecked={data.types.includes(typeCheck)}
+        onChange={() => {
+          if (data.types.includes(typeCheck)) {
+            setData({
+              types: data.types.filter(type => type !== typeCheck),
+            });
+          } else {
+            setData({
+              types: [...data.types, typeCheck],
+            });
+          }
+        }}
+        variantColor="green"
+        aria-label={typeCheck}
+        borderColor="grey"
+      >
+        {userTypeToText(typeCheck)}
+      </Checkbox>
+    );
+  };
+
   return (
     <>
       <Table.Row onClick={onOpen} className="pointer">
@@ -167,7 +195,9 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
         <Table.Cell>
           <Icon name={admin ? "check" : "small-close"} />
         </Table.Cell>
-        <Table.Cell>{userTypeToText(type)}</Table.Cell>
+        <Table.Cell>
+          {types?.map(type => userTypeToText(type).slice(0, 5)).join("|")}
+        </Table.Cell>
         <Table.Cell>
           <Icon name={fireRelated ? "check" : "small-close"} />
         </Table.Cell>
@@ -221,44 +251,16 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                   <Heading as="h2" size="lg">
                     Tipo de usuario
                   </Heading>
-                  <RadioGroup
-                    value={data.type}
-                    onChange={({ target: { value } }) => {
-                      setData({
-                        type: defaultUserType(value),
-                      });
-                    }}
-                  >
-                    <Radio
-                      variantColor="green"
-                      value={UserType.scientificOrAcademic}
-                      aria-label="scientific"
-                      borderColor="grey"
-                    >
-                      Científic@ y/o académic@
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.professional}
-                      borderColor="grey"
-                    >
-                      Profesional
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.student}
-                      borderColor="grey"
-                    >
-                      Estudiante
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.other}
-                      borderColor="grey"
-                    >
-                      Otros
-                    </Radio>
-                  </RadioGroup>
+                  <Stack>
+                    <TypeCheckbox>{UserType.scientificOrAcademic}</TypeCheckbox>
+                    <TypeCheckbox>
+                      {UserType.technicianOrProfessional}
+                    </TypeCheckbox>
+                    <TypeCheckbox>{UserType.student}</TypeCheckbox>
+                    <TypeCheckbox>{UserType.corralHabitant}</TypeCheckbox>
+                    <TypeCheckbox>{UserType.villaAlemanaHabitant}</TypeCheckbox>
+                    <TypeCheckbox>{UserType.other}</TypeCheckbox>
+                  </Stack>
                 </Box>
                 <Box>
                   <FormControl>
@@ -313,7 +315,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                         {
                           admin,
                           locked,
-                          type,
+                          types,
                           typeSpecify,
                           fireRelated,
                           fireRelatedSpecify,
@@ -328,7 +330,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                           data: {
                             _id,
                             admin: data.admin,
-                            type: data.type,
+                            types: data.types,
                             typeSpecify: data.typeSpecify,
                             fireRelated: data.fireRelated,
                             fireRelatedSpecify: data.fireRelatedSpecify,

@@ -223,7 +223,7 @@ export type IUser = {
   _id: string;
   email: string;
   admin: boolean;
-  type?: UserType;
+  types: UserType[];
   typeSpecify: string;
   fireRelated: boolean;
   fireRelatedSpecify: string;
@@ -276,7 +276,7 @@ const UserFragment = gql`
     _id
     email
     admin
-    type
+    types
     typeSpecify
     fireRelated
     fireRelatedSpecify
@@ -344,7 +344,7 @@ export const EDIT_USER: DocumentNode<
     data: {
       _id: string;
       admin: boolean;
-      type?: UserType;
+      types: UserType[];
       typeSpecify: string;
       fireRelated: boolean;
       fireRelatedSpecify: string;

@@ -90,7 +90,7 @@ export class TagCategoryAssociationResolver {
       const parser = new Parser({
         fields: [
           { value: "user", label: "Usuario" },
-          { value: "type", label: "Tipo de usuario" },
+          { value: "types", label: "Tipo de usuario" },
           { value: "tag", label: "Etiqueta" },
           { value: "categoryChosen", label: "Categoría elegida" },
           { value: "rejectedCategories", label: "Categorías rechazadas" },
@@ -106,14 +106,14 @@ export class TagCategoryAssociationResolver {
           $lte: toDate(maxDate),
         },
       })
-        .populate("user", "email type")
+        .populate("user", "email types typeSpecify")
         .populate("tag", "name")
         .populate("categoryChosen", "name")
         .populate("rejectedCategories", "name");
       return parser.parse(
         data.map<{
           user: string;
-          type: string;
+          types: string;
           tag: string;
           categoryChosen: string;
           rejectedCategories: string;
@@ -132,8 +132,14 @@ export class TagCategoryAssociationResolver {
           }) => {
             return {
               user: user && isDocument(user) ? user.email : "null",
-              type:
-                user && isDocument(user) ? userTypeToText(user.type) : "null",
+              types:
+                user && isDocument(user)
+                  ? `${user.types
+                      ?.map(type => userTypeToText(type))
+                      .join("|")}${
+                      user.typeSpecify ? " : " + user.typeSpecify : ""
+                    }`
+                  : "null",
               tag: tag && isDocument(tag) ? tag.name : "null",
               categoryChosen:
                 categoryChosen && isDocument(categoryChosen)

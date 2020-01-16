@@ -79,7 +79,7 @@ input EditTip {
 input EditUser {
   _id: ObjectId!
   admin: Boolean!
-  type: UserType!
+  types: [UserType!]!
   typeSpecify: String!
   fireRelated: Boolean!
   fireRelatedSpecify: String!
@@ -186,7 +186,7 @@ input RemoveTag {
 input SignUpInput {
   email: EmailAddress!
   password: String!
-  type: UserType!
+  types: [UserType!]!
   typeSpecify: String!
   fireRelated: Boolean!
   fireRelatedSpecify: String!
@@ -237,7 +237,7 @@ type User {
   email: EmailAddress!
   admin: Boolean!
   unlockKey: String!
-  type: UserType!
+  types: [UserType!]!
   typeSpecify: String!
   fireRelated: Boolean!
   fireRelatedSpecify: String!
@@ -259,7 +259,9 @@ type UserStats {
 
 enum UserType {
   scientificOrAcademic
-  professional
+  technicianOrProfessional
   student
+  corralHabitant
+  villaAlemanaHabitant
   other
 }
