@@ -1,10 +1,10 @@
 import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
-import { chunk, isEqual, toInteger } from "lodash";
-import { ChangeEvent, FC, Fragment, useMemo, useState } from "react";
+import { isEqual } from "lodash";
+import { ChangeEvent, FC, Fragment } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import { useSetState } from "react-use";
-import { Icon as SemanticIcon, Pagination, Table } from "semantic-ui-react";
+import { Icon as SemanticIcon, Table } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
@@ -57,14 +57,17 @@ import {
   RESET_TAG_CATEGORY_ASSOCIATIONS,
   USER_STATS,
 } from "../../graphql/adminQueries";
+import { usePagination } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
 function defaultUserType(type?: string): UserType | undefined {
   switch (type) {
     case UserType.scientificOrAcademic:
-    case UserType.professional:
+    case UserType.technicianOrProfessional:
     case UserType.student:
     case UserType.other:
+    case UserType.corralHabitant:
+    case UserType.villaAlemanaHabitant:
       return type;
     default:
       return undefined;
@@ -76,7 +79,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   email,
   admin,
   locked,
-  type,
+  types,
   typeSpecify,
   fireRelated,
   fireRelatedSpecify,
@@ -116,7 +119,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   const [data, setData] = useSetState({
     admin,
     locked,
-    type,
+    types,
     typeSpecify,
     fireRelated,
     fireRelatedSpecify,
@@ -154,11 +157,36 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
     }
   );
 
-  const paginatedImagesUploaded = useMemo(() => {
-    return chunk(imagesUploaded, 10);
-  }, [imagesUploaded]);
+  const { pagination, selectedData, paginatedData } = usePagination({
+    name: "admin_users_pagination",
+    data: imagesUploaded,
+  });
 
-  const [activePagination, setActivePagination] = useState(1);
+  const TypeCheckbox: FC<{ children: UserType }> = ({
+    children: typeCheck,
+  }) => {
+    return (
+      <Checkbox
+        isChecked={data.types.includes(typeCheck)}
+        onChange={() => {
+          if (data.types.includes(typeCheck)) {
+            setData({
+              types: data.types.filter(type => type !== typeCheck),
+            });
+          } else {
+            setData({
+              types: [...data.types, typeCheck],
+            });
+          }
+        }}
+        variantColor="green"
+        aria-label={typeCheck}
+        borderColor="grey"
+      >
+        {userTypeToText(typeCheck)}
+      </Checkbox>
+    );
+  };
 
   return (
     <>
@@ -167,7 +195,9 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
         <Table.Cell>
           <Icon name={admin ? "check" : "small-close"} />
         </Table.Cell>
-        <Table.Cell>{userTypeToText(type)}</Table.Cell>
+        <Table.Cell>
+          {types?.map(type => userTypeToText(type).slice(0, 5)).join("|")}
+        </Table.Cell>
         <Table.Cell>
           <Icon name={fireRelated ? "check" : "small-close"} />
         </Table.Cell>
@@ -221,44 +251,16 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                   <Heading as="h2" size="lg">
                     Tipo de usuario
                   </Heading>
-                  <RadioGroup
-                    value={data.type}
-                    onChange={({ target: { value } }) => {
-                      setData({
-                        type: defaultUserType(value),
-                      });
-                    }}
-                  >
-                    <Radio
-                      variantColor="green"
-                      value={UserType.scientificOrAcademic}
-                      aria-label="scientific"
-                      borderColor="grey"
-                    >
-                      Científic@ y/o académic@
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.professional}
-                      borderColor="grey"
-                    >
-                      Profesional
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.student}
-                      borderColor="grey"
-                    >
-                      Estudiante
-                    </Radio>
-                    <Radio
-                      variantColor="green"
-                      value={UserType.other}
-                      borderColor="grey"
-                    >
-                      Otros
-                    </Radio>
-                  </RadioGroup>
+                  <Stack>
+                    <TypeCheckbox>{UserType.scientificOrAcademic}</TypeCheckbox>
+                    <TypeCheckbox>
+                      {UserType.technicianOrProfessional}
+                    </TypeCheckbox>
+                    <TypeCheckbox>{UserType.student}</TypeCheckbox>
+                    <TypeCheckbox>{UserType.corralHabitant}</TypeCheckbox>
+                    <TypeCheckbox>{UserType.villaAlemanaHabitant}</TypeCheckbox>
+                    <TypeCheckbox>{UserType.other}</TypeCheckbox>
+                  </Stack>
                 </Box>
                 <Box>
                   <FormControl>
@@ -313,7 +315,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                         {
                           admin,
                           locked,
-                          type,
+                          types,
                           typeSpecify,
                           fireRelated,
                           fireRelatedSpecify,
@@ -328,7 +330,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                           data: {
                             _id,
                             admin: data.admin,
-                            type: data.type,
+                            types: data.types,
                             typeSpecify: data.typeSpecify,
                             fireRelated: data.fireRelated,
                             fireRelatedSpecify: data.fireRelatedSpecify,
@@ -416,93 +418,87 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                   <TabPanels>
                     <TabPanel>
                       <Stack align="center" textAlign="center">
-                        {paginatedImagesUploaded.length === 0 ? (
+                        {paginatedData.length === 0 ? (
                           <Text pt={3}>Sin imágenes subidas</Text>
                         ) : (
-                          <Box pt={3}>
-                            <Pagination
-                              activePage={activePagination}
-                              onPageChange={(_e, { activePage }) => {
-                                setActivePagination(toInteger(activePage));
-                              }}
-                              totalPages={paginatedImagesUploaded.length}
-                              secondary
-                              pointing
-                            />
-                          </Box>
+                          <Box pt={3}>{pagination}</Box>
                         )}
 
                         <Box mt={3}>
-                          {paginatedImagesUploaded[activePagination - 1]?.map(
-                            image => {
-                              return (
-                                <LazyImage
-                                  key={image._id}
-                                  src={`/api/images/${image.filename}`}
-                                  placeholder={imagePlaceholder}
-                                >
-                                  {(src, loading) => {
-                                    return (
-                                      <Stack
-                                        align="center"
-                                        mt={3}
-                                        border="1px solid"
-                                        p={3}
+                          {selectedData.map(image => {
+                            return (
+                              <LazyImage
+                                key={image._id}
+                                src={`/api/images/${image.filename}`}
+                                placeholder={imagePlaceholder}
+                              >
+                                {(src, loading) => {
+                                  return (
+                                    <Stack
+                                      align="center"
+                                      mt={3}
+                                      border="1px solid"
+                                      p={3}
+                                    >
+                                      {loading && <Spinner />}
+                                      <Image
+                                        src={src}
+                                        w="100%"
+                                        h="100%"
+                                        objectFit="contain"
+                                        maxH="30vh"
+                                        maxW="70vw"
+                                      />
+                                      <Box>
+                                        <Tag>Fecha subida:</Tag>
+
+                                        <Tag variantColor="blue">
+                                          {format(
+                                            new Date(image.uploadedAt),
+                                            "PPPPpppp",
+                                            {
+                                              locale: esLocale,
+                                            }
+                                          )}
+                                        </Tag>
+                                      </Box>
+
+                                      <Confirm
+                                        header={`¿Estás seguro que quieres eliminar la imagen ${image.filename}?`}
+                                        content="Será eliminada permanentemente"
+                                        confirmButton="Estoy seguro"
+                                        cancelButton="Cancelar"
                                       >
-                                        {loading && <Spinner />}
-                                        <Image
-                                          src={src}
-                                          w="100%"
-                                          h="100%"
-                                          objectFit="contain"
-                                          maxH="30vh"
-                                          maxW="70vw"
-                                        />
-                                        <Box>
-                                          <Tag>Fecha subida:</Tag>
-
-                                          <Tag variantColor="blue">
-                                            {format(
-                                              new Date(image.uploadedAt),
-                                              "PPPPpppp",
-                                              {
-                                                locale: esLocale,
-                                              }
-                                            )}
-                                          </Tag>
-                                        </Box>
-
-                                        <Confirm
-                                          header={`¿Estás seguro que quieres eliminar la imagen ${image.filename}?`}
-                                          content="Será eliminada permanentemente"
-                                          confirmButton="Estoy seguro"
-                                          cancelButton="Cancelar"
-                                        >
-                                          <Button
-                                            variantColor="red"
-                                            cursor="pointer"
-                                            onClick={async () => {
-                                              await removeImage({
-                                                variables: {
-                                                  data: {
-                                                    _id: image._id,
-                                                  },
+                                        <Button
+                                          variantColor="red"
+                                          cursor="pointer"
+                                          onClick={async () => {
+                                            await removeImage({
+                                              variables: {
+                                                data: {
+                                                  _id: image._id,
                                                 },
-                                              });
-                                            }}
-                                            isLoading={loadingRemoveImage}
-                                          >
-                                            Eliminar imagen
-                                          </Button>
-                                        </Confirm>
-                                      </Stack>
-                                    );
-                                  }}
-                                </LazyImage>
-                              );
-                            }
-                          )}
+                                              },
+                                            });
+                                          }}
+                                          isLoading={loadingRemoveImage}
+                                        >
+                                          Eliminar imagen
+                                        </Button>
+                                      </Confirm>
+                                    </Stack>
+                                  );
+                                }}
+                              </LazyImage>
+                            );
+                          })}
                         </Box>
+
+                        {paginatedData.length !== 0 && (
+                          <Box pt={3} pb={3}>
+                            {pagination}
+                          </Box>
+                        )}
                       </Stack>
                     </TabPanel>
                     <TabPanel>

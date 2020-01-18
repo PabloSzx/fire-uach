@@ -7,8 +7,7 @@ import { TagCategoryAssociation } from "../components/TagCategoryAssociation";
 import { useShouldBeCentered } from "../utils/useShouldBeCentered";
 
 const TagGamePage: NextPage = () => {
-  const shouldBeCentered = useShouldBeCentered();
-
+  const shouldBeCentered = useShouldBeCentered(450);
   return (
     <CategoriesContextContainer>
       <Stack
@@ -17,8 +16,8 @@ const TagGamePage: NextPage = () => {
         {...(shouldBeCentered
           ? { height: "100%", justifyContent: "center", alignItems: "center" }
           : {
-              paddingTop: "1em",
-              paddingBottom: "1em",
+              paddingTop: "0.2em",
+              paddingBottom: "0.2em",
             })}
       >
         <TagCategoryAssociation />

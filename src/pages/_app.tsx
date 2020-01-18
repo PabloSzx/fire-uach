@@ -1,4 +1,7 @@
 import "react-toastify/dist/ReactToastify.min.css";
+import "../../public/style.css";
+import "../../public/nprogress.css";
+import "react-datepicker/dist/react-datepicker.min.css";
 
 import ApolloClient from "apollo-client";
 import App from "next/app";

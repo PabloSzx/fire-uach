@@ -33,7 +33,6 @@ const GameTitle: FC = ({ children }) => {
 const IndexPage: NextPage = () => {
   const { push } = useRouter();
   const shouldBeCentered = useShouldBeCentered(400);
-
   return (
     <Stack
       transition="all 1s"

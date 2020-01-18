@@ -9,8 +9,10 @@ export const GRAPHQL_URL =
 export const USER_ALREADY_EXISTS = "user_already_exists";
 export enum UserType {
   scientificOrAcademic = "scientificOrAcademic",
-  professional = "professional",
+  technicianOrProfessional = "technicianOrProfessional",
   student = "student",
+  corralHabitant = "corralHabitant",
+  villaAlemanaHabitant = "villaAlemanaHabitant",
   other = "other",
 }
 export enum GameType {

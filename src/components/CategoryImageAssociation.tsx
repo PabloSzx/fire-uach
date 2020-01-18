@@ -137,7 +137,7 @@ export const CategoryImageAssociation: FC<{
                 : ["0.8em", "1.4em", "2.1em", "2.7em", "3em"]
             }
             p={[2, 2, 2, 2, 2]}
-            m={["0em", "0.2em", "0.2em", "0.4em", "0.8em"]}
+            m={["0em", "0.2em", "0.2em", "0.2em", "0.2em"]}
             cursor="pointer"
             overflowWrap="break-word"
             textAlign="center"
@@ -203,6 +203,15 @@ export const CategoryImageAssociation: FC<{
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, display: "none" }}
             >
+              <Text
+                textAlign="center"
+                fontSize={["1em", "1.5em", "2em"]}
+                m={0}
+                p={0}
+                pb={3}
+              >
+                Elige la categoría que más se asocia a la imagen
+              </Text>
               <SimpleGrid columns={3}>
                 {shuffledCategories.slice(0, 4).map(({ _id, name }) => {
                   return (

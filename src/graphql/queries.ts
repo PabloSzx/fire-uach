@@ -54,7 +54,7 @@ export const SIGN_UP: DocumentNode<
     data: {
       email: string;
       password: string;
-      type: UserType;
+      types: UserType[];
       typeSpecify: string;
       fireRelated: boolean;
       fireRelatedSpecify: string;

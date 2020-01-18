@@ -6,7 +6,6 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
   Box,
   Button,
-  Divider,
   Input,
   InputGroup,
   InputLeftAddon,
@@ -22,6 +21,7 @@ import {
   EDIT_TIP,
   REMOVE_TIP,
 } from "../../graphql/adminQueries";
+import { usePagination } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 import { tipToast } from "../Tip";
 
@@ -48,7 +48,7 @@ const EditTipComponent: FC<{
   });
 
   return (
-    <Stack key={_id} align="center" spacing="2em" p={2}>
+    <Stack key={_id} align="center" border="1px solid" spacing="2em" p={5}>
       <Stack align="center">
         <Text>Texto Tip</Text>
         <Textarea
@@ -133,8 +133,6 @@ const EditTipComponent: FC<{
           </Button>
         </Confirm>
       </Box>
-
-      <Divider width="100%" />
     </Stack>
   );
 };
@@ -175,14 +173,19 @@ const AdminTips: FC = () => {
     },
   });
 
-  return (
-    <Stack align="center" pt={5}>
-      <Divider border="1px solid" width="100%" />
+  const { pagination, selectedData } = usePagination({
+    name: "admin_tips_pagination",
+    data: dataAllTips?.allTips,
+  });
 
+  return (
+    <Stack align="center">
       {loadingAllTips && <Spinner />}
-      {dataAllTips?.allTips.map(tip => {
+      <Box p="2em">{pagination}</Box>
+      {selectedData.map(tip => {
         return <EditTipComponent key={tip._id} {...tip} />;
       })}
+      <Box p="2em">{pagination}</Box>
       <Stack align="center">
         <InputGroup>
           <InputLeftAddon>

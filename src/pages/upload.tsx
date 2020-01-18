@@ -1,19 +1,15 @@
 import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
-import { chunk, toInteger } from "lodash";
 import { NextPage } from "next";
 import { FC, MutableRefObject, useMemo, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { IoIosImages } from "react-icons/io";
 import LazyImage from "react-lazy-progressive-image";
 import { useAsync } from "react-use";
-import { Pagination } from "semantic-ui-react";
-import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
   Box,
-  Divider,
   Flex,
   Heading,
   Icon,
@@ -34,6 +30,7 @@ import {
   OWN_IMAGES,
   UPLOAD_IMAGE,
 } from "../graphql/queries";
+import { usePagination } from "../utils/pagination";
 
 const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
   refetch: refetchRef,
@@ -81,14 +78,6 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
     multiple: user?.admin ?? false,
   });
 
-  const paginatedImages = useMemo(() => {
-    return chunk(dataOwnImages?.ownImages ?? [], 10);
-  }, [dataOwnImages]);
-  const [activePagination, setActivePagination] = useRememberState(
-    "upload_active_pagination",
-    1
-  );
-
   const loadingUploadImage = useAsync(() => {
     return new Promise<boolean>(resolve => {
       if (loadingUpload) {
@@ -126,6 +115,11 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
     },
   });
 
+  const { pagination, selectedData, paginatedData } = usePagination({
+    name: "upload_own_images_pagination",
+    data: dataOwnImages?.ownImages,
+  });
+
   if (loadingUser) {
     return <LoadingPage />;
   }
@@ -147,32 +141,25 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
             <Icon name="add" size="3em" />
             <Box as={IoIosImages} size="3em" />
           </Flex>
-          <Text m={1}>Haz click aquí para subir imágenes</Text>
+          <Text m={1}>
+            Haz click aquí para subir imágenes y luego asociarlas a una
+            categoría
+          </Text>
         </Box>
       )}
 
       {uploadingImageSpinner}
-      {paginatedImages.length !== 0 && (
+      {paginatedData.length !== 0 && (
         <>
           <Stack mt="2em" align="center" spacing="3em">
             <Box>
               <Heading>Imágenes subidas por tí</Heading>
             </Box>
-            <Box>
-              <Pagination
-                activePage={activePagination}
-                onPageChange={(_e, { activePage }) => {
-                  setActivePagination(toInteger(activePage));
-                }}
-                totalPages={paginatedImages.length}
-                secondary
-                pointing
-              />
-            </Box>
+            <Box>{pagination}</Box>
             {loadingOwnImages ? (
               <Spinner />
             ) : (
-              paginatedImages[activePagination - 1]?.map(image => {
+              selectedData.map(image => {
                 return (
                   <Box key={image._id}>
                     <LazyImage
@@ -218,6 +205,7 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
                 );
               })
             )}
+            <Box>{pagination}</Box>
           </Stack>
         </>
       )}
@@ -228,7 +216,13 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
 const UploadPage: NextPage = () => {
   const refetch = useRef<() => Promise<any>>(async () => {});
   return (
-    <Stack pt="2em" align="center" justify="space-around" spacing="2em">
+    <Stack
+      pt="2em"
+      pb="2em"
+      align="center"
+      justify="space-around"
+      spacing="2em"
+    >
       <CategoriesContextContainer>
         <CategoryImageAssociation onlyOwnImages refetch={refetch} />
       </CategoriesContextContainer>

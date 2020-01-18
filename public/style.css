@@ -11,6 +11,10 @@ body {
 
 #__next {
   height: 100%;
+  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  padding-bottom: 1em;
 }
 
 a {

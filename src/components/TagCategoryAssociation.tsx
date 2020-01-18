@@ -12,7 +12,7 @@ import { useGeolocation } from "react-use";
 import wait from "waait";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Badge, Flex, SimpleGrid, Stack, Tag, Text } from "@chakra-ui/core";
+import { Badge, Box, Flex, SimpleGrid, Tag, Text } from "@chakra-ui/core";
 
 import { useTip } from "../components/Tip";
 import {
@@ -108,7 +108,7 @@ export const TagCategoryAssociation: FC = () => {
                 : ["0.8em", "1.4em", "2.1em", "2.7em", "3em"]
             }
             p={[2, 2, 2, 2, 2]}
-            m={["0em", "0.2em", "0.2em", "0.4em", "0.8em"]}
+            m={["0em", "0.2em", "0.2em", "0.2em", "0.2em"]}
             cursor="pointer"
             textAlign="center"
             justifyContent="center"
@@ -164,7 +164,7 @@ export const TagCategoryAssociation: FC = () => {
   return (
     <>
       {modal}
-      <Stack>
+      <Box>
         <AnimatePresence>
           {notAnsweredTag ? (
             <motion.div
@@ -173,6 +173,15 @@ export const TagCategoryAssociation: FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, display: "none" }}
             >
+              <Text
+                textAlign="center"
+                fontSize={["1em", "1.5em", "2em"]}
+                m={0}
+                p={0}
+                pb={3}
+              >
+                Elige la categoría que más se asocia a la palabra en rojo
+              </Text>
               <SimpleGrid columns={3}>
                 {shuffledCategories.slice(0, 4).map(({ _id, name }) => {
                   return (
@@ -226,7 +235,7 @@ export const TagCategoryAssociation: FC = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </Stack>
+      </Box>
     </>
   );
 };

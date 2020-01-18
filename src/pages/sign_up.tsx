@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import { map } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { FC } from "react";
 import { FaSignInAlt } from "react-icons/fa";
 import LazyImage from "react-lazy-progressive-image";
 import { isEmail } from "validator";
@@ -109,7 +110,7 @@ const SignUpPage: NextPage = () => {
               return "";
             }
           })(),
-          type: undefined as UserType | undefined,
+          types: [] as UserType[],
           typeSpecify: "",
           fireRelated: false,
           fireRelatedSpecify: "",
@@ -118,29 +119,34 @@ const SignUpPage: NextPage = () => {
         onSubmit={async ({
           email,
           password,
-          type,
+          types,
           typeSpecify,
           fireRelated,
           fireRelatedSpecify,
         }) => {
-          if (type !== undefined) {
-            try {
-              await signUp({
-                variables: {
-                  data: {
-                    email,
-                    password: sha256(password).toString(),
-                    type,
-                    typeSpecify,
-                    fireRelated,
-                    fireRelatedSpecify,
-                  },
+          try {
+            await signUp({
+              variables: {
+                data: {
+                  email,
+                  password: sha256(password).toString(),
+                  types,
+                  typeSpecify,
+                  fireRelated,
+                  fireRelatedSpecify,
                 },
-              });
-            } catch (err) {}
-          }
+              },
+            });
+          } catch (err) {}
         }}
-        validate={({ email, password, termsAndConditions, type }) => {
+        validate={({
+          email,
+          password,
+          termsAndConditions,
+          types,
+          typeSpecify,
+          fireRelatedSpecify,
+        }) => {
           const errors: Record<string, string> = {};
 
           if (!isEmail(email)) {
@@ -153,8 +159,15 @@ const SignUpPage: NextPage = () => {
             errors.termsAndConditions =
               "Debe aceptar los términos y condiciones!";
           }
-          if (type === undefined) {
-            errors.type = "Debe especifir su ocupación";
+          if (types.length === 0) {
+            errors.type = "Debe especifir al menos una opcion";
+          }
+
+          if (typeSpecify.length > 50) {
+            errors.typeSpecify = "Hasta 50 caracteres";
+          }
+          if (fireRelatedSpecify.length > 50) {
+            errors.fireRelatedSpecify = "Hasta 50 caracteres";
           }
 
           return errors;
@@ -172,6 +185,31 @@ const SignUpPage: NextPage = () => {
           dirty,
           setFieldValue,
         }) => {
+          const TypeCheckbox: FC<{ children: UserType }> = ({
+            children: typeCheck,
+          }) => {
+            return (
+              <Checkbox
+                isChecked={values.types.includes(typeCheck)}
+                onChange={() => {
+                  if (values.types.includes(typeCheck)) {
+                    setFieldValue(
+                      "types",
+                      values.types.filter(type => type !== typeCheck)
+                    );
+                  } else {
+                    setFieldValue("types", [...values.types, typeCheck]);
+                  }
+                }}
+                variantColor="green"
+                aria-label={typeCheck}
+                borderColor="grey"
+              >
+                {userTypeToText(typeCheck)}
+              </Checkbox>
+            );
+          };
+
           return (
             <form onSubmit={handleSubmit}>
               <Stack align="center">
@@ -257,59 +295,49 @@ const SignUpPage: NextPage = () => {
                 <Divider width="80%" />
                 <Box width={["80%", "60%", "40%"]}>
                   <FormControl
-                    isInvalid={!!(touched.type && errors.type)}
+                    isInvalid={!!(touched.types && errors.types)}
                     isRequired
                   >
                     <FormLabel as="h3" fontSize="1.5em">
-                      <b>¿A qué te dedicas?</b>
+                      <b>
+                        Elige una o más opciones con la(s) que te identificas.
+                        Soy:
+                      </b>
                     </FormLabel>
-                    <RadioGroup
-                      value={values.type}
-                      onChange={({ target: { value } }) => {
-                        setFieldValue("type", value);
-                      }}
-                    >
-                      <Radio
-                        variantColor="green"
-                        value={UserType.scientificOrAcademic}
-                        aria-label="scientific"
-                        borderColor="grey"
-                      >
-                        {userTypeToText(UserType.scientificOrAcademic)}
-                      </Radio>
-                      <Radio
-                        variantColor="green"
-                        value={UserType.professional}
-                        borderColor="grey"
-                      >
-                        {userTypeToText(UserType.professional)}
-                      </Radio>
-                      <Radio
-                        variantColor="green"
-                        value={UserType.student}
-                        borderColor="grey"
-                      >
-                        {userTypeToText(UserType.student)}
-                      </Radio>
-                      <Radio
-                        variantColor="green"
-                        value={UserType.other}
-                        borderColor="grey"
-                      >
-                        {userTypeToText(UserType.other)}
-                      </Radio>
-                    </RadioGroup>
-                    <FormErrorMessage>{errors.type}</FormErrorMessage>
+
+                    <Stack>
+                      <TypeCheckbox>
+                        {UserType.scientificOrAcademic}
+                      </TypeCheckbox>
+
+                      <TypeCheckbox>
+                        {UserType.technicianOrProfessional}
+                      </TypeCheckbox>
+
+                      <TypeCheckbox>{UserType.student}</TypeCheckbox>
+                      <TypeCheckbox>{UserType.corralHabitant}</TypeCheckbox>
+                      <TypeCheckbox>
+                        {UserType.villaAlemanaHabitant}
+                      </TypeCheckbox>
+                      <TypeCheckbox>{UserType.other}</TypeCheckbox>
+                    </Stack>
+
+                    <FormErrorMessage>{errors.types}</FormErrorMessage>
                   </FormControl>
                 </Box>
                 <Box width={["80%", "60%", "40%"]}>
-                  <FormControl>
+                  <FormControl
+                    isRequired={values.types.includes(UserType.other)}
+                    isInvalid={!!errors.typeSpecify}
+                  >
                     <FormLabel>Especifica</FormLabel>
                     <Input
                       name="typeSpecify"
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       value={values.typeSpecify}
                     />
+                    <FormErrorMessage>{errors.typeSpecify}</FormErrorMessage>
                   </FormControl>
                 </Box>
                 <Divider width="80%" />
@@ -317,10 +345,7 @@ const SignUpPage: NextPage = () => {
                 <Box width={["80%", "60%", "40%"]}>
                   <FormControl>
                     <FormLabel as="h3" fontSize="1.5em">
-                      <b>
-                        ¿Tus actividades diarias se relacionan con los
-                        incendios?
-                      </b>
+                      <b>¿Tus actividades se relacionan con los incendios?</b>
                     </FormLabel>
                     <RadioGroup
                       value={values.fireRelated ? "y" : "n"}
@@ -337,13 +362,23 @@ const SignUpPage: NextPage = () => {
                     </RadioGroup>
                   </FormControl>
 
-                  <FormControl>
+                  <FormControl
+                    isRequired={values.fireRelated}
+                    isInvalid={
+                      !!(
+                        touched.fireRelatedSpecify && errors.fireRelatedSpecify
+                      )
+                    }
+                  >
                     <FormLabel>Especifica</FormLabel>
                     <Input
                       name="fireRelatedSpecify"
                       onChange={handleChange}
                       value={values.fireRelatedSpecify}
                     />
+                    <FormErrorMessage>
+                      {errors.fireRelatedSpecify}
+                    </FormErrorMessage>
                   </FormControl>
                 </Box>
                 <Divider width="80%" />

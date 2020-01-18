@@ -7,7 +7,7 @@ import { CategoryImageAssociation } from "../components/CategoryImageAssociation
 import { useShouldBeCentered } from "../utils/useShouldBeCentered";
 
 const ImageGamePage: NextPage = () => {
-  const shouldBeCentered = useShouldBeCentered();
+  const shouldBeCentered = useShouldBeCentered(450);
 
   return (
     <CategoriesContextContainer>
@@ -15,10 +15,14 @@ const ImageGamePage: NextPage = () => {
         className="imageGamePage"
         transition="all 1s"
         {...(shouldBeCentered
-          ? { height: "100%", justifyContent: "center", alignItems: "center" }
+          ? {
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }
           : {
-              paddingTop: "1em",
-              paddingBottom: "1em",
+              paddingTop: "0.2em",
+              paddingBottom: "0.2em",
             })}
       >
         <CategoryImageAssociation />
