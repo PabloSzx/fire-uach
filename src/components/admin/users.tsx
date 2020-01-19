@@ -27,8 +27,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Radio,
-  RadioGroup,
   Spinner,
   Stack,
   Stat,
@@ -60,20 +58,6 @@ import {
 import { usePagination } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
-function defaultUserType(type?: string): UserType | undefined {
-  switch (type) {
-    case UserType.scientificOrAcademic:
-    case UserType.technicianOrProfessional:
-    case UserType.student:
-    case UserType.other:
-    case UserType.corralHabitant:
-    case UserType.villaAlemanaHabitant:
-      return type;
-    default:
-      return undefined;
-  }
-}
-
 const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   _id,
   email,
@@ -91,13 +75,21 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure(false);
 
-  const { data: dataUserStats, refetch: refetchStats } = useQuery(USER_STATS, {
+  const {
+    data: dataUserStats,
+    refetch: refetchStats,
+    error: errorUserStats,
+  } = useQuery(USER_STATS, {
     variables: {
       _id,
     },
     fetchPolicy: "cache-and-network",
     skip: !isOpen,
   });
+
+  if (errorUserStats) {
+    console.error(JSON.stringify(errorUserStats, null, 2));
+  }
 
   const [editUser, { loading: loadingEditUser }] = useMutation(EDIT_USER);
   const [removeUser, { loading: loadingRemoveUser }] = useMutation(

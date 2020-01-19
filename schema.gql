@@ -163,7 +163,8 @@ type Query {
   images: [Image!]!
   validatedImages: [Image!]!
   ownImages: [Image!]!
-  userStats(_id: ObjectId!): UserStats
+  userStats(user_id: ObjectId!): UserStats
+  rankingStats(limit: Int = 5): [UserStats!]!
   ownStats: UserStats!
   tags: [Tag!]!
   notAnsweredTag: Tag
@@ -250,11 +251,17 @@ type User {
 
 type UserStats {
   _id: ObjectId!
-  user: User!
+  user: User
   nAssociatedImages: Int!
   nAssociatedTags: Int!
   nUploadedImages: Int!
   nValidatedUploadedImages: Int!
+  imagesLevel: Int!
+  tagsLevel: Int!
+  uploadLevel: Int!
+  overallLevel: Int!
+  score: Int!
+  rankingPosition: Int!
 }
 
 enum UserType {

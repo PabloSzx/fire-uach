@@ -585,7 +585,7 @@ export const USER_STATS: DocumentNode<
   }
 > = gql`
   query($_id: ObjectId!) {
-    userStats(_id: $_id) {
+    userStats(user_id: $_id) {
       _id
       nAssociatedImages
       nAssociatedTags

@@ -241,6 +241,12 @@ export const OWN_STATS: DocumentNode<{
     nAssociatedTags: number;
     nUploadedImages: number;
     nValidatedUploadedImages: number;
+    imagesLevel: number;
+    tagsLevel: number;
+    uploadLevel: number;
+    overallLevel: number;
+    score: number;
+    rankingPosition: number;
   };
 }> = gql`
   query {
@@ -250,6 +256,39 @@ export const OWN_STATS: DocumentNode<{
       nAssociatedTags
       nUploadedImages
       nValidatedUploadedImages
+      imagesLevel
+      tagsLevel
+      uploadLevel
+      overallLevel
+      score
+      rankingPosition
+    }
+  }
+`;
+
+export const RANKING_STATS: DocumentNode<
+  {
+    rankingStats: {
+      _id: string;
+      user?: {
+        _id: string;
+        email: string;
+      };
+      overallLevel: string;
+    }[];
+  },
+  {
+    limit?: number;
+  }
+> = gql`
+  query($limit: Int) {
+    rankingStats(limit: $limit) {
+      _id
+      user {
+        _id
+        email
+      }
+      overallLevel
     }
   }
 `;
