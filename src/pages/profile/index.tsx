@@ -31,7 +31,9 @@ const Stats: FC = () => {
     data: dataRanking,
     loading: loadingRanking,
     error: errorRanking,
-  } = useQuery(RANKING_STATS);
+  } = useQuery(RANKING_STATS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const { user: authUser } = useUser("/profile");
 
