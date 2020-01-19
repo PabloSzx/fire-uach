@@ -99,7 +99,7 @@ export class UserStatsResolver {
       stats.nUploadedImages + stats.nValidatedUploadedImages
     );
 
-    stats.overallLevel = levelFunction(stats.score, 0.5);
+    stats.overallLevel = levelFunction(stats.score, 0.8);
 
     await stats.save();
 
