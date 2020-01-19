@@ -1,16 +1,17 @@
+import { orderBy } from "lodash";
 import { ObjectId } from "mongodb";
 import {
   Arg,
   Authorized,
   Ctx,
   FieldResolver,
+  Int,
   Query,
   Resolver,
-  ResolverInterface,
   Root,
 } from "type-graphql";
 
-import { isDocument, Ref } from "@typegoose/typegoose";
+import { DocumentType, isDocument, Ref } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
 import { CategoryImageAssociationModel } from "../entities/associations/categoryImageAssociation";
@@ -22,24 +23,95 @@ import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
+/**
+ *  This level function pretends to represent
+ *  level 1 ~> 0 score;
+ *  level 2 ~> 5 score;
+ *  level 3 ~> 15 score;
+ *  level 4 ~> 27 score;
+ *  level 5 ~> (level 4 score + (level 4 score - level 3 score) * 1.2) = 41;
+ *  level y ~> x score;
+ *
+ * @param {number} score score
+ * @param {number} m m in function
+ * @param {number} b b in function
+ * @returns {number} level
+ */
+const levelFunction = (
+  score: number,
+  m: number = 1.15,
+  b: number = 0.0796
+): number => {
+  const level = Math.round(b + Math.log(m * score));
+  return level >= 1 ? level : 1;
+};
+
 @Resolver(() => UserStats)
-export class UserStatsResolver implements ResolverInterface<UserStats> {
-  static async updateScore(user: Ref<User>, score: number) {
-    const newStats = await UserStatsModel.findOneAndUpdate(
-      {
-        user: isDocument(user) ? user._id : user,
-      },
-      {
-        $inc: {
-          score,
+export class UserStatsResolver {
+  static async updateUserStats({
+    user,
+    stats,
+  }: {
+    user?: Ref<User>;
+    stats?: DocumentType<UserStats>;
+  }) {
+    if (!stats) {
+      assertIsDefined(user, "User should be specified if stats is not given");
+      stats = await UserStatsModel.findOneAndUpdate(
+        {
+          user: isDocument(user) ? user._id : user,
         },
-      },
-      {
-        upsert: true,
-        new: true,
-        setDefaultsOnInsert: true,
-      }
+        {},
+        {
+          setDefaultsOnInsert: true,
+          upsert: true,
+          new: true,
+        }
+      );
+    }
+
+    [
+      stats.nAssociatedImages,
+      stats.nAssociatedTags,
+      stats.nUploadedImages,
+      stats.nValidatedUploadedImages,
+    ] = await Promise.all([
+      CategoryImageAssociationModel.countDocuments({
+        user: isDocument(user) ? user._id : user,
+      }),
+      TagCategoryAssociationModel.countDocuments({
+        user: isDocument(user) ? user._id : user,
+      }),
+      ImageModel.countDocuments({
+        uploader: isDocument(user) ? user._id : user,
+        active: true,
+      }),
+      ImageModel.countDocuments({
+        uploader: isDocument(user) ? user._id : user,
+        active: true,
+        validated: true,
+      }),
+    ]);
+
+    stats.score =
+      stats.nValidatedUploadedImages * 10 +
+      stats.nAssociatedTags * 2 +
+      stats.nAssociatedImages * 2 +
+      stats.nUploadedImages * 5;
+
+    stats.imagesLevel = levelFunction(stats.nAssociatedImages);
+
+    stats.tagsLevel = levelFunction(stats.nAssociatedTags);
+
+    stats.uploadLevel = levelFunction(
+      stats.nUploadedImages + stats.nValidatedUploadedImages
     );
+
+    stats.overallLevel = levelFunction(stats.score, 0.5);
+
+    await stats.save();
+
+    return stats;
   }
 
   @Authorized([ADMIN])
@@ -48,119 +120,58 @@ export class UserStatsResolver implements ResolverInterface<UserStats> {
     const user = await UserModel.findById(user_id);
 
     if (user) {
-      return await UserStatsModel.findOneAndUpdate(
-        {
-          user: user._id,
-        },
-        {},
-        {
-          upsert: true,
-          new: true,
-          setDefaultsOnInsert: true,
-        }
-      );
+      return await UserStatsResolver.updateUserStats({ user });
     }
 
     return null;
   }
 
   @Authorized()
-  @Query(() => UserStats)
-  async ownStats(@Ctx() { user }: IContext) {
-    assertIsDefined(user, "Context user failed!");
-    return await UserStatsModel.findOneAndUpdate(
-      {
-        user: user._id,
-      },
-      {},
-      {
-        upsert: true,
-        new: true,
-        setDefaultsOnInsert: true,
-      }
+  @Query(() => [UserStats])
+  async rankingStats(
+    @Arg("limit", () => Int, { defaultValue: 5 }) limit: number
+  ) {
+    let ranking = await UserStatsModel.find({})
+      .limit(limit)
+      .sort({
+        score: "desc",
+      });
+
+    ranking = await Promise.all(
+      ranking.map(stats => UserStatsResolver.updateUserStats({ stats }))
+    );
+
+    return orderBy(
+      ranking,
+      ["overallLevel", "score", "email"],
+      ["desc", "desc", "asc"]
     );
   }
 
-  @FieldResolver()
-  async nAssociatedImages(
-    @Root() { user, _id }: Pick<UserStats, "user" | "_id">
-  ) {
-    if (!user) {
-      return 0;
-    }
-    const n = await CategoryImageAssociationModel.countDocuments({
-      user: isDocument(user) ? user._id : user,
-    });
-
-    UserStatsModel.findByIdAndUpdate(_id, { nAssociatedImages: n })
-      .then(() => {})
-      .catch(err => {
-        console.error(err);
-      });
-
-    return n;
+  @Authorized()
+  @Query(() => UserStats)
+  async ownStats(@Ctx() { user }: IContext) {
+    assertIsDefined(user, "Context user failed!");
+    return await UserStatsResolver.updateUserStats({ user });
   }
 
   @FieldResolver()
-  async nAssociatedTags(
-    @Root() { user, _id }: Pick<UserStats, "user" | "_id">
-  ) {
-    if (!user) {
-      return 0;
-    }
-    const n = await TagCategoryAssociationModel.countDocuments({
-      user: isDocument(user) ? user._id : user,
-    });
-
-    UserStatsModel.findByIdAndUpdate(_id, { nAssociatedTags: n })
-      .then(() => {})
-      .catch(err => {
-        console.error(err);
-      });
-
-    return n;
+  async user(@Root() { user }: Pick<UserStats, "user">) {
+    return isDocument(user) ? user : await UserModel.findById(user);
   }
 
   @FieldResolver()
-  async nUploadedImages(
-    @Root() { user, _id }: Pick<UserStats, "user" | "_id">
-  ) {
-    if (!user) {
-      return 0;
-    }
-    const n = await ImageModel.countDocuments({
-      uploader: isDocument(user) ? user._id : user,
-      active: true,
+  async rankingPosition(@Root() { user }: Pick<UserStats, "user">) {
+    let ranking = await UserStatsModel.find({}, "user").sort({
+      score: "desc",
     });
 
-    UserStatsModel.findByIdAndUpdate(_id, { nUploadedImages: n })
-      .then(() => {})
-      .catch(err => {
-        console.error(err);
-      });
+    const userId = isDocument(user) ? user._id : user;
 
-    return n;
-  }
-
-  @FieldResolver()
-  async nValidatedUploadedImages(
-    @Root() { user, _id }: Pick<UserStats, "user" | "_id">
-  ) {
-    if (!user) {
-      return 0;
-    }
-    const n = await ImageModel.countDocuments({
-      uploader: isDocument(user) ? user._id : user,
-      active: true,
-      validated: true,
+    const position = ranking.findIndex(stats => {
+      return userId.equals(stats.user);
     });
 
-    UserStatsModel.findByIdAndUpdate(_id, { nValidatedUploadedImages: n })
-      .then(() => {})
-      .catch(err => {
-        console.error(err);
-      });
-
-    return n;
+    return position;
   }
 }

@@ -32,12 +32,27 @@ export class UserStats {
   nValidatedUploadedImages: number;
 
   @Field(() => Int)
-  @Property({ default: 1, index: true })
-  level: number;
+  @Property({ default: 1 })
+  imagesLevel: number;
+
+  @Field(() => Int)
+  @Property({ default: 1 })
+  tagsLevel: number;
+
+  @Field(() => Int)
+  @Property({ default: 1 })
+  uploadLevel: number;
+
+  @Field(() => Int)
+  @Property({ default: 1 })
+  overallLevel: number;
 
   @Field(() => Int)
   @Property({ default: 0, index: true })
   score: number;
+
+  @Field(() => Int)
+  rankingPosition: number;
 }
 
 export const UserStatsModel = getModelForClass(UserStats);
