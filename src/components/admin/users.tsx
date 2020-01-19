@@ -1,10 +1,11 @@
 import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
-import { isEqual } from "lodash";
-import { ChangeEvent, FC, Fragment } from "react";
+import { isEqual, sortBy } from "lodash";
+import { ChangeEvent, FC, Fragment, useEffect, useState } from "react";
 import LazyImage from "react-lazy-progressive-image";
 import { useSetState } from "react-use";
 import { Icon as SemanticIcon, Table } from "semantic-ui-react";
+import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
@@ -743,6 +744,39 @@ const AdminUsers: FC = () => {
     console.error(JSON.stringify(errorAllUsers, null, 2));
   }
 
+  const [column, setColumn] = useRememberState("AdminUsersColumn", "");
+  const [direction, setDirection] = useRememberState<"ascending" | "descending">(
+    "AdminUsersDirection",
+    "ascending"
+  );
+
+  const [sortedUsers, setSortedUsers] = useState<IUser[]>([]);
+
+  useEffect(() => {
+    if (dataAllUsers?.allUsers.length) {
+      if (direction === "ascending") {
+        setSortedUsers(sortBy(dataAllUsers?.allUsers ?? [], [column]));
+      } else {
+        setSortedUsers(
+          sortBy(dataAllUsers?.allUsers ?? [], [column]).reverse()
+        );
+      }
+    }
+  }, [dataAllUsers, column, direction, setSortedUsers]);
+
+  const handleSort = (clickedColumn: string) => () => {
+    if (column !== clickedColumn) {
+      setColumn(clickedColumn);
+      setDirection("ascending");
+    } else {
+      setDirection(direction === "ascending" ? "descending" : "ascending");
+    }
+  };
+  const { pagination, selectedData } = usePagination({
+    name: "admin_all_users",
+    data: sortedUsers,
+  });
+
   return (
     <Stack pt={5} align="center">
       {loadingAllUsers ? (
@@ -758,19 +792,46 @@ const AdminUsers: FC = () => {
         </Box>
       )}
 
-      <Table>
+      <Box p="2em">{pagination}</Box>
+
+      <Table selectable sortable>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell>Email</Table.HeaderCell>
-            <Table.HeaderCell>Admin</Table.HeaderCell>
-            <Table.HeaderCell>Tipo</Table.HeaderCell>
-            <Table.HeaderCell>Relacionado con el fuego</Table.HeaderCell>
-            <Table.HeaderCell>Bloqueado</Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={column === "email" ? direction : undefined}
+              onClick={handleSort("email")}
+            >
+              Email
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={column === "admin" ? direction : undefined}
+              onClick={handleSort("admin")}
+            >
+              Admin
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={column === "type" ? direction : undefined}
+              onClick={handleSort("type")}
+            >
+              Tipo
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={column === "fireRelated" ? direction : undefined}
+              onClick={handleSort("fireRelated")}
+            >
+              Relacionado con el fuego
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={column === "locked" ? direction : undefined}
+              onClick={handleSort("locked")}
+            >
+              Bloqueado
+            </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
         <Table.Body>
-          {dataAllUsers?.allUsers.map(user => {
+          {selectedData.map(user => {
             return (
               <UserModal
                 key={user._id}
