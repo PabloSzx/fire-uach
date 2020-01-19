@@ -1,7 +1,8 @@
 import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
-import { isEqual, sortBy } from "lodash";
+import { isEqual, sortBy, uniq } from "lodash";
 import { ChangeEvent, FC, Fragment, useEffect, useState } from "react";
+import { FaLock, FaLockOpen } from "react-icons/fa";
 import LazyImage from "react-lazy-progressive-image";
 import { useSetState } from "react-use";
 import { Icon as SemanticIcon, Table } from "semantic-ui-react";
@@ -187,15 +188,18 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
         <Table.Cell>
           <Icon name={admin ? "check" : "small-close"} />
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell textAlign="center">
           {types?.map(type => userTypeToText(type).slice(0, 5)).join("|")}
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell textAlign="center">
           <Icon name={fireRelated ? "check" : "small-close"} />
         </Table.Cell>
-        <Table.Cell>
-          <Icon name={locked ? "lock" : "unlock"} />
+        <Table.Cell textAlign="center">
+          <Box as={locked ? FaLock : FaLockOpen} />
         </Table.Cell>
+        <Table.Cell>{imagesUploaded.length}</Table.Cell>
+        <Table.Cell>{tagCategoryAssociations.length}</Table.Cell>
+        <Table.Cell>{categoryImageAssociations.length}</Table.Cell>
       </Table.Row>
       <Modal
         isOpen={isOpen}
@@ -744,29 +748,29 @@ const AdminUsers: FC = () => {
     console.error(JSON.stringify(errorAllUsers, null, 2));
   }
 
-  const [column, setColumn] = useRememberState("AdminUsersColumn", "");
-  const [direction, setDirection] = useRememberState<"ascending" | "descending">(
-    "AdminUsersDirection",
-    "ascending"
+  const [columns, setColumns] = useRememberState<string[]>(
+    "AdminUsersColumn",
+    []
   );
+  const [direction, setDirection] = useRememberState<
+    "ascending" | "descending"
+  >("AdminUsersDirection", "ascending");
 
   const [sortedUsers, setSortedUsers] = useState<IUser[]>([]);
 
   useEffect(() => {
     if (dataAllUsers?.allUsers.length) {
       if (direction === "ascending") {
-        setSortedUsers(sortBy(dataAllUsers?.allUsers ?? [], [column]));
+        setSortedUsers(sortBy(dataAllUsers?.allUsers ?? [], columns));
       } else {
-        setSortedUsers(
-          sortBy(dataAllUsers?.allUsers ?? [], [column]).reverse()
-        );
+        setSortedUsers(sortBy(dataAllUsers?.allUsers ?? [], columns).reverse());
       }
     }
-  }, [dataAllUsers, column, direction, setSortedUsers]);
+  }, [dataAllUsers, columns, direction, setSortedUsers]);
 
   const handleSort = (clickedColumn: string) => () => {
-    if (column !== clickedColumn) {
-      setColumn(clickedColumn);
+    setColumns(uniq([clickedColumn, ...columns]));
+    if (columns[0] !== clickedColumn) {
       setDirection("ascending");
     } else {
       setDirection(direction === "ascending" ? "descending" : "ascending");
@@ -798,34 +802,58 @@ const AdminUsers: FC = () => {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell
-              sorted={column === "email" ? direction : undefined}
+              sorted={columns[0] === "email" ? direction : undefined}
               onClick={handleSort("email")}
             >
               Email
             </Table.HeaderCell>
             <Table.HeaderCell
-              sorted={column === "admin" ? direction : undefined}
+              sorted={columns[0] === "admin" ? direction : undefined}
               onClick={handleSort("admin")}
             >
               Admin
             </Table.HeaderCell>
             <Table.HeaderCell
-              sorted={column === "type" ? direction : undefined}
+              sorted={columns[0] === "type" ? direction : undefined}
               onClick={handleSort("type")}
             >
               Tipo
             </Table.HeaderCell>
             <Table.HeaderCell
-              sorted={column === "fireRelated" ? direction : undefined}
+              sorted={columns[0] === "fireRelated" ? direction : undefined}
               onClick={handleSort("fireRelated")}
             >
-              Relacionado con el fuego
+              Rel. fuego
             </Table.HeaderCell>
             <Table.HeaderCell
-              sorted={column === "locked" ? direction : undefined}
+              sorted={columns[0] === "locked" ? direction : undefined}
               onClick={handleSort("locked")}
             >
-              Bloqueado
+              Bloq.
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={columns[0] === "imagesUploaded" ? direction : undefined}
+              onClick={handleSort("imagesUploaded")}
+            >
+              Imag. Sub.
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={
+                columns[0] === "tagCategoryAssociations" ? direction : undefined
+              }
+              onClick={handleSort("tagCategoryAssociations")}
+            >
+              Tags. Asoc.
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={
+                columns[0] === "categoryImageAssociations"
+                  ? direction
+                  : undefined
+              }
+              onClick={handleSort("categoryImageAssociations")}
+            >
+              Imag. Asoc.
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
