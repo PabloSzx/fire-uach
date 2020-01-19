@@ -48,27 +48,19 @@ const levelFunction = (
 
 @Resolver(() => UserStats)
 export class UserStatsResolver {
-  static async updateUserStats({
-    user,
-    stats,
-  }: {
-    user?: Ref<User>;
-    stats?: DocumentType<UserStats>;
-  }) {
-    if (!stats) {
-      assertIsDefined(user, "User should be specified if stats is not given");
-      stats = await UserStatsModel.findOneAndUpdate(
-        {
-          user: isDocument(user) ? user._id : user,
-        },
-        {},
-        {
-          setDefaultsOnInsert: true,
-          upsert: true,
-          new: true,
-        }
-      );
-    }
+  static async updateUserStats({ user }: { user: Ref<User> }) {
+    assertIsDefined(user, "User should be specified if stats is not given");
+    const stats = await UserStatsModel.findOneAndUpdate(
+      {
+        user: isDocument(user) ? user._id : user,
+      },
+      {},
+      {
+        setDefaultsOnInsert: true,
+        upsert: true,
+        new: true,
+      }
+    );
 
     [
       stats.nAssociatedImages,
@@ -131,14 +123,19 @@ export class UserStatsResolver {
   async rankingStats(
     @Arg("limit", () => Int, { defaultValue: 5 }) limit: number
   ) {
-    let ranking = await UserStatsModel.find({})
+    let ranking = await UserStatsModel.find({}, "user")
       .limit(limit)
       .sort({
         score: "desc",
       });
 
     ranking = await Promise.all(
-      ranking.map(stats => UserStatsResolver.updateUserStats({ stats }))
+      ranking
+        .filter(({ user }) => user)
+        .map(({ user }) => {
+          assertIsDefined(user, "filter is not working");
+          return UserStatsResolver.updateUserStats({ user });
+        })
     );
 
     return orderBy(

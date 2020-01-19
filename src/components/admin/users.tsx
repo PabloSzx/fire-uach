@@ -84,7 +84,6 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
       _id,
     },
     fetchPolicy: "cache-and-network",
-    skip: !isOpen,
   });
 
   if (errorUserStats) {
