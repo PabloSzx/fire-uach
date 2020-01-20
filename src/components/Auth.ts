@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { CURRENT_USER, IUser } from "../graphql/queries";
 
 export function useUser(
-  requireAuth?: undefined,
+  requireAuthRedirect?: undefined,
   admin?: undefined,
   fetchPolicy?: "cache-first" | "cache-and-network"
 ): {
@@ -14,12 +14,12 @@ export function useUser(
   refetch: () => Promise<any>;
 };
 export function useUser(
-  requireAuth: string,
+  requireAuthRedirect: string,
   admin?: boolean,
   fetchPolicy?: "cache-first" | "cache-and-network"
 ): { user: IUser; loading: boolean; refetch: () => Promise<any> };
 export function useUser(
-  requireAuth?: string,
+  requireAuthRedirect?: string,
   admin?: boolean,
   fetchPolicy: "cache-first" | "cache-and-network" = "cache-first"
 ) {
@@ -35,15 +35,14 @@ export function useUser(
     throw error;
   }
 
-  if (
-    (requireAuth && !data?.currentUser) ||
-    (admin && !data?.currentUser?.admin)
-  ) {
+  const user = data?.currentUser;
+
+  if ((requireAuthRedirect && user) || (admin && !user?.admin)) {
     if (!loading) {
-      if (data?.currentUser) {
+      if (user) {
         push("/profile");
       } else {
-        push(`/login?route=${requireAuth}`);
+        push(`/login?route=${requireAuthRedirect}`);
       }
     }
     return {
@@ -53,5 +52,5 @@ export function useUser(
     };
   }
 
-  return { user: data?.currentUser, loading, refetch };
+  return { user, loading, refetch };
 }

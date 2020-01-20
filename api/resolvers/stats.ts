@@ -29,7 +29,7 @@ import { ObjectIdScalar } from "../utils/ObjectIdScalar";
  *  level 2 ~> 5 score;
  *  level 3 ~> 15 score;
  *  level 4 ~> 27 score;
- *  level 5 ~> (level 4 score + (level 4 score - level 3 score) * 1.2) = 41;
+ *  level 5 ~> (level 4 score + (level 4 score - level 3 score) * 1.2) = 41 score;
  *  level y ~> x score;
  *
  * @param {number} score score
