@@ -1,30 +1,15 @@
-import { useRouter } from "next/router";
+import { WatchQueryFetchPolicy } from "apollo-client";
+import Router from "next/router";
 
 import { useQuery } from "@apollo/react-hooks";
 
-import { CURRENT_USER, IUser } from "../graphql/queries";
+import { CURRENT_USER } from "../graphql/queries";
 
-export function useUser(
-  requireAuthRedirect?: undefined,
-  admin?: undefined,
-  fetchPolicy?: "cache-first" | "cache-and-network"
-): {
-  user: IUser | undefined;
-  loading: boolean;
-  refetch: () => Promise<any>;
-};
-export function useUser(
-  requireAuthRedirect: string,
-  admin?: boolean,
-  fetchPolicy?: "cache-first" | "cache-and-network"
-): { user: IUser; loading: boolean; refetch: () => Promise<any> };
 export function useUser(
   requireAuthRedirect?: string,
   admin?: boolean,
-  fetchPolicy: "cache-first" | "cache-and-network" = "cache-first"
+  fetchPolicy: WatchQueryFetchPolicy = "cache-first"
 ) {
-  const { push } = useRouter();
-
   const { data, error, loading, refetch } = useQuery(CURRENT_USER, {
     ssr: false,
     fetchPolicy,
@@ -37,12 +22,12 @@ export function useUser(
 
   const user = data?.currentUser;
 
-  if ((requireAuthRedirect && user) || (admin && !user?.admin)) {
+  if ((requireAuthRedirect && !user) || (admin && !user?.admin)) {
     if (!loading) {
       if (user) {
-        push("/profile");
+        Router.push("/profile");
       } else {
-        push(`/login?route=${requireAuthRedirect}`);
+        Router.push(`/login?route=${requireAuthRedirect}`);
       }
     }
     return {

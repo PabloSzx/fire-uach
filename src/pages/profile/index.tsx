@@ -35,13 +35,24 @@ const Stats: FC = () => {
     fetchPolicy: "cache-and-network",
   });
 
-  const { user: authUser } = useUser("/profile");
+  const { user: authUser, loading: loadingUser } = useUser(
+    "/profile",
+    false,
+    "cache-and-network"
+  );
 
   if (errorRanking) {
     console.error(JSON.stringify(errorRanking, null, 2));
   }
 
-  if (loadingOwnStats || loadingRanking || !dataRanking || !dataOwnStats) {
+  if (
+    loadingOwnStats ||
+    loadingRanking ||
+    loadingUser ||
+    !dataRanking ||
+    !dataOwnStats ||
+    !authUser
+  ) {
     return <Spinner />;
   }
 
@@ -159,13 +170,9 @@ const Stats: FC = () => {
 };
 
 const ProfilePage: NextPage = ({}) => {
-  const { user, loading: loadingUser } = useUser(
-    "/profile",
-    false,
-    "cache-and-network"
-  );
+  const { user, loading: loadingUser } = useUser("/profile");
 
-  if (loadingUser) {
+  if (loadingUser || !user) {
     return <LoadingPage />;
   }
 
