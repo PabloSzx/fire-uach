@@ -7,7 +7,7 @@ import { CategoryImageAssociation } from "../components/CategoryImageAssociation
 import { useShouldBeCentered } from "../utils/useShouldBeCentered";
 
 const ImageGamePage: NextPage = () => {
-  const shouldBeCentered = useShouldBeCentered(450);
+  const shouldBeCentered = useShouldBeCentered(550);
 
   return (
     <CategoriesContextContainer>

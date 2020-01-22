@@ -21,8 +21,11 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Heading,
   Image,
   Input,
+  List,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -294,10 +297,7 @@ const SignUpPage: NextPage = () => {
                 </Box>
                 <Divider width="80%" />
                 <Box width={["80%", "60%", "40%"]}>
-                  <FormControl
-                    isInvalid={!!(touched.types && errors.types)}
-                    isRequired
-                  >
+                  <FormControl isInvalid={!!(touched.types && errors.types)}>
                     <FormLabel as="h3" fontSize="1.5em">
                       <b>
                         Elige una o más opciones con la(s) que te identificas.
@@ -353,33 +353,37 @@ const SignUpPage: NextPage = () => {
                         setFieldValue("fireRelated", value === "y");
                       }}
                     >
-                      <Radio value="y" borderColor="grey" variantColor="green">
-                        Sí
-                      </Radio>
                       <Radio value="n" borderColor="grey" variantColor="green">
                         No
+                      </Radio>
+
+                      <Radio value="y" borderColor="grey" variantColor="green">
+                        Sí
                       </Radio>
                     </RadioGroup>
                   </FormControl>
 
-                  <FormControl
-                    isRequired={values.fireRelated}
-                    isInvalid={
-                      !!(
-                        touched.fireRelatedSpecify && errors.fireRelatedSpecify
-                      )
-                    }
-                  >
-                    <FormLabel>Especifica</FormLabel>
-                    <Input
-                      name="fireRelatedSpecify"
-                      onChange={handleChange}
-                      value={values.fireRelatedSpecify}
-                    />
-                    <FormErrorMessage>
-                      {errors.fireRelatedSpecify}
-                    </FormErrorMessage>
-                  </FormControl>
+                  {values.fireRelated && (
+                    <FormControl
+                      isRequired={values.fireRelated}
+                      isInvalid={
+                        !!(
+                          touched.fireRelatedSpecify &&
+                          errors.fireRelatedSpecify
+                        )
+                      }
+                    >
+                      <FormLabel>Especifica</FormLabel>
+                      <Input
+                        name="fireRelatedSpecify"
+                        onChange={handleChange}
+                        value={values.fireRelatedSpecify}
+                      />
+                      <FormErrorMessage>
+                        {errors.fireRelatedSpecify}
+                      </FormErrorMessage>
+                    </FormControl>
+                  )}
                 </Box>
                 <Divider width="80%" />
 
@@ -432,12 +436,137 @@ const SignUpPage: NextPage = () => {
         blockScrollOnMount={false}
         isOpen={isOpenTermsAndConditions}
         onClose={onClose}
+        size="6xl"
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Términos y condiciones</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>Términos y condiciones en construcción...</ModalBody>
+          <ModalBody>
+            <Image
+              alt="UACh"
+              src="/uach_logo.jpg"
+              width="100%"
+              height="100%"
+              maxHeight={["100px", "120px", "160", "200px"]}
+              objectFit="contain"
+            />
+            <Heading as="h1" size="xl">
+              LICENCIA DE USO DE APLICACIÓN E-NCENDIO
+            </Heading>
+            <Heading as="h3" size="lg">
+              ANTECEDENTES
+            </Heading>
+            <Text fontSize="lg">
+              <b>LA UNIVERSIDAD AUSTRAL DE CHILE</b>, (en adelante e
+              indistintamente, “UACh” o la “UNIVERSIDAD”), en el marco del
+              proyecto FireSeS, Centro de fuego y resiliencia de
+              socioecosistemas, creado el año 2019 con el objetivo de evaluar
+              los principales forzantes (drivers), impactos y tendencias del
+              régimen de fuego sobre la resiliencia y adaptación de los
+              socioecosistemas del centro-sur de Chile bajo un escenario de
+              cambio y variabilidad climática, y en el marco del Proyecto
+              Fondecyt Regular N. 1190999 “Soil fertility and fire proneness
+              across scales”, ha creado la aplicación <b>E-NCENDIO</b>, que
+              tiene como objetivo conocer la percepción de la comunidad sobre
+              los incendios en forma lúdica. Mientras se juega, los
+              participantes recibirán consejos sobre incendios y también puntos
+              para acceder a premios.
+            </Text>
+            <Heading as="h3" size="lg">
+              CLÁUSULAS
+            </Heading>
+            <Heading as="h4" size="md">
+              PRIMERA: OBJETO DEL CONTRATO
+            </Heading>
+            <Text fontSize="lg">
+              La UNIVERSIDAD otorga al usuario, una licencia gratuita de uso
+              para utilizar la aplicación E-NCENDIO, mediante el medio
+              electrónico en que se encuentre, y toda la documentación
+              correspondiente para su operación y uso.
+            </Text>
+            <Heading as="h3" size="lg">
+              SEGUNDA: PROPIEDAD DE LA APLICACIÓN Y ALCANCE DE LA LICENCIA.
+            </Heading>
+            <Text fontSize="lg">
+              El Licenciatario acepta y reconoce que la aplicación E-NCENDIO es
+              propiedad de la UNIVERSIDAD, por lo que deberá abstenerse de
+              copiar con o sin fines de lucro la aplicación bajo licencia y/o
+              distribuirla por otros medios a los establecidos por la
+              UNIVERSIDAD. El usuario se compromete a no someter el software a
+              procesos de ingeniería inversa, descompilarlo o desensamblarlo,
+              salvo en las formas permitidas por la ley aplicable. El usuario no
+              debe modificar, adaptar, traducir, alquilar, arrendar, prestar,
+              sublicenciar o crear obras derivadas y basadas en el software, ya
+              sea total o parcialmente, ni comercializar en ninguna forma la
+              aplicación E-NCENDIO.
+            </Text>
+            <Heading as="h3" size="lg">
+              TERCERA: GARANTÍA LIMITADA
+            </Heading>
+            <Text fontSize="lg">
+              Esta aplicación es proporcionada por sus propietarios y
+              colaboradores "tal cual". En consecuencia, no se otorga ninguna
+              garantía expresa o implícita, incluyendo, pero no limitado a, las
+              garantías de comerciabilidad y aptitud para un propósito en
+              particular. En ningún caso la UNIVERSIDAD será responsable por
+              daños directos, indirectos, incidentales, especiales, ejemplar o
+              consecuenciales (incluyendo, pero no limitado a, la adquisición de
+              bienes o servicios; pérdida de uso, de datos o de beneficios, o
+              interrupción de la actividad), y en cualquier teoría de
+              responsabilidad, ya sea en materia de responsabilidad contractual
+              o extracontractual que de alguna manera pueda surgir del uso de
+              esta aplicación, incluso si se ha advertido de la posibilidad de
+              tales daños.
+            </Text>
+            <Heading as="h3" size="lg">
+              CUARTA: RECOPILACIÓN DE DATOS DE USUARIO Y SU USO POR PARTE DE LA
+              UNIVERSIDAD
+            </Heading>
+            <Text fontSize="lg">
+              Al utilizar la aplicación E-NCENDIO el usuario acepta que toda la
+              información que ingrese o que la aplicación genere automáticamente
+              en base a su uso será propiedad de la UNIVERSIDAD, y está podrá
+              usarla para los fines que estime convenientes. A continuación se
+              detalla la información que recopilará la aplicación E-NCENDIO de
+              los usuarios que la utilicen.
+            </Text>
+            <List as="ol" listStyleType="lower-alpha" fontSize="lg">
+              <ListItem>
+                Se recopilará la asociación que hagan los usuarios de conceptos
+                y de imágenes con conceptos, en el contexto de incendios
+                forestales. Tanto los conceptos como las imágenes serán
+                provistas por la UNIVERSIDAD.
+              </ListItem>
+              <ListItem>
+                También se recopilarán las fotos que suban los usuarios a la
+                aplicación y la asociación que hagan de ellas con los conceptos
+                provistos por la UNIVERSIDAD.
+              </ListItem>
+              <ListItem>
+                Se recopilarán datos en cuanto a su ocupación, lugar de
+                residencia y su relación con los incendios.
+              </ListItem>
+              <ListItem>
+                Se recopilarán datos en relación a su posición espacial en el
+                momento de usar la aplicación.
+              </ListItem>
+            </List>
+            <Heading as="h3" size="lg">
+              QUINTA: PREMIO POR USO DE LA APLICACIÓN E-NCENDIO
+            </Heading>
+            <Text fontSize="lg">
+              Al usar la aplicación durante el mes de Febrero de 2020, los
+              usuarios podrán ganar una cámara instantánea con más de 100 fotos.
+              El ganador será sorteado entre aquellos que más participen de los
+              tres juegos que se incluyen en la aplicación, determinado por el
+              ranking general que se encuentra en la sección de perfil de
+              usuario de la aplicación. El ganador se determinará durante abril
+              2020, siendo invitado a recibir su premio en Valdivia.
+            </Text>
+          </ModalBody>
           <ModalFooter>
             <Button variantColor="blue" mr={3} onClick={onClose}>
               Cerrar
