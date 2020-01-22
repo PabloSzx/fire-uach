@@ -363,27 +363,24 @@ const SignUpPage: NextPage = () => {
                     </RadioGroup>
                   </FormControl>
 
-                  {values.fireRelated && (
-                    <FormControl
-                      isRequired={values.fireRelated}
-                      isInvalid={
-                        !!(
-                          touched.fireRelatedSpecify &&
-                          errors.fireRelatedSpecify
-                        )
-                      }
-                    >
-                      <FormLabel>Especifica</FormLabel>
-                      <Input
-                        name="fireRelatedSpecify"
-                        onChange={handleChange}
-                        value={values.fireRelatedSpecify}
-                      />
-                      <FormErrorMessage>
-                        {errors.fireRelatedSpecify}
-                      </FormErrorMessage>
-                    </FormControl>
-                  )}
+                  <FormControl
+                    isRequired={values.fireRelated}
+                    isInvalid={
+                      !!(
+                        touched.fireRelatedSpecify && errors.fireRelatedSpecify
+                      )
+                    }
+                  >
+                    <FormLabel>Especifica</FormLabel>
+                    <Input
+                      name="fireRelatedSpecify"
+                      onChange={handleChange}
+                      value={values.fireRelatedSpecify}
+                    />
+                    <FormErrorMessage>
+                      {errors.fireRelatedSpecify}
+                    </FormErrorMessage>
+                  </FormControl>
                 </Box>
                 <Divider width="80%" />
 
@@ -469,11 +466,10 @@ const SignUpPage: NextPage = () => {
               socioecosistemas del centro-sur de Chile bajo un escenario de
               cambio y variabilidad climática, y en el marco del Proyecto
               Fondecyt Regular N. 1190999 “Soil fertility and fire proneness
-              across scales”, ha creado la aplicación <b>E-NCENDIO</b>, que
-              tiene como objetivo conocer la percepción de la comunidad sobre
-              los incendios en forma lúdica. Mientras se juega, los
-              participantes recibirán consejos sobre incendios y también puntos
-              para acceder a premios.
+              across scales”, ha creado la aplicación E-NCENDIO, que tiene como
+              objetivo conocer la percepción de la comunidad sobre los incendios
+              en forma lúdica. Mientras se juega, los participantes recibirán
+              consejos sobre incendios y también puntos para acceder a premios.
             </Text>
             <Heading as="h3" size="lg">
               CLÁUSULAS
