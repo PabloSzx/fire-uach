@@ -18,7 +18,7 @@ export function usePagination<T = unknown>({
 
   const paginatedData = useMemo(() => {
     return chunk(data ?? [], n);
-  }, [data]);
+  }, [data, n]);
 
   useEffect(() => {
     if (paginatedData.length && activePage > paginatedData.length) {

@@ -157,7 +157,7 @@ const Stats: FC = () => {
           <Flex alignItems="center">
             <Text m={0}>{rankingPosition + 1}.</Text>
             <Badge ml={2} mr={2} variantColor="blue">
-              {authUser?.email.split("@")[0]}
+              {authUser.username}
             </Badge>
             <Badge ml={2} mr={2}>
               Nivel {overallLevel}
