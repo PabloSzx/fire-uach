@@ -52,6 +52,11 @@ export class UserResolver {
   }
 
   @FieldResolver()
+  async username(@Root() { email, username }: Partial<User>) {
+    return username ?? email?.split("@")[0] ?? "default";
+  }
+
+  @FieldResolver()
   async types(@Root() { types }: Partial<User>) {
     return types || [];
   }

@@ -78,6 +78,7 @@ input EditTip {
 
 input EditUser {
   _id: ObjectId!
+  username: String!
   admin: Boolean!
   types: [UserType!]!
   typeSpecify: String!
@@ -186,6 +187,7 @@ input RemoveTag {
 
 input SignUpInput {
   email: EmailAddress!
+  username: String!
   password: String!
   types: [UserType!]!
   typeSpecify: String!
@@ -236,6 +238,7 @@ scalar Upload
 type User {
   _id: ObjectId!
   email: EmailAddress!
+  username: String!
   admin: Boolean!
   unlockKey: String!
   types: [UserType!]!

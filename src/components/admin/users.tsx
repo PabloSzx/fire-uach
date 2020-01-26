@@ -63,6 +63,7 @@ import { Confirm } from "../Confirm";
 const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   _id,
   email,
+  username,
   admin,
   locked,
   types,
@@ -110,6 +111,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
   );
 
   const [data, setData] = useSetState({
+    username,
     admin,
     locked,
     types,
@@ -185,6 +187,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
     <>
       <Table.Row onClick={onOpen} className="pointer">
         <Table.Cell>{email}</Table.Cell>
+        <Table.Cell>{username}</Table.Cell>
         <Table.Cell>
           <Icon name={admin ? "check" : "small-close"} />
         </Table.Cell>
@@ -217,6 +220,22 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
           <ModalBody overflowY="scroll">
             <Stack align="center">
               <Stack align="center" spacing="2em" p={2} border="1px solid">
+                <Box>
+                  <FormControl>
+                    <FormLabel>Nombre de usuario</FormLabel>
+                    <Input
+                      type="text"
+                      value={data.username}
+                      onChange={({
+                        target: { value },
+                      }: ChangeEvent<HTMLInputElement>) => {
+                        setData({
+                          username: value,
+                        });
+                      }}
+                    />
+                  </FormControl>
+                </Box>
                 <Box>
                   <Checkbox
                     borderColor="grey"
@@ -325,6 +344,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
                         variables: {
                           data: {
                             _id,
+                            username: data.username,
                             admin: data.admin,
                             types: data.types,
                             typeSpecify: data.typeSpecify,
@@ -806,6 +826,12 @@ const AdminUsers: FC = () => {
               onClick={handleSort("email")}
             >
               Email
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={columns[0] === "username" ? direction : undefined}
+              onClick={handleSort("username")}
+            >
+              Usuario
             </Table.HeaderCell>
             <Table.HeaderCell
               sorted={columns[0] === "admin" ? direction : undefined}

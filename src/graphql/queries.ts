@@ -5,6 +5,7 @@ import { UserType } from "../../constants";
 export type IUser = {
   _id: string;
   email: string;
+  username: string;
   admin: boolean;
 };
 
@@ -12,6 +13,7 @@ export const CurrentUserFragment = gql`
   fragment CurrentUserFragment on User {
     _id
     email
+    username
     admin
   }
 `;
@@ -53,6 +55,7 @@ export const SIGN_UP: DocumentNode<
   {
     data: {
       email: string;
+      username: string;
       password: string;
       types: UserType[];
       typeSpecify: string;
@@ -272,7 +275,7 @@ export const RANKING_STATS: DocumentNode<
       _id: string;
       user?: {
         _id: string;
-        email: string;
+        username: string;
       };
       overallLevel: string;
     }[];
@@ -286,7 +289,7 @@ export const RANKING_STATS: DocumentNode<
       _id
       user {
         _id
-        email
+        username
       }
       overallLevel
     }

@@ -85,6 +85,7 @@ export class AuthResolver {
     @Arg("data")
     {
       email,
+      username,
       password,
       types,
       typeSpecify,
@@ -99,6 +100,7 @@ export class AuthResolver {
     if (user === null) {
       user = await UserModel.create({
         email,
+        username,
         password,
         types,
         typeSpecify,
@@ -112,6 +114,7 @@ export class AuthResolver {
       });
       return user;
     } else if (!user.active) {
+      user.username = username;
       user.types = types;
       user.typeSpecify = typeSpecify;
       user.fireRelated = fireRelated;

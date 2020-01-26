@@ -1,11 +1,12 @@
-import { IsHash } from "class-validator";
+import { IsHash, Length } from "class-validator";
 import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
 import { Field, InputType } from "type-graphql";
 
 import { UserType } from "../../../constants";
+import { User } from "./user";
 
 @InputType()
-export class LoginInput {
+export class LoginInput implements Partial<User> {
   @Field(() => EmailAddress)
   email: string;
 
@@ -15,9 +16,13 @@ export class LoginInput {
 }
 
 @InputType()
-export class SignUpInput {
+export class SignUpInput implements Partial<User> {
   @Field(() => EmailAddress)
   email: string;
+
+  @Length(3, 30)
+  @Field()
+  username: string;
 
   @Field()
   @IsHash("sha256", { message: "password must be a hash" })

@@ -222,6 +222,7 @@ export const REMOVE_IMAGE: DocumentNode<
 export type IUser = {
   _id: string;
   email: string;
+  username: string;
   admin: boolean;
   types: UserType[];
   typeSpecify: string;
@@ -275,6 +276,7 @@ const UserFragment = gql`
   fragment UserFragment on User {
     _id
     email
+    username
     admin
     types
     typeSpecify
@@ -343,6 +345,7 @@ export const EDIT_USER: DocumentNode<
   {
     data: {
       _id: string;
+      username: string;
       admin: boolean;
       types: UserType[];
       typeSpecify: string;

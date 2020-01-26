@@ -26,6 +26,10 @@ export class User {
   @Property({ required: true, unique: true })
   email: string;
 
+  @Field()
+  @Property()
+  username: string;
+
   @Property()
   password?: string;
 
@@ -85,6 +89,9 @@ export const UserModel = getModelForClass(User);
 export class EditUser implements Partial<User> {
   @Field(() => ObjectIdScalar)
   _id: ObjectId;
+
+  @Field()
+  username: string;
 
   @Field()
   admin: boolean;

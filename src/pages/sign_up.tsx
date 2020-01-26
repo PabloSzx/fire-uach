@@ -102,6 +102,7 @@ const SignUpPage: NextPage = () => {
       <Formik
         initialValues={{
           email: typeof email === "string" && email ? email : "",
+          username: "",
           password: (() => {
             try {
               const pass = localStorage.getItem("password");
@@ -121,6 +122,7 @@ const SignUpPage: NextPage = () => {
         }}
         onSubmit={async ({
           email,
+          username,
           password,
           types,
           typeSpecify,
@@ -132,6 +134,7 @@ const SignUpPage: NextPage = () => {
               variables: {
                 data: {
                   email,
+                  username,
                   password: sha256(password).toString(),
                   types,
                   typeSpecify,
@@ -144,6 +147,7 @@ const SignUpPage: NextPage = () => {
         }}
         validate={({
           email,
+          username,
           password,
           termsAndConditions,
           types,
@@ -155,6 +159,11 @@ const SignUpPage: NextPage = () => {
           if (!isEmail(email)) {
             errors.email = "Email invalido!";
           }
+          if (username.length < 3 || username.length > 30) {
+            errors.username =
+              "El nombre de usuario debe ser de al menos 3 caracteres y máximo 30 caracteres!";
+          }
+
           if (password.length < 3) {
             errors.password = "Contraseña invalida!";
           }
@@ -277,6 +286,24 @@ const SignUpPage: NextPage = () => {
                       value={values.email}
                     />
                     <FormErrorMessage>{errors.email}</FormErrorMessage>
+                  </FormControl>
+                </Box>
+                <Box width={["80%", "60%", "40%"]}>
+                  <FormControl
+                    isInvalid={!!(touched.username && errors.username)}
+                    isRequired
+                  >
+                    <FormLabel>
+                      Nombre de usuario <i>(público)</i>
+                    </FormLabel>
+                    <Input
+                      type="username"
+                      name="username"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.username}
+                    />
+                    <FormErrorMessage>{errors.username}</FormErrorMessage>
                   </FormControl>
                 </Box>
                 <Box width={["80%", "60%", "40%"]}>

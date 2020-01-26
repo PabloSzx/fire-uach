@@ -132,7 +132,7 @@ const Stats: FC = () => {
 
       <Stack textAlign="center" p={0} alignItems="center">
         {ranking
-          .filter(({ user }) => user?.email)
+          .filter(({ user }) => user?.username)
           .map(({ _id, user, overallLevel }, key) => {
             return (
               <Flex key={_id} alignItems="center">
@@ -142,7 +142,7 @@ const Stats: FC = () => {
                   mr={2}
                   variantColor={user?._id === authUser._id ? "blue" : "green"}
                 >
-                  {user?.email.split("@")[0]}
+                  {user?.username}
                 </Badge>
                 <Badge ml={2} mr={2}>
                   Nivel {overallLevel}
@@ -180,7 +180,7 @@ const ProfilePage: NextPage = ({}) => {
     <Stack align="center">
       <Box p={10}>
         <Text fontSize={["1em", "1em", "2em"]} textAlign="center">
-          Bienvenido <b>{truncate(user.email.split("@")[0], { length: 45 })}</b>
+          Bienvenido <b>{user.username}</b>
         </Text>
       </Box>
       <Stats />
