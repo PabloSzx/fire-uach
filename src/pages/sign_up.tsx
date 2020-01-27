@@ -294,7 +294,7 @@ const SignUpPage: NextPage = () => {
                     isRequired
                   >
                     <FormLabel>
-                      Nombre de usuario <i>(público)</i>
+                      Nombre de usuario <i>(visible en ranking general)</i>
                     </FormLabel>
                     <Input
                       type="username"
