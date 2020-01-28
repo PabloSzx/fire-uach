@@ -1,7 +1,9 @@
-import { addMilliseconds } from "date-fns";
+import { addMilliseconds, isSameDay } from "date-fns";
 import { Request, Response } from "express";
+import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
 import { sign } from "jsonwebtoken";
 import ms from "ms";
+import { generate } from "randomstring";
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import {
@@ -20,6 +22,7 @@ import {
 import { User, UserModel } from "../entities/auth/user";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
+import { sendMail, UnlockMail } from "../utils/mail";
 
 @Resolver()
 export class AuthResolver {
@@ -155,22 +158,53 @@ export class AuthResolver {
     if (!user) {
       throw new Error(WRONG_INFO);
     } else {
-      if (user.password === password) {
-        throw new Error(USED_OLD_PASSWORD);
-      } else {
-        user.password = password;
-        user.locked = false;
-        user.unlockKey = "";
-        await user.save();
+      user.password = password;
+      user.locked = false;
+      user.unlockKey = "";
+      await user.save();
 
-        AuthResolver.authenticate({
-          req,
-          res,
-          _id: user._id,
-        });
+      AuthResolver.authenticate({
+        req,
+        res,
+        _id: user._id,
+      });
 
-        return user;
-      }
+      return user;
+    }
+  }
+
+  @Mutation()
+  async forgotPassword(
+    @Arg("email", () => EmailAddress) email: string
+  ): Promise<boolean> {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return false;
+    }
+
+    const now = new Date();
+
+    if (user.lastEmailSent && isSameDay(now, user.lastEmailSent)) {
+      return true;
+    }
+
+    try {
+      const unlockKey = generate();
+      user.lastEmailSent = now;
+      user.unlockKey = unlockKey;
+      await user.save();
+      await sendMail({
+        to: email,
+        html: UnlockMail({
+          email,
+          unlockKey,
+        }),
+        subject: "Recuperación de cuenta FireSeS e-ncendio",
+      });
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
     }
   }
 

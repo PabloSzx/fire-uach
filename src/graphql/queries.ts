@@ -72,6 +72,39 @@ export const SIGN_UP: DocumentNode<
   ${CurrentUserFragment}
 `;
 
+export const FORGOT_PASSWORD: DocumentNode<
+  {
+    forgotPassword: boolean;
+  },
+  {
+    email: string;
+  }
+> = gql`
+  mutation($email: EmailAddress!) {
+    forgotPassword(email: $email)
+  }
+`;
+
+export const UNLOCK: DocumentNode<
+  {
+    unlock?: IUser;
+  },
+  {
+    data: {
+      email: string;
+      password: string;
+      unlockKey: string;
+    };
+  }
+> = gql`
+  mutation($data: UnlockInput!) {
+    unlock(data: $data) {
+      ...CurrentUserFragment
+    }
+  }
+  ${CurrentUserFragment}
+`;
+
 export const OWN_IMAGES: DocumentNode<{
   ownImages: { _id: string; filename: string; uploadedAt: string }[];
 }> = gql`

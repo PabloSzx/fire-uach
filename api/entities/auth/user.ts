@@ -38,8 +38,11 @@ export class User {
   admin: boolean;
 
   @Field()
-  @Property({ default: () => generate() })
+  @Property({ default: "" })
   unlockKey: string;
+
+  @Property()
+  lastEmailSent?: Date;
 
   @Field(() => UserType)
   @PropertyArray({
