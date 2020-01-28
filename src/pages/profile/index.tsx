@@ -150,7 +150,7 @@ const Stats: FC = () => {
             );
           })}
       </Stack>
-      {rankingPosition > 4 && (
+      {(authUser.admin || rankingPosition > 4) && (
         <Stack alignItems="center">
           <Text>...</Text>
           <Flex alignItems="center">

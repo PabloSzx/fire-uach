@@ -178,7 +178,25 @@ export class UserStatsResolver {
 
   @FieldResolver()
   async rankingPosition(@Root() { user }: Pick<UserStats, "user">) {
-    let ranking = await UserStatsModel.find({}, "user").sort({
+    if (userAdmins === undefined) {
+      userAdmins = (await UserModel.find({ admin: true })).map(
+        ({ _id }) => _id
+      );
+    }
+
+    let ranking = await UserStatsModel.find(
+      {
+        score: {
+          $gt: 0,
+        },
+        user: {
+          $not: {
+            $in: userAdmins,
+          },
+        },
+      },
+      "user"
+    ).sort({
       score: "desc",
     });
 
