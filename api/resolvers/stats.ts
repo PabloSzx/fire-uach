@@ -23,6 +23,8 @@ import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
+let userAdmins: ObjectId[] | undefined = undefined;
+
 /**
  *  This level function pretends to represent
  *  level 1 ~> 0 score;
@@ -123,7 +125,24 @@ export class UserStatsResolver {
   async rankingStats(
     @Arg("limit", () => Int, { defaultValue: 5 }) limit: number
   ) {
-    let ranking = await UserStatsModel.find({}, "user")
+    if (userAdmins === undefined) {
+      userAdmins = (await UserModel.find({ admin: true })).map(
+        ({ _id }) => _id
+      );
+    }
+    let ranking = await UserStatsModel.find(
+      {
+        score: {
+          $gt: 0,
+        },
+        user: {
+          $not: {
+            $in: userAdmins,
+          },
+        },
+      },
+      "user"
+    )
       .limit(limit)
       .sort({
         score: "desc",

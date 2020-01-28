@@ -33,7 +33,7 @@ export class User {
   password?: string;
 
   @Field()
-  @Property({ default: false })
+  @Property({ default: false, index: true })
   admin: boolean;
 
   @Field()
