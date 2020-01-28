@@ -74,6 +74,7 @@ const EditTipComponent: FC<{
 
       <Box>
         <Button
+          cursor="pointer"
           variantColor="cyan"
           onClick={() => {
             tipToast(dataText);
@@ -85,6 +86,7 @@ const EditTipComponent: FC<{
 
       <Box>
         <Button
+          cursor="pointer"
           isLoading={loadingEditTip}
           onClick={() => {
             if (dataText) {
@@ -118,6 +120,7 @@ const EditTipComponent: FC<{
           cancelButton="Cancelar"
         >
           <Button
+            cursor="pointer"
             variantColor="red"
             onClick={() => {
               removeTip({
@@ -201,6 +204,7 @@ const AdminTips: FC = () => {
           />
         </InputGroup>
         <Button
+          cursor="pointer"
           isLoading={loadingNewTip}
           isDisabled={!newTip || disabledNewTip}
           onClick={() => {

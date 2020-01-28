@@ -133,6 +133,7 @@ const ImageEdit: FC<IImage & { maxImageHeight: number }> = memo(
                 cancelButton="Cancelar"
               >
                 <Button
+                  cursor="pointer"
                   variantColor="red"
                   onClick={() => {
                     removeImage({

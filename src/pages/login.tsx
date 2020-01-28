@@ -212,6 +212,7 @@ const LoginPage: NextPage = () => {
                   variantColor="blue"
                   isDisabled={!isValid || !dirty}
                   leftIcon={FaSignInAlt}
+                  cursor="pointer"
                 >
                   Iniciar Sesión
                 </Button>
@@ -220,6 +221,7 @@ const LoginPage: NextPage = () => {
                 <Button
                   size="lg"
                   variantColor="green"
+                  cursor="pointer"
                   onClick={() => {
                     try {
                       localStorage.setItem("password", values.password || "");
@@ -250,6 +252,7 @@ const LoginPage: NextPage = () => {
               {
                 <Box width="50%" textAlign="center">
                   <Button
+                    cursor="pointer"
                     size="lg"
                     variantColor="cyan"
                     isDisabled={loadingForgotPassword || !isEmail(values.email)}

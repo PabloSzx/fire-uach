@@ -76,6 +76,7 @@ const EditCategory: FC<{ _id: string; name: string }> = ({ _id, name }) => {
           }}
           variantColor="blue"
           isDisabled={loadingEditCategory || dataName === name}
+          cursor="pointer"
         >
           Guardar cambios
         </Button>
@@ -87,6 +88,7 @@ const EditCategory: FC<{ _id: string; name: string }> = ({ _id, name }) => {
           cancelButton="Cancelar"
         >
           <Button
+            cursor="pointer"
             variantColor="red"
             onClick={() => {
               removeCategory({
@@ -173,6 +175,7 @@ const AdminCategories: FC = () => {
           />
         </InputGroup>
         <Button
+          cursor="pointer"
           isLoading={loadingNewCategory}
           isDisabled={!newCategory || disabledNewCategory}
           onClick={() => {

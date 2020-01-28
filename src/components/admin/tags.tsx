@@ -67,6 +67,7 @@ const TagEdit: FC<ITag> = ({ _id, name: nameProp }) => {
 
       <Box>
         <Button
+          cursor="pointer"
           isLoading={loadingEditTag}
           onClick={() => {
             if (name) {
@@ -95,6 +96,7 @@ const TagEdit: FC<ITag> = ({ _id, name: nameProp }) => {
           cancelButton="Cancelar"
         >
           <Button
+            cursor="pointer"
             variantColor="red"
             onClick={() => {
               removeTag({
@@ -146,6 +148,7 @@ const NewTag: FC = memo(() => {
         />
       </InputGroup>
       <Button
+        cursor="pointer"
         onClick={() => {
           if (newTag)
             createTag({

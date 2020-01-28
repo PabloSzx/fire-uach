@@ -447,6 +447,7 @@ const SignUpPage: NextPage = () => {
                     variantColor="blue"
                     isDisabled={!values.password || !isValid}
                     leftIcon={FaSignInAlt}
+                    cursor="pointer"
                   >
                     Registrarse
                   </Button>
@@ -591,7 +592,12 @@ const SignUpPage: NextPage = () => {
             </Text>
           </ModalBody>
           <ModalFooter>
-            <Button variantColor="blue" mr={3} onClick={onClose}>
+            <Button
+              variantColor="blue"
+              mr={3}
+              onClick={onClose}
+              cursor="pointer"
+            >
               Cerrar
             </Button>
           </ModalFooter>
