@@ -1,4 +1,4 @@
-import { addMilliseconds, isSameDay } from "date-fns";
+import { addMilliseconds, differenceInHours } from "date-fns";
 import { Request, Response } from "express";
 import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
 import { sign } from "jsonwebtoken";
@@ -6,12 +6,7 @@ import ms from "ms";
 import { generate } from "randomstring";
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
-import {
-  LOCKED_USER,
-  USED_OLD_PASSWORD,
-  USER_ALREADY_EXISTS,
-  WRONG_INFO,
-} from "../../constants";
+import { LOCKED_USER, USER_ALREADY_EXISTS, WRONG_INFO } from "../../constants";
 import { SECRET } from "../constants";
 import {
   ChangePasswordInput,
@@ -157,6 +152,8 @@ export class AuthResolver {
 
     if (!user) {
       throw new Error(WRONG_INFO);
+    } else if (user.locked) {
+      throw new Error(LOCKED_USER);
     } else {
       user.password = password;
       user.locked = false;
@@ -173,18 +170,18 @@ export class AuthResolver {
     }
   }
 
-  @Mutation()
+  @Mutation(() => Boolean)
   async forgotPassword(
     @Arg("email", () => EmailAddress) email: string
   ): Promise<boolean> {
     const user = await UserModel.findOne({ email });
-    if (!user) {
+    if (!user || !user.active || user.locked) {
       return false;
     }
 
     const now = new Date();
 
-    if (user.lastEmailSent && isSameDay(now, user.lastEmailSent)) {
+    if (user.lastEmailSent && differenceInHours(now, user.lastEmailSent) < 1) {
       return true;
     }
 

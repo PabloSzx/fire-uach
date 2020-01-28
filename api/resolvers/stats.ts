@@ -11,7 +11,7 @@ import {
   Root,
 } from "type-graphql";
 
-import { DocumentType, isDocument, Ref } from "@typegoose/typegoose";
+import { isDocument, Ref } from "@typegoose/typegoose";
 
 import { ADMIN } from "../../constants";
 import { CategoryImageAssociationModel } from "../entities/associations/categoryImageAssociation";

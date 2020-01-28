@@ -3,8 +3,9 @@ import { Formik } from "formik";
 import { map } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FaSignInAlt } from "react-icons/fa";
+import { FaQuestion, FaSignInAlt } from "react-icons/fa";
 import LazyImage from "react-lazy-progressive-image";
+import { toast } from "react-toastify";
 import { isEmail } from "validator";
 
 import { useMutation } from "@apollo/react-hooks";
@@ -27,7 +28,7 @@ import {
 import { imagePlaceholder, LOCKED_USER, WRONG_INFO } from "../../constants";
 import { useUser } from "../components/Auth";
 import { LoadingPage } from "../components/LoadingPage";
-import { CURRENT_USER, LOGIN } from "../graphql/queries";
+import { CURRENT_USER, FORGOT_PASSWORD, LOGIN } from "../graphql/queries";
 
 const LoginPage: NextPage = () => {
   const { user, loading } = useUser();
@@ -52,6 +53,15 @@ const LoginPage: NextPage = () => {
       console.error(JSON.stringify(err, null, 2));
     },
   });
+
+  const [forgotPassword, { loading: loadingForgotPassword }] = useMutation(
+    FORGOT_PASSWORD,
+    {
+      onError: err => {
+        console.error(JSON.stringify(err, null, 2));
+      },
+    }
+  );
 
   if (loading) {
     return <LoadingPage />;
@@ -237,6 +247,65 @@ const LoginPage: NextPage = () => {
                   Registrarse
                 </Button>
               </Box>
+              {
+                <Box width="50%" textAlign="center">
+                  <Button
+                    size="lg"
+                    variantColor="cyan"
+                    isDisabled={loadingForgotPassword || !isEmail(values.email)}
+                    onClick={async ev => {
+                      ev.preventDefault();
+                      if (isEmail(values.email)) {
+                        const forgotResult = await forgotPassword({
+                          variables: {
+                            email: values.email,
+                          },
+                        });
+
+                        if (forgotResult.data?.forgotPassword) {
+                          toast(
+                            <Stack>
+                              <Text>
+                                <b>Revise su correo electrónico</b>
+                              </Text>
+                              <Text>
+                                <i>
+                                  Recuerde tambien revisar su carpeta de correos
+                                  no deseado
+                                </i>
+                              </Text>
+                            </Stack>,
+
+                            {
+                              type: "success",
+                              autoClose: 20000,
+                              closeOnClick: false,
+                            }
+                          );
+                        } else {
+                          toast(
+                            <Stack>
+                              <Text>
+                                Su correo electrónico no tiene cuenta asociada o
+                                se encuentra bloqueada por seguridad
+                              </Text>
+                            </Stack>,
+                            {
+                              type: "error",
+                              autoClose: 10000,
+                              closeOnClick: true,
+                            }
+                          );
+                        }
+                      }
+                    }}
+                    leftIcon={FaQuestion}
+                    isLoading={loadingForgotPassword}
+                  >
+                    Olvidé mi contraseña
+                  </Button>
+                </Box>
+              }
             </Stack>
           </form>
         );

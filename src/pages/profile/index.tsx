@@ -1,4 +1,3 @@
-import { truncate } from "lodash";
 import { NextPage } from "next";
 import { FC } from "react";
 

@@ -12,7 +12,7 @@
     "dev": "cross-env NODE_ENV=development run-p -l watch-*",
     "start": "pm2 start ecosystem.yaml",
     "stop": "pm2 delete ecosystem.yaml",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noUnusedLocals --noEmit",
     "watch-api": "tsc-watch -P api --onSuccess \"node --inspect=27052 ./api/dist/api/index.js\"",
     "watch-client": "wait-on tcp:4005 && next"
   },
