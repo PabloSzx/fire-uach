@@ -120,6 +120,7 @@ const UnlockPage: FC = () => {
           <Stack>
             <Text>Nueva contraseña</Text>
             <Input
+              id="password"
               type="password"
               value={password}
               autoComplete="new-password"
@@ -133,6 +134,7 @@ const UnlockPage: FC = () => {
           <Stack>
             <Text>Repita su nueva contraseña</Text>
             <Input
+              id="confirm_password"
               type="password"
               value={confirmPassword}
               autoComplete="new-password"
