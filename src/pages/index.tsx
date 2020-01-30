@@ -81,7 +81,16 @@ const IndexPage: NextPage = () => {
       <Text fontSize="2em" textAlign="center" ml="10%" mr="10%">
         Para ver el video tutorial haz click{" "}
         <a href="https://drive.google.com/file/d/1cT2SPMvcPEhyxrrS0CiUgvfhAm55jAsW/view?ts=5e307742">
-          aquí
+          <b
+            style={{
+              backgroundColor: "#57585A",
+              color: "white",
+              padding: "5px",
+              borderRadius: "5px",
+            }}
+          >
+            aquí
+          </b>
         </a>
       </Text>
     </Stack>
