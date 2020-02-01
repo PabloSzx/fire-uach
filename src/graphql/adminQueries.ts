@@ -597,3 +597,11 @@ export const USER_STATS: DocumentNode<
     }
   }
 `;
+
+export const GENERAL_USER_PROGRESS: DocumentNode<{
+  generalUserProgress: string[];
+}> = gql`
+  query {
+    generalUserProgress
+  }
+`;

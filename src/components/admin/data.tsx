@@ -7,12 +7,21 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { FaImage, FaTag } from "react-icons/fa";
 import { useRememberState } from "use-remember-state";
 
-import { useMutation } from "@apollo/react-hooks";
-import { Box, Button, Checkbox, Stack, Tag } from "@chakra-ui/core";
+import { useMutation, useQuery } from "@apollo/react-hooks";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Spinner,
+  Stack,
+  Tag,
+  Text,
+} from "@chakra-ui/core";
 
 import {
   CSV_RESULTS_CATEGORY_IMAGE,
   CSV_RESULTS_TAG_CATEGORIES,
+  GENERAL_USER_PROGRESS,
 } from "../../graphql/adminQueries";
 
 registerLocale("es", esLocale);
@@ -66,6 +75,13 @@ const AdminData: FC = () => {
         maxDate,
       },
     },
+  });
+
+  const {
+    data: dataGeneralUserProgress,
+    loading: loadingGeneralUserProgress,
+  } = useQuery(GENERAL_USER_PROGRESS, {
+    fetchPolicy: "cache-and-network",
   });
 
   useEffect(() => {
@@ -187,6 +203,18 @@ const AdminData: FC = () => {
           Descargar resultados asociaciones de imagen
         </Button>
       </Stack>
+
+      {loadingGeneralUserProgress ? (
+        <Spinner />
+      ) : (
+        <Stack border="1px solid black" p={4}>
+          {dataGeneralUserProgress?.generalUserProgress.map(
+            (dataProgress, key) => {
+              return <Text key={key}>{dataProgress}</Text>;
+            }
+          )}
+        </Stack>
+      )}
     </Stack>
   );
 };

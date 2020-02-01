@@ -119,6 +119,12 @@ export class UserStatsResolver {
 
     const steps = range(0, 1, 0.1);
 
+    if (userAdmins === undefined) {
+      userAdmins = (await UserModel.find({ admin: true })).map(
+        ({ _id }) => _id
+      );
+    }
+
     const results = await Promise.all(
       steps.map(async i => {
         const [nAssociatedTags, nAssociatedImages] = await Promise.all([
@@ -127,20 +133,30 @@ export class UserStatsResolver {
               $gte: Math.round(totalTags * i),
               $lt: Math.round(totalTags * (i + 0.1)),
             },
+            user: {
+              $not: {
+                $in: userAdmins,
+              },
+            },
           }),
           UserStatsModel.countDocuments({
             nAssociatedImages: {
               $gte: Math.round(totalImages * i),
               $lt: Math.round(totalImages * (i + 0.1)),
             },
+            user: {
+              $not: {
+                $in: userAdmins,
+              },
+            },
           }),
         ]);
 
         return [
-          `${nAssociatedTags} usuarios han respondido entre ${Math.round(
+          `${nAssociatedTags} usuario(s) han respondido entre ${Math.round(
             i * 100
           )}% y ${Math.round((i + 0.1) * 100)}% de etiquetas`,
-          `${nAssociatedImages} usuarios han respondido entre ${Math.round(
+          `${nAssociatedImages} usuario(s) han respondido entre ${Math.round(
             i * 100
           )}% y ${Math.round((i + 0.1) * 100)}% de imágenes`,
         ];
