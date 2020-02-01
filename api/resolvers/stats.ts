@@ -1,4 +1,4 @@
-import { orderBy } from "lodash";
+import { orderBy, range } from "lodash";
 import { ObjectId } from "mongodb";
 import {
   Arg,
@@ -19,6 +19,7 @@ import { TagCategoryAssociationModel } from "../entities/associations/tagCategor
 import { User, UserModel } from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
 import { UserStats, UserStatsModel } from "../entities/stats";
+import { TagModel } from "../entities/tag";
 import { IContext } from "../interfaces";
 import { assertIsDefined } from "../utils/assert";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
@@ -106,6 +107,47 @@ export class UserStatsResolver {
     await stats.save();
 
     return stats;
+  }
+
+  @Authorized([ADMIN])
+  @Query(() => [String])
+  async generalUserProgress() {
+    const [totalTags, totalImages] = await Promise.all([
+      TagModel.countDocuments({}),
+      ImageModel.countDocuments({}),
+    ]);
+
+    const steps = range(0, 1, 0.1);
+
+    const results = await Promise.all(
+      steps.map(async i => {
+        const [nAssociatedTags, nAssociatedImages] = await Promise.all([
+          UserStatsModel.countDocuments({
+            nAssociatedTags: {
+              $gte: Math.round(totalTags * i),
+              $lt: Math.round(totalTags * (i + 0.1)),
+            },
+          }),
+          UserStatsModel.countDocuments({
+            nAssociatedImages: {
+              $gte: Math.round(totalImages * i),
+              $lt: Math.round(totalImages * (i + 0.1)),
+            },
+          }),
+        ]);
+
+        return [
+          `${nAssociatedTags} usuarios han respondido entre ${Math.round(
+            i * 100
+          )}% y ${Math.round((i + 0.1) * 100)}% de etiquetas`,
+          `${nAssociatedImages} usuarios han respondido entre ${Math.round(
+            i * 100
+          )}% y ${Math.round((i + 0.1) * 100)}% de imágenes`,
+        ];
+      })
+    );
+
+    return results.flat();
   }
 
   @Authorized([ADMIN])

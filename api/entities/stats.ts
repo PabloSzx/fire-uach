@@ -12,7 +12,7 @@ export class UserStats {
   readonly _id: ObjectId;
 
   @Field(() => User, { nullable: true })
-  @Property({ ref: "User", index: true })
+  @Property({ ref: "User", index: true, unique: true })
   user?: Ref<User>;
 
   @Field(() => Int)

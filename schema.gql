@@ -165,6 +165,7 @@ type Query {
   images: [Image!]!
   validatedImages: [Image!]!
   ownImages: [Image!]!
+  generalUserProgress: [String!]!
   userStats(user_id: ObjectId!): UserStats
   rankingStats(limit: Int = 5): [UserStats!]!
   ownStats: UserStats!
