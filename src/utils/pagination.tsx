@@ -1,9 +1,48 @@
 import { chunk, toInteger } from "lodash";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pagination, PaginationProps } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-export function usePagination<T = unknown>({
+export function usePagination({
+  name,
+  componentProps = {},
+}: {
+  name: string;
+  componentProps?: Partial<PaginationProps>;
+}) {
+  const [activePage, setActivePage] = useRememberState(name, 1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    if (totalPages && activePage > totalPages) {
+      setActivePage(1);
+    }
+  }, [activePage, totalPages, setActivePage]);
+
+  const pagination = useMemo(() => {
+    return (
+      <Pagination
+        activePage={activePage}
+        onPageChange={(_e, { activePage }) => {
+          setActivePage(toInteger(activePage));
+        }}
+        totalPages={totalPages}
+        secondary
+        pointing
+        {...componentProps}
+      />
+    );
+  }, [activePage, setActivePage, totalPages, componentProps]);
+
+  return {
+    pagination,
+    activePage,
+    setActivePage,
+    setTotalPages,
+  };
+}
+
+export function usePaginationAllData<T = unknown>({
   name,
   data,
   n = 10,

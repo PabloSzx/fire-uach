@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import {
   Arg,
+  Args,
   Authorized,
   FieldResolver,
   Mutation,
@@ -14,17 +15,37 @@ import { isDocumentArray } from "@typegoose/typegoose";
 import { ADMIN } from "../../constants";
 import { CategoryImageAssociationModel } from "../entities/associations/categoryImageAssociation";
 import { TagCategoryAssociationModel } from "../entities/associations/tagCategoryAssociation";
-import { EditUser, User, UserModel } from "../entities/auth/user";
+import {
+  AllUsersQuery,
+  EditUser,
+  User,
+  UserModel,
+} from "../entities/auth/user";
 import { ImageModel } from "../entities/image";
+import { PaginationArg } from "../entities/pagination";
 import { TipModel } from "../entities/tip";
 import { ObjectIdScalar } from "../utils/ObjectIdScalar";
 
 @Resolver(() => User)
 export class UserResolver {
   @Authorized([ADMIN])
-  @Query(() => [User])
-  async allUsers() {
-    return await UserModel.find({ active: true });
+  @Query(() => AllUsersQuery)
+  async allUsers(@Arg("pagination") { limit, after }: PaginationArg) {
+    const [nodes, totalCount] = await Promise.all([
+      UserModel.find({ active: true })
+        .limit(limit)
+        .skip(after),
+      UserModel.estimatedDocumentCount({}),
+    ]);
+
+    return {
+      nodes,
+      pageInfo: {
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        pageCount: nodes.length,
+      },
+    };
   }
 
   @Authorized([ADMIN])

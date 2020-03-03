@@ -20,7 +20,7 @@ import {
   REMOVE_TAG,
   TAGS,
 } from "../../graphql/adminQueries";
-import { usePagination } from "../../utils/pagination";
+import { usePaginationAllData } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
 const TagEdit: FC<ITag> = ({ _id, name: nameProp }) => {
@@ -174,7 +174,7 @@ const AdminTags: FC = () => {
     fetchPolicy: "cache-and-network",
   });
 
-  const { selectedData, pagination } = usePagination({
+  const { selectedData, pagination } = usePaginationAllData({
     name: "admin_tags_pagination",
     data: dataAllTags?.tags,
   });

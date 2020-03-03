@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type AllUsersQuery {
+  nodes: [User!]!
+  pageInfo: PageInfo!
+}
+
 type Category {
   _id: ObjectId!
   name: String!
@@ -157,6 +162,17 @@ type Mutation {
 """Mongo object id scalar type"""
 scalar ObjectId
 
+type PageInfo {
+  totalCount: Int!
+  totalPages: Int!
+  pageCount: Int!
+}
+
+input PaginationArg {
+  limit: Int = 10
+  after: Int = 0
+}
+
 type Query {
   currentUser: User
   categories: [Category!]!
@@ -172,7 +188,7 @@ type Query {
   tags: [Tag!]!
   notAnsweredTag: Tag
   allTips: [Tip!]!
-  allUsers: [User!]!
+  allUsers(pagination: PaginationArg!): AllUsersQuery!
 }
 
 input RemoveCategory {

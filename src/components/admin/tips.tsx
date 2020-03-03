@@ -21,7 +21,7 @@ import {
   EDIT_TIP,
   REMOVE_TIP,
 } from "../../graphql/adminQueries";
-import { usePagination } from "../../utils/pagination";
+import { usePaginationAllData } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 import { tipToast } from "../Tip";
 
@@ -176,7 +176,7 @@ const AdminTips: FC = () => {
     },
   });
 
-  const { pagination, selectedData } = usePagination({
+  const { pagination, selectedData } = usePaginationAllData({
     name: "admin_tips_pagination",
     data: dataAllTips?.allTips,
   });

@@ -27,7 +27,7 @@ import {
   IMAGES,
   REMOVE_IMAGE,
 } from "../../graphql/adminQueries";
-import { usePagination } from "../../utils/pagination";
+import { usePaginationAllData } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
 const ImageEdit: FC<IImage & { maxImageHeight: number }> = memo(
@@ -238,7 +238,7 @@ const AdminImages: FC = () => {
 
   const [maxImageHeight, setMaxImageHeight] = useState(20);
 
-  const { pagination, selectedData } = usePagination({
+  const { pagination, selectedData } = usePaginationAllData({
     name: "admin_images_pagination",
     data: filteredImages,
     n: nPagination,

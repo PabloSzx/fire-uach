@@ -327,12 +327,27 @@ const UserFragment = gql`
   }
 `;
 
-export const ALL_USERS: DocumentNode<{
-  allUsers: IUser[];
-}> = gql`
-  query {
-    allUsers {
-      ...UserFragment
+export const ALL_USERS: DocumentNode<
+  {
+    allUsers: {
+      nodes: IUser[];
+      pageInfo: {
+        totalPages: number;
+      };
+    };
+  },
+  {
+    pagination: { limit: number; after: number };
+  }
+> = gql`
+  query($pagination: PaginationArg!) {
+    allUsers(pagination: $pagination) {
+      nodes {
+        ...UserFragment
+      }
+      pageInfo {
+        totalPages
+      }
     }
   }
   ${UserFragment}

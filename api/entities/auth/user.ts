@@ -14,6 +14,7 @@ import { ObjectIdScalar } from "../../utils/ObjectIdScalar";
 import { CategoryImageAssociation } from "../associations/categoryImageAssociation";
 import { TagCategoryAssociation } from "../associations/tagCategoryAssociation";
 import { Image } from "../image";
+import { PageInfo } from "../pagination";
 import { Tip } from "../tip";
 
 @ObjectType()
@@ -112,4 +113,13 @@ export class EditUser implements Partial<User> {
 
   @Field()
   locked: boolean;
+}
+
+@ObjectType()
+export class AllUsersQuery {
+  @Field(() => [User])
+  nodes: User[];
+
+  @Field(() => PageInfo)
+  pageInfo: PageInfo;
 }

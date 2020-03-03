@@ -30,7 +30,7 @@ import {
   OWN_IMAGES,
   UPLOAD_IMAGE,
 } from "../graphql/queries";
-import { usePagination } from "../utils/pagination";
+import { usePaginationAllData } from "../utils/pagination";
 
 const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
   refetch: refetchRef,
@@ -115,7 +115,7 @@ const UploadImages: FC<{ refetch: MutableRefObject<() => Promise<any>> }> = ({
     },
   });
 
-  const { pagination, selectedData, paginatedData } = usePagination({
+  const { pagination, selectedData, paginatedData } = usePaginationAllData({
     name: "upload_own_images_pagination",
     data: dataOwnImages?.ownImages,
   });

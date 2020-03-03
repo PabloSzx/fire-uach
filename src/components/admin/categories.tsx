@@ -19,7 +19,7 @@ import {
   EDIT_CATEGORY,
   REMOVE_CATEGORY,
 } from "../../graphql/adminQueries";
-import { usePagination } from "../../utils/pagination";
+import { usePaginationAllData } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
 const EditCategory: FC<{ _id: string; name: string }> = ({ _id, name }) => {
@@ -147,7 +147,7 @@ const AdminCategories: FC = () => {
     }
   );
 
-  const { selectedData, pagination } = usePagination({
+  const { selectedData, pagination } = usePaginationAllData({
     name: "admin_categories_pagination",
     data: dataAllCategories?.categories,
   });

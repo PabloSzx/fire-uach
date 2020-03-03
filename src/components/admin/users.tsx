@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import esLocale from "date-fns/locale/es";
 import { isEqual, sortBy, uniq } from "lodash";
-import { ChangeEvent, FC, Fragment, useEffect, useState } from "react";
+import { ChangeEvent, FC, Fragment, useEffect, useRef, useState } from "react";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import LazyImage from "react-lazy-progressive-image";
 import { useSetState } from "react-use";
@@ -57,7 +57,7 @@ import {
   RESET_TAG_CATEGORY_ASSOCIATIONS,
   USER_STATS,
 } from "../../graphql/adminQueries";
-import { usePagination } from "../../utils/pagination";
+import { usePagination, usePaginationAllData } from "../../utils/pagination";
 import { Confirm } from "../Confirm";
 
 const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
@@ -152,7 +152,7 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
     }
   );
 
-  const { pagination, selectedData, paginatedData } = usePagination({
+  const { pagination, selectedData, paginatedData } = usePaginationAllData({
     name: "admin_users_pagination",
     data: imagesUploaded,
   });
@@ -755,18 +755,36 @@ const UserModal: FC<IUser & { refetchAllUsers: () => Promise<any> }> = ({
 };
 
 const AdminUsers: FC = () => {
+  const [sortedUsers, setSortedUsers] = useState<IUser[]>([]);
+
+  const { pagination, activePage, setTotalPages } = usePagination({
+    name: "adminUsers",
+  });
+
   const {
     data: dataAllUsers,
     loading: loadingAllUsers,
     refetch: refetchAllUsers,
     error: errorAllUsers,
   } = useQuery(ALL_USERS, {
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
+    variables: {
+      pagination: {
+        limit: 10,
+        after: (activePage - 1) * 10,
+      },
+    },
+    notifyOnNetworkStatusChange: true,
   });
-
   if (errorAllUsers) {
     console.error(JSON.stringify(errorAllUsers, null, 2));
   }
+
+  useEffect(() => {
+    if (dataAllUsers?.allUsers.pageInfo.totalPages) {
+      setTotalPages(dataAllUsers?.allUsers.pageInfo.totalPages);
+    }
+  }, [dataAllUsers?.allUsers.pageInfo.totalPages]);
 
   const [columns, setColumns] = useRememberState<string[]>(
     "AdminUsersColumn",
@@ -776,14 +794,14 @@ const AdminUsers: FC = () => {
     "ascending" | "descending"
   >("AdminUsersDirection", "ascending");
 
-  const [sortedUsers, setSortedUsers] = useState<IUser[]>([]);
-
   useEffect(() => {
-    if (dataAllUsers?.allUsers.length) {
+    if (dataAllUsers?.allUsers.nodes.length) {
       if (direction === "ascending") {
-        setSortedUsers(sortBy(dataAllUsers?.allUsers ?? [], columns));
+        setSortedUsers(sortBy(dataAllUsers?.allUsers.nodes ?? [], columns));
       } else {
-        setSortedUsers(sortBy(dataAllUsers?.allUsers ?? [], columns).reverse());
+        setSortedUsers(
+          sortBy(dataAllUsers?.allUsers.nodes ?? [], columns).reverse()
+        );
       }
     }
   }, [dataAllUsers, columns, direction, setSortedUsers]);
@@ -796,10 +814,6 @@ const AdminUsers: FC = () => {
       setDirection(direction === "ascending" ? "descending" : "ascending");
     }
   };
-  const { pagination, selectedData } = usePagination({
-    name: "admin_all_users",
-    data: sortedUsers,
-  });
 
   return (
     <Stack pt={5} align="center">
@@ -885,7 +899,7 @@ const AdminUsers: FC = () => {
         </Table.Header>
 
         <Table.Body>
-          {selectedData.map(user => {
+          {sortedUsers.map(user => {
             return (
               <UserModal
                 key={user._id}
