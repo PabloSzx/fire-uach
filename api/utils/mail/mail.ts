@@ -1,4 +1,4 @@
-import requireEnv from "require-env-variable";
+import { requireEnv } from "require-env-variable";
 
 const { OFFICE365_USERNAME, DOMAIN } = requireEnv(
   "DOMAIN",

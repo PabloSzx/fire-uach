@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/sendmail-transport";
-import requireEnv from "require-env-variable";
+import { requireEnv } from "require-env-variable";
 
 const { OFFICE365_USERNAME, OFFICE365_PASSWORD } = requireEnv(
   "OFFICE365_USERNAME",
