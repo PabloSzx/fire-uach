@@ -114,7 +114,7 @@ export class ImageResolver {
       });
       await Promise.all([
         uploadFileGridFSBuffer(optimizedImage, filename, imageDoc._id),
-        new Promise(async (resolve, reject) => {
+        new Promise<void>(async (resolve, reject) => {
           try {
             const { size, width, height } = await sharp(
               optimizedImage
@@ -288,7 +288,7 @@ export class ImageResolver {
   async uploadedAt(@Root() { uploadedAt, createdAt, _id }: Partial<Image>) {
     if (!uploadedAt) {
       ImageModel.findByIdAndUpdate(_id, {
-        uploadedAt: createdAt,
+        uploadedAt: createdAt as Date,
       })
         .then(() => {})
         .catch(() => {});
